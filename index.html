@@ -1,0 +1,1475 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="İşletim Sistemleri vizesi için ilk 51 sayfa: konu anlatımı, hafıza kancaları, deneyler, kartlar ve deneme sınavı.">
+<title>Çekirdek Kampı</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Pixelify+Sans:wght@500;700&family=VT323&display=swap">
+<style>
+/* Layout: retro işletim sistemi masaüstü. İçerik "pencereler"de; altta görev çubuğu + Başlat menüsü.
+   Tasarım sistemi (ui-ux-pro-max → Pixel Art/retro yönü, okunabilirlik için DM Sans gövde):
+   piksel başlık (Pixelify Sans) · terminal etiket (VT323) · gövde (DM Sans 16px/1.6) · sert gölgeli pencereler · sarı yapışkan not kancalar */
+:root{
+  --desk:#2D6F6A; --desk-dot:#347A74; --on-desk:#FFFFFF;
+  --win:#FCFBF7; --inset:#EFEDE4; --chip:#E6E3D8; --line:#CFCBBE;
+  --frame:#17192A; --shadow:#17192A; --ink:#17192A; --muted:#51576B;
+  --bar:#2B2F8F; --on-bar:#FFFFFF; --link:#2B2F8F;
+  --accent:#F2B13C; --on-accent:#17192A;
+  --note:#FFE27A; --on-note:#2A2410;
+  --ok:#1C7348; --ok-soft:#D6F0E1; --bad:#B3261E; --bad-soft:#F9DEDB;
+  --f-pixel:"Pixelify Sans","Segoe UI",system-ui,sans-serif;
+  --f-term:"VT323",ui-monospace,Consolas,monospace;
+  --f-body:"DM Sans","Segoe UI",system-ui,sans-serif;
+  --tb-h:64px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --desk:#0E1820; --desk-dot:#15242E; --on-desk:#FFFFFF;
+  --win:#1A2030; --inset:#141925; --chip:#262D40; --line:#353D52;
+  --frame:#05070C; --shadow:#000000; --ink:#ECEAE2; --muted:#A6ACBD;
+  --bar:#4A50C8; --on-bar:#FFFFFF; --link:#AEB3FF;
+  --accent:#F2B13C; --on-accent:#17192A;
+  --note:#E6CD68; --on-note:#2A2410;
+  --ok:#63D19A; --ok-soft:#173A2A; --bad:#FF8A80; --bad-soft:#40201E; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --desk:#0E1820; --desk-dot:#15242E; --on-desk:#FFFFFF;
+  --win:#1A2030; --inset:#141925; --chip:#262D40; --line:#353D52;
+  --frame:#05070C; --shadow:#000000; --ink:#ECEAE2; --muted:#A6ACBD;
+  --bar:#4A50C8; --on-bar:#FFFFFF; --link:#AEB3FF;
+  --accent:#F2B13C; --on-accent:#17192A;
+  --note:#E6CD68; --on-note:#2A2410;
+  --ok:#63D19A; --ok-soft:#173A2A; --bad:#FF8A80; --bad-soft:#40201E; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{background-color:var(--desk);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6;
+  background-image:radial-gradient(var(--desk-dot) 1.5px,transparent 1.6px);background-size:16px 16px;}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--desk)}
+button,a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+h1,h2,h3{text-wrap:balance;line-height:1.15;margin:0}
+p{margin:0}
+.term{font-family:var(--f-term);font-size:1.1rem;line-height:1.2;letter-spacing:.02em}
+.mono{font-family:var(--f-term);font-size:1.05rem;letter-spacing:.02em}
+.skip{position:absolute;left:-9999px;top:8px;z-index:60;background:var(--accent);color:var(--on-accent);padding:8px 14px;border:2px solid var(--frame)}
+.skip:focus{left:12px}
+
+/* ---------- sayfa ---------- */
+main{max-width:880px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:24px calc(var(--tb-h) + 40px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:24px;outline:none}
+
+/* ---------- pencere ---------- */
+.win{background:var(--win);border:2px solid var(--frame);border-radius:4px;box-shadow:5px 5px 0 var(--shadow);min-width:0}
+.win-bar{background:var(--bar);color:var(--on-bar);display:flex;align-items:center;gap:10px;justify-content:space-between;padding:6px 8px 6px 12px;border-bottom:2px solid var(--frame)}
+.win-bar .term{font-size:1.15rem}
+.win-dots{display:flex;gap:4px;flex:none}
+.win-dots i{width:14px;height:14px;border:2px solid var(--frame);background:var(--win);display:block}
+.win-body{padding:20px;display:flex;flex-direction:column;gap:16px}
+@media (max-width:520px){.win-body{padding:16px}}
+
+/* masaüstü (ana sayfa) */
+.desk-title{color:var(--on-desk);display:flex;flex-direction:column;gap:8px;padding-top:8px}
+.desk-title .term{font-size:1.25rem;opacity:.9}
+.desk-title h1{font-family:var(--f-pixel);font-weight:700;font-size:clamp(2.2rem,8vw,3.6rem);letter-spacing:.01em;text-shadow:3px 3px 0 var(--frame)}
+.desk-title p{max-width:58ch;font-size:1.05rem}
+.icons{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+@media (max-width:560px){.icons{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.dicon{display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 6px;text-decoration:none;color:var(--on-desk);border:2px solid transparent;border-radius:4px;text-align:center;min-height:44px}
+.dicon:hover,.dicon:focus-visible{border-color:var(--on-desk);border-style:dotted}
+.dicon svg{width:64px;height:56px}
+.dicon .lbl{background:var(--frame);color:#FFFFFF;padding:2px 8px;font-weight:700;font-size:.95rem;line-height:1.3}
+.dicon .sub{font-family:var(--f-term);font-size:1.05rem;line-height:1}
+.fold-back{fill:#D9952A}.fold-front{fill:var(--accent)}.fold-line{fill:none;stroke:var(--frame);stroke-width:2.5}
+.fold-paper{fill:#FCFBF7}.fold-num{fill:var(--frame);font-family:var(--f-pixel);font-weight:700;font-size:20px}
+.dosbox{background:#0B0E14;color:#C9D1C8;font-family:var(--f-term);font-size:1.15rem;line-height:1.35;padding:14px 16px;overflow-x:auto;border-top:0}
+.dosbox .y{color:#F2B13C}.dosbox .g{color:#7BE0A6}
+.blink{animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.lvl-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 16px;align-items:center}
+.lvl-row h2{font-family:var(--f-pixel);font-size:1.7rem}
+.xpbig{font-family:var(--f-term);font-size:2.2rem;line-height:1;color:var(--ink);text-align:right}
+.ladder{display:flex;gap:6px;flex-wrap:wrap;grid-column:1/-1}
+.ladder span{font-family:var(--f-term);font-size:1.05rem;padding:2px 8px;border:2px solid var(--line);color:var(--muted)}
+.ladder span.past{border-color:var(--frame);color:var(--ink)}
+.ladder span.on{background:var(--accent);border-color:var(--frame);color:var(--on-accent)}
+.meter{height:14px;border:2px solid var(--frame);background:var(--inset);display:block;overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:repeating-linear-gradient(90deg,var(--ok) 0 10px,transparent 10px 12px)}
+.meter.amber i{background:repeating-linear-gradient(90deg,var(--accent) 0 10px,transparent 10px 12px)}
+.chaplist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:620px){.chaplist{grid-template-columns:1fr}}
+.chapitem{display:flex;flex-direction:column;gap:6px;padding:14px;border:2px solid var(--frame);background:var(--win);text-decoration:none;color:var(--ink);box-shadow:3px 3px 0 var(--shadow);transition:transform .15s,box-shadow .15s}
+.chapitem:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--shadow)}
+.chapitem:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--shadow)}
+.chapitem .top{display:flex;justify-content:space-between;gap:8px;font-family:var(--f-term);font-size:1.1rem;color:var(--muted)}
+.chapitem h3{font-family:var(--f-pixel);font-size:1.4rem}
+.chapitem p{color:var(--muted);font-size:.95rem}
+
+/* bölüm başlığı */
+.chap-win h1{font-family:var(--f-pixel);font-weight:700;font-size:clamp(1.8rem,6vw,2.6rem)}
+.chap-win .alt{color:var(--muted);font-size:1.05rem}
+.chap-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-family:var(--f-term);font-size:1.15rem}
+.chap-meta .meter{width:160px}
+.toc{display:flex;flex-wrap:wrap;gap:6px}
+.toc a{font-size:.88rem;padding:6px 10px;border:2px solid var(--line);color:var(--ink);text-decoration:none;min-height:36px;display:inline-flex;align-items:center;gap:6px}
+.toc a:hover{border-color:var(--frame)}
+.toc a.done{border-color:var(--ok);color:var(--ok)}
+.toc a.done::before{content:"✓";font-weight:700}
+.chapnav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+
+/* konu penceresi */
+.konu{scroll-margin-top:16px}
+.konu.done .win-bar{background:var(--ok);color:var(--win)}
+.konu h2{font-size:1.4rem;font-weight:700;letter-spacing:-.01em}
+.konu ul{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:7px}
+.konu li::marker{content:"▸ ";color:var(--bar)}
+.konu b{font-weight:700}
+.def{border:2px dashed var(--bar);padding:12px 14px;font-size:1.05rem;background:var(--inset)}
+.def small,.lab-h,.tip small{display:block;font-family:var(--f-term);font-size:1.05rem;letter-spacing:.04em;color:var(--link);margin-bottom:2px}
+.note{background:var(--note);color:var(--on-note);padding:14px 16px 16px;border:2px solid var(--frame);box-shadow:4px 4px 0 var(--shadow);transform:rotate(-.5deg);position:relative;margin-inline:4px}
+.note::before{content:"";position:absolute;top:-10px;left:50%;width:70px;height:18px;margin-left:-35px;background:rgba(255,255,255,.55);border:1px solid rgba(0,0,0,.15);transform:rotate(2deg)}
+.note small{display:block;font-family:var(--f-term);font-size:1.05rem;letter-spacing:.06em;margin-bottom:4px;opacity:.8}
+.note .mn{font-family:var(--f-pixel);font-weight:700;font-size:1.15rem;line-height:1.3}
+.note b{color:inherit}
+.tip{background:var(--chip);padding:10px 14px;font-size:.95rem;border-left:4px solid var(--bar)}
+.cmp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:560px){.cmp{grid-template-columns:1fr}}
+.cmp>div{border:2px solid var(--line);padding:12px;min-width:0;background:var(--win)}
+.cmp h4{margin:0 0 4px;font-size:1rem;font-weight:700}
+.cmp p{font-size:.95rem;color:var(--muted)}
+.k-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;border-top:2px dashed var(--line);padding-top:14px}
+.k-foot .st-note{font-family:var(--f-term);font-size:1.1rem;color:var(--muted)}
+
+/* düğmeler */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;border:2px solid var(--frame);background:var(--win);color:var(--ink);padding:8px 16px;font-weight:700;font-size:.95rem;box-shadow:3px 3px 0 var(--shadow);text-decoration:none;transition:transform .12s,box-shadow .12s;border-radius:2px}
+.btn:hover:not(:disabled){transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--shadow)}
+.btn:active:not(:disabled){transform:translate(3px,3px);box-shadow:0 0 0 var(--shadow)}
+.btn.pri{background:var(--accent);color:var(--on-accent)}
+.btn.okb.on{background:var(--ok);color:var(--win)}
+.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.muted{color:var(--muted)}
+
+/* deney paneli */
+.lab{border:2px solid var(--frame);background:var(--inset);padding:14px;display:flex;flex-direction:column;gap:12px;box-shadow:inset 3px 3px 0 var(--line)}
+.lab-h{color:var(--link)}
+.lst{display:flex;flex-wrap:wrap;gap:8px}
+.lst-b{border:2px solid var(--frame);background:var(--win);padding:8px 12px;font-size:.92rem;text-align:left;min-height:44px;box-shadow:2px 2px 0 var(--shadow)}
+.lst-b:hover{background:var(--chip)}
+.lst-b.on{background:var(--bar);color:var(--on-bar)}
+.lst-b .tag{font-family:var(--f-term);font-size:1.05rem;margin-right:6px;opacity:.8}
+.lst.stack{flex-direction:column;align-items:center}
+.lst.stack .lst-b{text-align:center}
+.lst-d{min-height:3.4em;font-size:.95rem;background:var(--win);padding:10px 12px;border:2px solid var(--line)}
+.lst-d b{font-weight:700}
+.twocol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:560px){.twocol{grid-template-columns:1fr}}
+.twocol>div{background:var(--win);border:2px solid var(--line);padding:12px;display:flex;flex-direction:column;gap:10px;align-items:flex-start;min-width:0}
+.twocol h4{margin:0;font-size:1rem}
+ol.steps{margin:0;padding-left:1.4em;font-size:.92rem;display:flex;flex-direction:column;gap:3px}
+ol.steps li{animation:pop .22s ease-out}
+@keyframes pop{from{opacity:.2;transform:translateX(-6px)}to{opacity:1;transform:none}}
+.res{font-size:.95rem;font-weight:700}
+.res.good{color:var(--ok)}
+.res.good::before{content:"✓ "}
+.res.badc{color:var(--bad)}
+.res.badc::before{content:"✗ "}
+.paper{background:var(--win);border:2px solid var(--line);padding:8px 10px;font-family:var(--f-term);font-size:1.1rem;line-height:1.25;min-height:9.5em;display:flex;flex-direction:column;gap:2px}
+.ln{padding:1px 6px;animation:pop .2s ease-out;color:var(--on-note)}
+.uA{background:#F6C9A8}.uB{background:#B9E6CB}.uC{background:#C9CDF5}
+.queue{display:flex;gap:6px;flex-wrap:wrap;min-height:30px;align-items:center;font-family:var(--f-term);font-size:1.1rem}
+.queue span{padding:2px 8px;border:2px solid var(--frame)}
+.queue span.uA,.queue span.uB,.queue span.uC{color:var(--on-note)}
+.toggle{display:inline-flex;border:2px solid var(--frame)}
+.toggle button{border:0;background:var(--win);padding:8px 12px;font-size:.9rem;min-height:40px}
+.toggle button.on{background:var(--bar);color:var(--on-bar)}
+.stepper{display:flex;gap:6px;flex-wrap:wrap}
+.stepper span{font-size:.86rem;padding:5px 10px;border:2px solid var(--line);background:var(--win);color:var(--muted)}
+.stepper span.on{background:var(--accent);border-color:var(--frame);color:var(--on-accent);font-weight:700}
+.stepper span.past{color:var(--ink);border-color:var(--frame)}
+.tblwrap{overflow-x:auto}
+table.syn{border-collapse:collapse;width:100%;min-width:540px;font-size:.9rem;background:var(--win)}
+table.syn th,table.syn td{border:2px solid var(--frame);padding:8px;text-align:center;vertical-align:middle}
+table.syn thead th{background:var(--bar);color:var(--on-bar);font-weight:700}
+table.syn th[scope=row]{text-align:left;background:var(--chip)}
+table.syn td button{width:100%;min-height:40px;border:2px dashed var(--bar);background:transparent;color:var(--link);font-family:var(--f-term);font-size:1.3rem}
+table.syn td.shown{background:var(--note);color:var(--on-note)}
+.qbox{background:var(--win);border:2px solid var(--line);padding:12px;display:flex;flex-direction:column;gap:10px}
+.qq{font-weight:700}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{border:2px solid var(--frame);background:var(--win);padding:10px 12px;text-align:left;font-size:.96rem;display:flex;gap:12px;align-items:flex-start;min-height:48px;box-shadow:2px 2px 0 var(--shadow)}
+.opt:hover:not(:disabled){background:var(--chip)}
+.opt .lt{font-family:var(--f-term);font-size:1.25rem;line-height:1.1;flex:none;width:1.2em}
+.opt.right{background:var(--ok-soft);border-color:var(--ok)}
+.opt.right::after{content:"✓ doğru";margin-left:auto;font-weight:700;color:var(--ok);flex:none;padding-left:8px}
+.opt.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.opt.wrong::after{content:"✗ senin cevabın";margin-left:auto;font-weight:700;color:var(--bad);flex:none;padding-left:8px}
+.opt:disabled{cursor:default;color:var(--ink)}
+.shake{animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.matrix{display:grid;grid-template-columns:auto minmax(0,1fr) minmax(0,1fr);gap:6px;align-items:stretch}
+.matrix .ax{font-family:var(--f-term);font-size:1.05rem;color:var(--muted);display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.1}
+.matrix .ax.v{writing-mode:vertical-rl;transform:rotate(180deg)}
+.quad{border:2px solid var(--frame);background:var(--win);padding:10px;min-height:96px;font-size:.86rem;display:flex;flex-direction:column;gap:4px;text-align:left;box-shadow:2px 2px 0 var(--shadow)}
+.quad:hover{background:var(--chip)}
+.quad b{font-size:.9rem}
+.quad .found{color:var(--ok);font-weight:700}
+.match{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+.match .colm{display:flex;flex-direction:column;gap:8px}
+.match button{border:2px solid var(--frame);background:var(--win);padding:8px 10px;text-align:left;font-size:.9rem;min-height:48px;box-shadow:2px 2px 0 var(--shadow)}
+.match button.sel{background:var(--bar);color:var(--on-bar)}
+.match button.ok{border-color:var(--ok);background:var(--ok-soft);color:var(--ink);cursor:default;box-shadow:none}
+.match button.ok::before{content:"✓ ";color:var(--ok);font-weight:700}
+.states{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.st{border:2px solid var(--line);background:var(--win);padding:10px 4px;text-align:center;font-weight:700;font-size:.86rem;transition:transform .2s,background .2s;min-width:0;overflow-wrap:anywhere}
+.st small{display:block;font-weight:400;font-family:var(--f-term);font-size:1rem;color:var(--muted)}
+.st.on{border-color:var(--frame);background:var(--accent);color:var(--on-accent);transform:scale(1.04);box-shadow:3px 3px 0 var(--shadow)}
+.st.on small{color:var(--on-accent)}
+.st.w{grid-column:2/span 2}
+.log{font-family:var(--f-term);font-size:1.08rem;line-height:1.25;background:#0B0E14;color:#C9D1C8;border:2px solid var(--frame);padding:8px 10px;max-height:9em;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.dl svg{width:100%;max-width:440px;display:block;margin:0 auto;background:var(--win);border:2px solid var(--line)}
+.dl .node{fill:var(--win);stroke:var(--ink);stroke-width:2.5}
+.dl .rnode{fill:var(--accent);stroke:var(--frame);stroke-width:2.5}
+.dl text{fill:var(--ink);font-family:var(--f-body);font-size:13px;font-weight:700}
+.dl text.rt{fill:var(--on-accent)}
+.dl text.sm{font-size:10.5px;font-weight:400;fill:var(--muted)}
+.dl line{stroke:var(--ink);stroke-width:2.5;transition:opacity .3s}
+.dl line.req{stroke-dasharray:6 4}
+.dl line.cyc{stroke:var(--bad)}
+.dl .hide{opacity:0}
+.dl .dead{opacity:.25}
+.dl marker path{fill:var(--ink)}
+.dl marker#ahR path{fill:var(--bad)}
+.ram{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.slot{border:2px dashed var(--line);min-height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--f-term);font-size:1.15rem;background:var(--win);line-height:1.1}
+.slot.full{border-style:solid;border-color:var(--frame);background:var(--chip)}
+.slot small{color:var(--muted);font-size:.95rem}
+.disk{display:flex;gap:6px;flex-wrap:wrap;min-height:38px;align-items:center;border:2px solid var(--line);padding:6px;background:var(--win);font-family:var(--f-term);font-size:1.1rem}
+.disk span{padding:1px 8px;background:var(--note);color:var(--on-note);border:2px solid var(--frame)}
+.lab .muted.term{font-size:1.05rem}
+
+/* kartlar */
+.fc{perspective:1200px;height:280px;cursor:pointer}
+.fc-in{position:relative;width:100%;height:100%;transition:transform .45s cubic-bezier(.3,.7,.3,1);transform-style:preserve-3d}
+.fc.flip .fc-in{transform:rotateY(180deg)}
+.fc-f,.fc-b{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;padding:22px;display:flex;flex-direction:column;justify-content:center;gap:12px;border:2px solid var(--frame);box-shadow:5px 5px 0 var(--shadow);overflow:auto}
+.fc-f{background:var(--win)}
+.fc-f p{font-family:var(--f-pixel);font-size:clamp(1.35rem,4vw,1.8rem);font-weight:700;text-align:center;line-height:1.25}
+.fc-b{background:var(--note);color:var(--on-note);transform:rotateY(180deg)}
+.fc-b p{font-size:1.05rem;text-align:center}
+.fc small{font-family:var(--f-term);font-size:1.05rem;opacity:.75;text-align:center}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg button{border:2px solid var(--frame);background:var(--win);padding:8px 12px;font-size:.92rem;min-height:44px}
+.seg button.on{background:var(--bar);color:var(--on-bar)}
+.seg-h{font-family:var(--f-term);font-size:1.15rem;color:var(--muted);margin-bottom:6px}
+
+/* sınav */
+.qmeta{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-family:var(--f-term);font-size:1.15rem;color:var(--muted)}
+.qtitle{font-size:1.3rem;font-weight:700;line-height:1.4}
+.expl{background:var(--note);color:var(--on-note);border:2px solid var(--frame);padding:10px 14px;font-size:.95rem}
+.score{font-family:var(--f-pixel);font-size:3.4rem;font-weight:700;line-height:1}
+.wronglist{display:flex;flex-direction:column;gap:8px}
+.wronglist div{border:2px solid var(--line);padding:10px 12px;font-size:.94rem;background:var(--win)}
+.wronglist div b{color:var(--ok)}
+
+/* kancalar */
+.hook{display:grid;grid-template-columns:minmax(0,15em) minmax(0,1fr);gap:4px 16px;padding:12px 0;border-bottom:2px dashed var(--line)}
+.hook:last-child{border-bottom:0}
+@media (max-width:620px){.hook{grid-template-columns:1fr}}
+.hook a{font-weight:700;color:var(--link)}
+.hook .pg{font-family:var(--f-term);font-size:1.05rem;color:var(--muted);display:block}
+.hook .mn{font-family:var(--f-pixel);font-weight:700}
+
+/* ---------- görev çubuğu + başlat menüsü ---------- */
+.taskbar{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--win);border-top:2px solid var(--frame);
+  padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px));padding-block:6px calc(6px + env(safe-area-inset-bottom,0px));
+  display:flex;align-items:stretch;gap:6px;min-height:var(--tb-h)}
+.start{display:flex;align-items:center;gap:8px;border:2px solid var(--frame);background:var(--accent);color:var(--on-accent);font-family:var(--f-pixel);font-weight:700;font-size:1.05rem;padding:0 12px;box-shadow:2px 2px 0 var(--shadow);min-height:48px;flex:none}
+.start[aria-expanded="true"]{transform:translate(2px,2px);box-shadow:none}
+.start svg{width:22px;height:22px}
+.tb{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:64px;padding:2px 8px;text-decoration:none;color:var(--ink);border:2px solid transparent;font-size:.78rem;font-weight:700}
+.tb svg{width:22px;height:22px}
+.tb:hover{border-color:var(--line)}
+.tb.on{border-color:var(--frame);background:var(--chip)}
+.tray{margin-left:auto;display:flex;align-items:center;gap:8px;border:2px solid var(--line);padding:0 10px;min-width:0;background:var(--inset)}
+.tray .term{font-size:1.15rem;white-space:nowrap}
+.tray .meter{width:70px;height:12px}
+@media (max-width:640px){.tb{min-width:0;flex:1}.tray{flex-direction:column;justify-content:center;gap:2px;padding:0 6px}.tray #hudLvl{display:none}.tray .meter{width:56px}.start .stxt{display:none}.start{padding:0 10px}}
+.startmenu{position:fixed;z-index:45;left:max(8px,env(safe-area-inset-left,0px));bottom:calc(var(--tb-h) + 4px + env(safe-area-inset-bottom,0px));width:min(320px,calc(100vw - 16px));
+  background:var(--win);border:2px solid var(--frame);box-shadow:5px 5px 0 var(--shadow);display:flex}
+.startmenu .side{background:var(--bar);color:var(--on-bar);writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--f-pixel);font-weight:700;font-size:1.2rem;padding:10px 6px;letter-spacing:.04em}
+.startmenu ul{list-style:none;margin:0;padding:6px;flex:1;display:flex;flex-direction:column;gap:2px}
+.startmenu a{display:flex;align-items:center;gap:10px;padding:8px 10px;text-decoration:none;color:var(--ink);min-height:48px}
+.startmenu a:hover,.startmenu a:focus-visible{background:var(--bar);color:var(--on-bar);outline:none}
+.startmenu a small{display:block;font-family:var(--f-term);font-size:1rem;opacity:.75;line-height:1}
+.startmenu .sep{border-top:2px dashed var(--line);margin:4px 0}
+.startmenu svg{width:28px;height:24px;flex:none}
+.toast{position:fixed;right:max(12px,env(safe-area-inset-right,0px));bottom:calc(var(--tb-h) + 12px + env(safe-area-inset-bottom,0px));z-index:50;background:var(--note);color:var(--on-note);border:2px solid var(--frame);box-shadow:4px 4px 0 var(--shadow);padding:10px 14px;font-weight:700;max-width:min(320px,calc(100vw - 24px));transform:translateY(16px);opacity:0;transition:transform .25s ease-out,opacity .25s ease-out;pointer-events:none}
+.toast.show{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+
+<div lang="tr">
+<a class="skip" href="#main">İçeriğe geç</a>
+<main id="main" tabindex="-1"></main>
+<div class="startmenu" id="startmenu" hidden>
+  <div class="side" aria-hidden="true">Çekirdek Kampı</div>
+  <ul id="startlist"></ul>
+</div>
+<nav class="taskbar" aria-label="Ana menü">
+  <button class="start" id="startBtn" aria-expanded="false" aria-controls="startmenu"><svg viewBox="0 0 22 22" aria-hidden="true"><rect x="1" y="1" width="9" height="9" fill="#C8382E" stroke="#17192A" stroke-width="1.5"/><rect x="12" y="1" width="9" height="9" fill="#2E9E57" stroke="#17192A" stroke-width="1.5"/><rect x="1" y="12" width="9" height="9" fill="#2F5FD0" stroke="#17192A" stroke-width="1.5"/><rect x="12" y="12" width="9" height="9" fill="#F7D24B" stroke="#17192A" stroke-width="1.5"/></svg><span class="stxt">Başlat</span></button>
+  <a class="tb" href="#kartlar" data-tab="kartlar"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="14" height="14"/><path d="M7 2h14v14"/></svg><span>Kartlar</span></a>
+  <a class="tb" href="#sinav" data-tab="sinav"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18"/><path d="M7 12l3 3 7-7"/></svg><span>Sınav</span></a>
+  <a class="tb" href="#kancalar" data-tab="kancalar"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 3h16v14l-5 5H4z"/><path d="M15 22v-5h5"/></svg><span>Kancalar</span></a>
+  <div class="tray" aria-live="polite"><span class="term" id="hudLvl">Vakum Tüpü</span><span class="meter amber"><i id="hudBar"></i></span><span class="term" id="hudXp">0 XP</span></div>
+</nav>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+</div>
+
+<script>
+/* =====================================================================
+   İÇERİK — isletim_sistemleri.pdf, sayfa 1–51
+   ===================================================================== */
+const HOOK_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3v9a5 5 0 0 1-10 0v-2"/><path d="M3 12l2-2 2 2"/></svg>';
+
+const BOLUMLER = [
+{ id:'b1', no:1, ad:'Maestro', alt:'Temel kavramlar, katmanlı mimari ve tarihsel evrim', sayfa:'1–13',
+  ozet:'İşletim sistemi ne işe yarar, katmanlar, program/proses, zaman paylaşımı, spooling, 4 nesil ve boot.',
+  konular:[
+  { id:'tanim', s:'1–3, 13', t:'İşletim sistemi nedir?',
+    h:`<div class="def"><small>SINAVLIK TANIM</small>Donanım ve yazılım kaynaklarını kullanıcılar arasında <b>adil</b> bir biçimde paylaştıran, bilgisayarın <b>etkin</b> ve <b>verimli</b> kullanılmasını sağlayan <b>sistem programları topluluğu</b>.</div>
+    <ul>
+      <li>İşletim sistemi üç tarafın <b>ara katmanıdır</b>:
+        <b>Donanım</b> (CPU, bellek/RAM, G/Ç birimleri), <b>Yazılım</b> (uygulamalar ve sistem yazılımları: derleyiciler, VTYS) ve <b>Kullanıcı</b> (sisteme komut veren son uç).</li>
+      <li>Slaytların metaforu: işletim sistemi <b>dijital dünyanın maestrosu</b>, yani orkestra şefi. Donanım tek başına kart, kablo ve mekanik parça yığınıdır.</li>
+      <li>OS donanımı yönetir, <b>karmaşıklığı soyutlar</b> ve kullanıcıya üretebileceği bir sahne sunar.</li>
+      <li>Yığın işlemden dağıtık bulut mimarisine uzanan evrim, <b>kaostan düzene geçişin</b> tarihidir.</li>
+    </ul>`,
+    k:'<span class="mn">“Adil, etkin, verimli.”</span><br>Tanımı sorarlarsa bu üç kelime ve “sistem programları topluluğu” mutlaka geçsin.' },
+
+  { id:'osuz', s:'2', t:'İşletim sistemi olmasaydı?',
+    h:`<ul>
+      <li>OS olmasaydı bir programı açmak için diskin donanım ayrıntılarıyla tek tek uğraşmak gerekirdi: 7 adım.</li>
+      <li>OS ile: <b>sadece dosyanın adına veya simgesine (ikon) tıklarsın</b>.</li>
+      <li>Ana fikir: OS, donanımın karmaşık yapısını gizleyerek <b>kaosu tek bir tıklamaya dönüştüren</b> görünmez bir güçtür.</li>
+    </ul>`,
+    k:'<span class="mn">7 adım → 1 tık.</span><br>Sürücü · Disket dönüyor mu · Okuma kafası · Program hangi izde · Kafayı gönder · Bellekte yer · Oku-yerleştir-çalıştır.',
+    w:'osuz' },
+
+  { id:'katman', s:'4', t:'Bilgisayar sisteminin 6 katmanı',
+    h:`<ul>
+      <li>Yukarıdan aşağı: <b>Uygulama yazılımı → Sistem yazılımı → İşletim sistemi → Makine dili → Mikroprogram → Fiziksel birimler</b>.</li>
+      <li><b>Kullanıcı etkileşimi</b> yukarıdan aşağı iner, <b>donanım yürütmesi</b> aşağıdan yukarı çıkar.</li>
+      <li><b>Makine dili:</b> donanımın gerçek parçası gibi algılanan <b>50–300 temel komut</b> seti.</li>
+      <li><b>Mikroprogram:</b> <b>ROM</b>'da yer alır, makine dilini yorumlayan en ilkel yazılımdır (ekle, taşı, karşılaştır).</li>
+    </ul>`,
+    k:'<span class="mn">“Usta Sincap İnce Makarnayı Mikrodalgada Fırınladı.”</span><br>U-S-İ-M-M-F: Uygulama, Sistem yazılımı, İşletim sistemi, Makine dili, Mikroprogram, Fiziksel.',
+    w:'katman' },
+
+  { id:'proses', s:'5', t:'Program ve proses (süreç)',
+    h:`<div class="cmp">
+      <div><h4>Program</h4><p>Diskte bekleyen komutlar dizisi. <b>Statiktir</b> (durgun veri yapısı). Dosya olarak yıllarca kalıcı olabilir.</p></div>
+      <div><h4>Proses (süreç)</h4><p>RAM'e yüklenmiş, <b>çalıştırılmakta olan</b> program. <b>Dinamiktir</b> (yaşayan görev). Ömrü saniye veya dakikayla ölçülür.</p></div>
+    </div>
+    <ul><li>İşletim sisteminin kalbi: bu dinamik prosesleri yönetmek ve sistem kaynaklarını (CPU, bellek) onlara <b>tahsis etmek</b>.</li></ul>`,
+    k:'<span class="mn">Program = yemek tarifi, proses = ocakta pişen yemek.</span><br>Tarif kitapta yıllarca durur. Yemek pişerken ocağı ve tencereyi (CPU, bellek) kullanır, sonra biter.' },
+
+  { id:'zaman', s:'6', t:'Zaman paylaşımı ve çoklu görev',
+    h:`<ul>
+      <li><b>Zaman paylaşımı (time-sharing):</b> CPU'nun çok sayıda kullanıcının veya sürecin işlerine <b>kısa sürelerle</b> tahsis edilmesi.</li>
+      <li><b>İllüzyon:</b> Sistem çok hızlı olduğu için terminal başındaki her kullanıcı işlemcinin <b>yalnızca kendisine</b> hizmet ettiğini sanır.</li>
+      <li><b>Çoklu görev (multitasking):</b> Kullanıcının kendisine ait farklı programları aynı anda işletebilmesi (örn. Windows).</li>
+    </ul>`,
+    k:'<span class="mn">Simultane satranç ustası.</span><br>Usta 20 masayı sırayla dolaşıp birer hamle yapar. Her rakip ustanın yalnız onunla oynadığını sanır. Usta = CPU, masalar = kullanıcılar.' },
+
+  { id:'spool', s:'7', t:'Spooling: karmaşayı önleyen trafik polisi',
+    h:`<ul>
+      <li><b>Problem:</b> Aynı anda 3 kullanıcı yazıcıya çıktı gönderirse satırlar kâğıtta birbirine karışır.</li>
+      <li><b>Nasıl çalışır?</b> Paylaşımlı kullanıma uygun olmayan çevre birimlerinde talepler doğrudan cihaza gitmez. OS bu işleri <b>disk üzerinde sıraya (kuyruğa)</b> koyar.</li>
+      <li><b>Sonuç:</b> Kullanıcılar birbirini beklemeden cihazı kendilerine aitmiş gibi kullanır.</li>
+      <li>Açılımı: <b>S</b>imultaneous <b>P</b>eripheral <b>O</b>peration <b>O</b>n <b>L</b>ine.</li>
+    </ul>`,
+    k:'<span class="mn">Bankadaki sıra numarası.</span><br>Numaranı alıp işine dönersin, sıran gelince çağrılırsın. Bekleme salonu = disk, gişe = yazıcı.',
+    w:'spool' },
+
+  { id:'kernel', s:'8', t:'Monolitik çekirdek ve istemci/sunucu (mikroçekirdek)',
+    h:`<ul>
+      <li><b>Çekirdeğin küçülmesi:</b> Kernel en düşük düzeye indirilir, iletişim bir ara köprüye dönüşür.</li>
+      <li><b>Çalışma prensibi:</b> İstemci proses bir sunucuya (örn. dosya sunucusu) istek gönderir; sunucu işi yapar ve sonucu döndürür.</li>
+      <li><b>Kararlılık ve güvenlik:</b> Bir hata yüzünden File Server çökerse <b>sadece dosya servisi durur</b>, sistemin tümü çökmez.</li>
+      <li>Mikroçekirdeğin çevresindeki sunucular: <b>Process Server, File Server, Memory Server</b>.</li>
+    </ul>`,
+    k:'<span class="mn">Monolitik = tek parça kaya, mikroçekirdek = ayrı odalı ev.</span><br>Kaya çatlarsa hepsi gider. Evde mutfak su basarsa sadece mutfak kapanır.' },
+
+  { id:'nesil', s:'9–10', t:'Tarihsel evrim: 4 nesil',
+    h:`<ul>
+      <li><b>1. nesil (1945–1955) vakum tüpleri:</b> OS yok. Fiş panoları ve makine diliyle programlama. Tasarım, donanım, programlama hep aynı grubun elinde.</li>
+      <li><b>2. nesil (1955–1965) transistörler:</b> <b>Yığın işlem (batch)</b>: programlar tek bantta toplanıp arka arkaya çalışır. Öne çıkan dil Fortran; ilk OS örneği <b>IBSYS (IBM)</b>.</li>
+      <li><b>3. nesil (1965–1980) entegre devreler (IC):</b> <b>Multiprogramming</b>: G/Ç sırasında CPU boş kalmaz, başka programı işler. <b>Spooling</b> ve <b>zaman paylaşımı</b> doğar.</li>
+      <li><b>4. nesil (1980–günümüz):</b> LSI çipler ile <b>kişisel bilgisayar</b> (MS-DOS ve UNIX hâkimiyeti), <b>ağ OS</b>, <b>dağıtık OS</b>, <b>gömülü ve gerçek zamanlı</b> sistemler.</li>
+    </ul>
+    <div class="cmp">
+      <div><h4>Ağ işletim sistemi</h4><p>Her makinenin kendi yerel OS'u vardır, ama kullanıcılar uzaktan bağlanma (remote login) ile ağdaki diğer makinelerin <b>farkındadır</b>.</p></div>
+      <div><h4>Dağıtık işletim sistemi</h4><p>Çok sayıda CPU olsa da sistem kullanıcıya <b>tek bir işlemci</b> gibi görünür. Kullanıcı dosyasının nerede işlendiğini bilmez.</p></div>
+    </div>`,
+    k:'<span class="mn">“Tüp Tıkandı, Entegre Lazım.”</span><br>Tüp → Transistör → Entegre → LSI. Yıllar: 45 · 55 · 65 · 80. Kavramlar: OS yok → Batch → Multiprogramming → PC/Ağ/Dağıtık.',
+    w:'nesil' },
+
+  { id:'terminal', s:'11', t:'Ağın uç noktaları: terminaller',
+    h:`<div class="cmp">
+      <div><h4>1. Kendi OS'u olan terminaller</h4><p>Günümüzde yaygın; Windows veya macOS çalıştıran istemci cihazlar.</p></div>
+      <div><h4>2. Aptal terminaller (dumb terminals)</h4><p>OS'u, işlemcisi, diski <b>yoktur</b>. Sadece klavye ve monitör. Özel bir kartla doğrudan sunucuya bağlıdır. Örnek: eski banka gişelerindeki memur bilgisayarları.</p></div>
+    </div>`,
+    k:'<span class="mn">Aptal terminalin beyni sunucudadır.</span><br>Kendisi sadece göz (monitör) ve el (klavye).' },
+
+  { id:'boot', s:'12', t:'Sistemin uyanışı: boot',
+    h:`<ul>
+      <li><b>Kapalı durum:</b> Elektrik yok, RAM boş, OS sabit diskte (HDD) bekliyor.</li>
+      <li><b>Tetiklenme (power on):</b> ROM'daki mikroprogram temel kontrolleri yapar.</li>
+      <li><b>Yükleme (loading):</b> Sabit diskteki OS dosyaları okunup ana belleğe (RAM) taşınır.</li>
+      <li><b>Devir:</b> OS donanımın tam kontrolünü alır ve kullanıcıdan komut beklemeye başlar.</li>
+    </ul>`,
+    k:'<span class="mn">Uyku → alarm → kahvaltı → işbaşı.</span><br>Kapalı → ROM kontrolü → Diskten RAM\'e yükleme → Kontrol OS\'ta.',
+    w:'boot' }
+  ]},
+
+{ id:'b2', no:2, ad:'Evrim', alt:'Komut satırından kriptolu güvenliğe', sayfa:'14–26',
+  ozet:'MS-DOS, UNIX, Novell; CLI ve GUI; Windows sürümleri; NAP, BitLocker; macOS, Pardus ve bulut.',
+  konular:[
+  { id:'aile', s:'15', t:'Temel görev ve iki arayüz ailesi',
+    h:`<ul>
+      <li><b>İnsan:</b> bilgisayarla etkileşim kurmak isteyen kullanıcı. <b>İşletim sistemi:</b> yazılım ile donanım arasındaki köprü (<b>çekirdek</b>). <b>Donanım:</b> MİB (işlemci), bellek, disk ve çevre birimleri.</li>
+    </ul>
+    <div class="cmp">
+      <div><h4>Metin tabanlı (kuralcı)</h4><p>MS-DOS, Unix, Novell Netware. Sadece komutlarla iletişim.</p></div>
+      <div><h4>Grafik tabanlı (görsel)</h4><p>Windows, macOS, Linux, OS/2. Sezgisel ve görsel iletişim.</p></div>
+    </div>`,
+    k:'<span class="mn">Metin tabanlılar “MUN”dur.</span><br><b>M</b>S-DOS, <b>U</b>nix, <b>N</b>ovell. Geri kalanlar (Windows, macOS, Linux, OS/2) grafik.' },
+
+  { id:'sentaks', s:'16', t:'Sentaks çağı: makinenin dilini konuşmak',
+    h:`<ul>
+      <li><b>MS-DOS (Disk Operating System):</b> Tek kullanıcılı, salt metin ekranında çalışır. Her eylem için ezber komutları klavyeden yazmak gerekir. <b>Bilişsel yük tamamen kullanıcıda.</b></li>
+      <li><b>UNIX:</b> <b>Çok kullanıcılı ve çok görevli</b> bir devrim. İşlemci mimarisinden <b>bağımsız</b> çalışır; büyük şirketlerin, bankaların ve devlet kurumlarının omurgası oldu.</li>
+      <li><b>Novell Netware:</b> <b>Ağ işletim sistemlerinin öncüsü.</b> Yönetici, ağdaki diğer iş istasyonları üzerindeki tüm hakları belirler (hiyerarşik yapı).</li>
+    </ul>`,
+    k:'<span class="mn">DOS = tek kişilik daktilo, UNIX = kalabalık ofis, Novell = ofisin müdürü.</span>' },
+
+  { id:'gorsel', s:'17', t:'Görsel devrim: ezberden sezgiye',
+    h:`<div class="cmp">
+      <div><h4>Metin arayüzü (CLI)</h4><p><b>Hatırlama (recall).</b> Komutları ezberlemek zorunlu. Öğrenme eğrisi diktir.</p></div>
+      <div><h4>Grafik arayüz (GUI)</h4><p><b>Tanıma (recognition).</b> Klasör ve dosya ikonları sayesinde kullanım basit, görsel ve sezgisel.</p></div>
+    </div>
+    <ul>
+      <li><b>Macintosh (1984):</b> fare kullanımını merkeze alan öncü sistem.</li>
+      <li><b>Windows 3.1 (1992):</b> dünyada geniş çapta kabul gören <b>ilk</b> görsel arayüz.</li>
+    </ul>`,
+    k:'<span class="mn">CLI = klasik sınav, GUI = test sınavı.</span><br>Klasikte cevabı hatırlarsın (recall), testte doğru şıkkı tanırsın (recognition).' },
+
+  { id:'masaustu', s:'18', t:'Masaüstü standardının oturması',
+    h:`<ul>
+      <li><b>Windows 95:</b> 32-bit mimari ile sürat ve kolaylık. Aynı anda birden çok uygulamayı çalıştıran sağlam ve korumalı ortam: <b>gerçek çoklu görev</b>.</li>
+      <li><b>Windows 98:</b> 95'in gelişmiş hali. En büyük farkı, <b>Web ve internet deneyiminin</b> işletim sistemine <b>yerleşik</b> (built-in) olarak entegre edilmesi.</li>
+      <li><b>OS/2 (1987):</b> <b>IBM ve Microsoft</b> ortaklığı. Windows ve Mac'e benzeyen, multimedya destekli güçlü bir sistemdi, ama <b>uygulama yazılımı eksikliğinden</b> yaygınlaşamadı.</li>
+    </ul>`,
+    k:'<span class="mn">84 fare, 87 ortaklık, 92 zafer.</span><br>1984 Macintosh, 1987 OS/2 (IBM + Microsoft), 1992 Windows 3.1.',
+    w:'tarih' },
+
+  { id:'otomasyon', s:'19', t:'Otomasyon çağı: donanım kaosunun sonu',
+    h:`<ul>
+      <li><b>Eski yol:</b> Yeni donanım tak → disket ara → manuel kurulum → çakışma hataları.</li>
+      <li><b>Yeni yol:</b> USB tak → internetten sorgula → otomatik kurulum → kullanıma hazır.</li>
+      <li><b>Windows ME (MS-DOS'un sonu):</b> config.sys ve autoexec.bat gibi açılış prosedürleri kaldırıldı, <b>16-bit sürücüler kapatıldı</b>, sistem tamamen 32-bit çalışmaya zorlandı.</li>
+      <li><b>Windows XP ve sürücü veritabanı:</b> En büyük devrimi, donanımı <b>otomatik tanıma</b> ve <b>Windows Update</b> üzerinden eksik sürücüleri otomatik indirip güncellemesiydi.</li>
+    </ul>`,
+    k:'<span class="mn">ME = MS-DOS\'un Ecel\'i.</span><br>XP = “Takarsın, kendisi bulur.”' },
+
+  { id:'xp', s:'20', t:'XP dönemi: çekirdek istikrarı ve insan ergonomisi',
+    h:`<ul>
+      <li><b>NT çekirdeği:</b> Windows 2000'den miras alınan sağlam çekirdek; efsanevi “mavi ekran” hataları ve CTRL+ALT+DEL zorunluluğu azaldı.</li>
+      <li><b>ClearType:</b> LCD ekranlarda metin okunaklılığını artıran <b>alt-piksel (sub-pixel)</b> render teknolojisi. Donanımın insan gözü için optimize edilmesi.</li>
+      <li><b>İşbirliği ve esneklik:</b> <b>Hızlı kullanıcı değişimi</b> (oturum kapatmadan geçiş) ve <b>Uzak Masaüstü</b> standart hale geldi.</li>
+    </ul>`,
+    k:'<span class="mn">XP\'nin üç hediyesi: sağlam kalp, net göz, paylaşılan masa.</span><br>NT çekirdeği · ClearType · Hızlı kullanıcı değişimi / Uzak Masaüstü.' },
+
+  { id:'kale', s:'21–22', t:'Kale çağı ve BitLocker',
+    h:`<ul>
+      <li><b>Yeni misyon:</b> İnternetin patlamasıyla OS'ler sadece çalıştırmak için değil, aktif olarak <b>korumak</b> için yeniden tasarlandı.</li>
+      <li><b>Ağ Erişim Koruması (NAP):</b> OS bir güvenlik görevlisi gibi davranır; bilgisayar ağa bağlanmadan <b>önce</b> virüs taraması yapılır, sağlığı kontrol edilir.</li>
+      <li><b>Gelişmiş iletişim güvenliği:</b> Windows Mail'e kimlik avı (phishing) ve istenmeyen e-posta (spam) kalkanları eklendi.</li>
+    </ul>
+    <div class="cmp">
+      <div><h4>Standart parola koruması</h4><p><b>Aşılabilir.</b> OS parolası aşıldığında veya disk başka bilgisayara takıldığında veriler tamamen savunmasızdır.</p></div>
+      <div><h4>BitLocker: sektör bazlı şifreleme</h4><p>Fiziksel donanım çalınsa bile yetkili <b>kriptografik anahtar</b> olmadan verileri okumak matematiksel olarak imkânsızdır.</p></div>
+    </div>`,
+    k:'<span class="mn">Parola = kapıdaki kilit, BitLocker = şifreli kasa.</span><br>Hırsız kapıyı söküp diski götürse bile kasayı anahtarsız açamaz.' },
+
+  { id:'felsefe', s:'23', t:'Alternatif felsefeler: kapalı ekosistem ve açık kaynak',
+    h:`<div class="cmp">
+      <div><h4>macOS</h4><p><b>UNIX tabanlı</b> güçlü mimari. Donanım ve yazılım tek üreticide (Apple) birleşir: <b>kapalı ekosistem</b>. Kusursuz kullanıcı deneyimi ve stabiliteye odaklı.</p></div>
+      <div><h4>Linux ve Pardus</h4><p>Küresel <b>imece usulü</b> (community-driven) geliştirilen <b>açık kaynak</b>. Sürekli denetlenir, kararlı ve esnektir. <b>Lisans gerektirmez</b>; toplam sahip olma maliyetinde tasarruf. Pardus: <b>TÜBİTAK</b> öncülüğünde milli proje.</p></div>
+    </div>`,
+    k:'<span class="mn">Apple = tek şef mutfağı, Linux = imece sofrası.</span><br>Pardus\'un künyesi: açık kaynak + TÜBİTAK + lisanssız.' },
+
+  { id:'bulut', s:'24', t:'Modern dönem: bulut tabanlı işletim sistemi',
+    h:`<ul>
+      <li><b>Evrensel arayüz:</b> Cihazlar arası mutlak uyum. Klasik Başlat menüsünün evrimi; dokunmatik ekranlar için dinamik başlangıç ekranları.</li>
+      <li><b>Yerelden buluta geçiş:</b> OS artık sadece sabit diskte yaşamaz. SkyDrive/OneDrive ile profiller, ayarlar ve dosyalar tüm cihazlarda anında <b>senkronize</b> olur.</li>
+      <li><b>Yeni nesil etkileşim:</b> Biyometrik güvenlik (yüz tanıma), görünmez tak-çalıştır ve <b>Windows Mağaza</b> ile uygulama kurulumunun merkezileşmesi.</li>
+    </ul>`,
+    k:'<span class="mn">Bulut çağı = “Arayüz her yerde aynı, dosya her yerde senin, giriş yüzünle.”</span>' },
+
+  { id:'sentez', s:'25–26', t:'40 yıllık evrimin sentezi',
+    h:`<ul>
+      <li>Tablo 4 dönemi 3 açıdan karşılaştırır: <b>etkileşim modeli, donanım yönetimi, güvenlik duruşu</b>. Aşağıdaki kutuları açarak kendini test et.</li>
+      <li><b>Sonuç, görünmez dev:</b> İşletim sistemlerinin evrimi, makineyi çalıştırmaktan <b>“makineyi unutturmak”</b> hedefine doğru bir yolculuktur.</li>
+      <li>Bugün en iyi işletim sistemi, <b>en az hissettiğiniz ama sizi en çok koruyan</b> sistemdir.</li>
+    </ul>`,
+    k:'<span class="mn">Ezber → Tık → Hızlı geçiş → Yüzün.</span><br>Donanım: Manuel → Disket kaosu → İnternetten sürücü → Görünmez tak-çalıştır. Güvenlik: Fiziksel kilit → Basit şifre → NAP → BitLocker.',
+    w:'sentez' }
+  ]},
+
+{ id:'b3', no:3, ad:'Görevler', alt:'Temel görevler, beklenen fonksiyonlar ve sınıflandırma', sayfa:'27–41',
+  ozet:'4 temel sütun, görünmez döngü, 12 altın kural, 7 performans kriteri ve 4 sınıflandırma perspektifi.',
+  konular:[
+  { id:'sef', s:'27–28', t:'Kaosu düzenleyen orkestra şefi',
+    h:`<ul>
+      <li>İşletim sistemi <b>makinenin görünmez beynidir</b>.</li>
+      <li>Donanımı <b>soyutlayarak</b> karmaşıklığı gizler; sistem kaynaklarını yöneterek yazılım ile donanım arasında kusursuz bir iletişim köprüsü kurar.</li>
+      <li>Üç kat: <b>Kullanıcı ve uygulamalar</b> (üstte) → <b>İşletim sistemi</b> (ortada) → <b>Donanım kaynakları</b>: MİB, RAM, disk (altta).</li>
+    </ul>`,
+    k:'<span class="mn">Soyutla, yönet, köprü kur.</span><br>OS\'nin üç fiili.' },
+
+  { id:'sutun', s:'29–31', t:'Sistemin 4 temel sütunu',
+    h:`<ul>
+      <li><b>İşlem yönetimi:</b> zamanı ve sırayı yönetir. İşlemlerin belirli bir sırada ve kusursuz zamanlamayla (zaman çizelgesi içinde) MİB'de çalışmasını garanti eder.</li>
+      <li><b>Bellek yönetimi:</b> alanı ve kapasiteyi düzenler. Ana belleğin organizasyonunu sağlar, dolu/boş kısımları denetler, işlem bitince belleği boşaltır. Yer kalmadığında <b>yardımcı belleği (sabit disk)</b> devreye sokar.</li>
+      <li><b>Giriş-çıkış yönetimi:</b> çevre birimleriyle haberleşir. Bilgisayar ile çevre birimleri (I/O unit) arasındaki veri otobanını denetler (printer, mouse, scanner).</li>
+      <li><b>Dosya yönetimi:</b> veriyi hiyerarşik olarak saklar. Veri yazma, okuma ve dosya erişim yetkilerini düzenler.</li>
+    </ul>`,
+    k:'<span class="mn">“İyi Bir Gün Dile.”</span><br>İşlem (zaman) · Bellek (alan) · G/Ç (dış dünya) · Dosya (kalıcılık).' },
+
+  { id:'dongu', s:'32', t:'Sahne arkasındaki görünmez döngü',
+    h:`<ul>
+      <li>OS arka planda 5 işi sürekli bir döngü halinde yapar: <b>Yükleme → Koruma → Zaman paylaşımı → Denetim ve loglama → Haberleşme</b>.</li>
+      <li>Ayrıntılar için aşağıdaki parçalara dokun.</li>
+    </ul>`,
+    k:'<span class="mn">“Yağmurda Koşan Zebra Dereyi Hopladı.”</span><br>Y-K-Z-D-H: Yükleme, Koruma, Zaman paylaşımı, Denetim ve loglama, Haberleşme.',
+    w:'dongu' },
+
+  { id:'kural', s:'33', t:'İşletim sisteminin 12 altın kuralı',
+    h:`<div class="cmp">
+      <div><h4>Yönetim ve optimizasyon (4)</h4><p>İşleri sıraya koyma · İşlerde öncelik (priority) tanıma · Kaynakları sıkı kontrol etme · Bilgisayar kaynaklarının hesabını tutma.</p></div>
+      <div><h4>Etkileşim ve paylaşım (3)</h4><p>İşi kontrol eden dili yorumlama · Birden fazla eşzamanlı erişim sağlama · İyi ve tutarlı bir arayüz sunma.</p></div>
+    </div>
+    <div class="cmp">
+      <div style="grid-column:1/-1"><h4>Koruma ve süreklilik (5)</h4><p>Hata durumlarında işlemleri sonuçlandırma · G/Ç işlemlerini sağlama alma · Kesmelerin (interrupts) gereğini yapma · Kullanıcıların haklarına müdahaleyi önleme · Bilgileri uzun vadede güvenle saklama.</p></div>
+    </div>`,
+    k:'<span class="mn">4 + 3 + 5 = 12.</span><br>Yönetici (4 iş), arkadaş canlısı (3 iş), bekçi (5 iş). Bekçinin işi en çok: koruma her şeydir.',
+    w:'kural' },
+
+  { id:'perf', s:'34', t:'Performans kriterleri: ideal sistem radarı',
+    h:`<ul>
+      <li>İdeal bir OS 7 kriterde yüksek puan almalıdır. Her birinin kısa tanımını bil: aşağıdaki parçalara dokun.</li>
+    </ul>`,
+    k:'<span class="mn">“Ekmek Hamuru Mayalanırken İki Güzel Simit Kızardı.”</span><br>Etkinlik · Hız · MİB optimizasyonu · İş yapma süresi · Güvenirlik · Süreklilik · Kompakt yapı.',
+    w:'perf' },
+
+  { id:'mercek', s:'35–36', t:'Sınıflandırma merceği ve ölçek',
+    h:`<ul>
+      <li>Sistemler, kullanım şekillerine ve bilgiye erişim yöntemlerine göre <b>4 perspektiften</b> incelenir: <b>1. Büyüklük ve donanım (ölçek)</b> · <b>2. İş yapma biçimi (mimari)</b> · <b>3. Zaman ve erişim (tepki)</b> · <b>4. Görev ve kullanıcı (kapsam)</b>.</li>
+      <li><b>Perspektif 1, micro'dan macro'ya:</b> Akıllı kart (kredi kartı boyutunda, işlemcili, tek işlevli) → Gömülü ve el sistemleri (avuç içi bilgisayar, TV, cep telefonu) → Kişisel bilgisayar (ev, ofis, masaüstü) → Çok işlemcili ve kümeleşmiş (paralel, dağıtık) → Sunucu (ağ üzerinden çok kullanıcıya hizmet) → Ana çatı/mainframe (yoğun G/Ç gerektiren devasa görevler).</li>
+    </ul>`,
+    k:'<span class="mn">Perspektifler: “BİZ Gördük.”</span> Büyüklük, İş yapma biçimi, Zaman ve erişim, Görev ve kullanıcı.<br><span class="mn">Ölçek: “Akıllı Gelin Kaynanasını Çok Sever Aslında.”</span> Akıllı kart · Gömülü · Kişisel · Çok işlemcili · Sunucu · Ana çatı.' },
+
+  { id:'bicim', s:'37', t:'Perspektif 2: iş yapma biçimleri',
+    h:`<div class="cmp">
+      <div><h4>Çoklu işlem (multiprocessing)</h4><p><b>Donanım:</b> 1'den fazla fiziksel işlemcinin <b>aynı belleği paylaşarak</b> aynı anda program çalıştırması.</p></div>
+      <div><h4>Çoklu programlama (multiprogramming)</h4><p><b>Zaman:</b> <b>Tek işlemcide</b>, çok kısa zaman dilimleriyle (time-slicing) değişik programların çalıştırılması.</p></div>
+      <div><h4>Toplu işlem (batch processing)</h4><p><b>Bekleme:</b> Program ve verilerin tamamen yüklenip <b>“kuyruk”</b> sırasına göre işlenmesi.</p></div>
+      <div><h4>Etkileşimli (interactive)</h4><p><b>Diyalog:</b> Kullanıcı ve bilgisayarın karşılıklı, anlık diyalog içinde olması.</p></div>
+    </div>`,
+    k:'<span class="mn">multiPROCESSing → çok PROCESSOR. multiPROGRAMming → çok PROGRAM, tek CPU.</span><br>Batch = mektup (yaz, bekle), interactive = telefon (anında cevap).' },
+
+  { id:'erisim', s:'38', t:'Zaman ve erişim mimarileri',
+    h:`<ul>
+      <li><b>Çoklu erişim (multi-access):</b> 1'den fazla kullanıcının aynı anda, etkileşimli olarak sisteme bağlanabilmesi.</li>
+      <li><b>Zaman paylaşımı (time-sharing):</b> Çoklu erişimi sağlamak için işlemci zamanının çok küçük, <b>milisaniyelik</b> dilimlere bölünerek her kullanıcıya sırayla hizmet verilmesi.</li>
+      <li><b>Gerçek zamanlı (real time):</b> Kritik görevler. Sonuçların işlemleri <b>anında</b> etkilediği, zaman kısıtlarının hayati olduğu sistemler (kimyasal tesisler, endüstriyel kontrol).</li>
+    </ul>`,
+    k:'<span class="mn">Gerçek zamanlıda geç kalan cevap = yanlış cevap.</span><br>Kimya tesisinde vana 3 saniye geç kapanırsa sonuç doğru olsa da iş işten geçmiştir.' },
+
+  { id:'matris', s:'39', t:'Görev ve kullanıcı matrisi',
+    h:`<ul>
+      <li><b>Tek kullanıcı, tek görev:</b> her defasında tek kişi, tek iş. Örnek: <b>MS-DOS</b>.</li>
+      <li><b>Tek kullanıcı, çok görev:</b> bir kişi eşzamanlı birçok iş (internetten dosya indirirken yazı yazmak). Örnek: <b>Windows, MacOS</b>.</li>
+      <li><b>Çok kullanıcı, çok görev:</b> birçok kullanıcı aynı anda birden fazla program çalıştırır (uzaktan SSH/Telnet). Örnek: <b>UNIX</b>.</li>
+      <li><b>Çok kullanıcı, tek görev:</b> pek çok kişi ortak bir veritabanı programı ya da tek mesajlaşma sistemi. Örnek: <b>Banka sistemleri</b>.</li>
+    </ul>
+    <div class="tip"><small>NOT</small>Slaytta bu sayfa “Perspektif 3” diye geçer; merceğe göre 4. perspektif (görev ve kullanıcı) budur.</div>`,
+    k:'<span class="mn">DOS yalnız, Windows meşgul, UNIX kalabalık, banka sıra.</span>',
+    w:'matris' },
+
+  { id:'eko', s:'40–41', t:'Modern ekosistem: gerçek dünya haritası',
+    h:`<ul>
+      <li><b>Ana çatı (mainframe):</b> OS/390</li>
+      <li><b>Sunucu:</b> Unix, Windows 2008 Server</li>
+      <li><b>Kişisel bilgisayar:</b> Windows 7 / XP, MacOS, Linux</li>
+      <li><b>Gömülü / el sistemleri:</b> iOS, Android, PalmOS, Symbian</li>
+      <li><b>Gerçek zamanlı:</b> VxWorks, QNX</li>
+      <li><b>Kaos ile düzen arasındaki yegâne köprü:</b> Akıllı kart da olsa ana çatı da olsa OS'nin misyonu değişmez: <b>kaynakları korumak, zamanı bükmek, donanıma nefes vermek</b>.</li>
+    </ul>`,
+    k:'<span class="mn">Gerçek zamanlıyı “VQ” ile hatırla: VxWorks, QNX.</span><br>Ana çatıda tek isim var: OS/390 (“390 kiloluk dev”).',
+    w:'eko' }
+  ]},
+
+{ id:'b4', no:4, ad:'Yapı', alt:'Von Neumann mimarisi ve 8 temel alt sistem', sayfa:'42–51',
+  ozet:'Von Neumann, G/Ç katmanları, 5 işlem durumu, deadlock, sanal bellek ve swapping, disk, güvenlik, ağ.',
+  konular:[
+  { id:'von', s:'43', t:'Von Neumann mimarisi',
+    h:`<ul>
+      <li>Modern PC ve sunucuların evrensel donanım temeli. 3 ana birim + veri yolu.</li>
+      <li><b>G/Ç birimleri:</b> çift yönlü veri akışı. Giriş: klavye, fare, dokunmatik panel, sensörler. Çıkış: ekran, yazıcı, ağ arayüzü. Aygıtlar veri yolu üzerinden işlemciye bağlanır.</li>
+      <li><b>Ana bellek (RAM):</b> işlenecek veri, program ve komutları depolar. <b>Depolanmış program bilgisayarları</b> (stored program computers) kavramının merkezidir. Birden fazla program aynı anda belleğe yüklenir, CPU aralarında geçiş yapar. <b>Uçucudur</b> (volatile).</li>
+      <li><b>CPU:</b> <b>ALU</b> matematiksel ve mantıksal hesapları yapar. <b>Kontrol birimi (CU)</b> komut döngüsünü ve veri akışını yönetir. Adres ve veri yolu (bus) ile bellek ve G/Ç'ye bağlıdır.</li>
+    </ul>`,
+    k:'<span class="mn">ALU hesaplar, CU yönetir.</span><br>ALU = hesap makinesi, CU = trafik polisi. RAM = tezgâh (elektrik kesilince tezgâh boşalır, volatile).',
+    w:'von' },
+
+  { id:'sekiz', s:'44', t:'İşletim sisteminin 8 temel alt sistemi',
+    h:`<ul>
+      <li><b>1. G/Ç yönetimi:</b> verilerin kayıpsız aktarımı ve aygıt denetimi.</li>
+      <li><b>2. İşlem yönetimi:</b> çoklu programlama, thread yönetimi, işlem durum döngüsü.</li>
+      <li><b>3. Bellek yönetimi:</b> RAM bölümlenmesi, sanal bellek tahsisi, swapping.</li>
+      <li><b>4. Yan bellek yönetimi:</b> disk formatlama, sektör/iz yapısı, MBR, bölümleme (partition).</li>
+      <li><b>5. Dosya yönetimi:</b> FAT, NTFS, EXT4; kök dizin ve dosya öznitelikleri.</li>
+      <li><b>6. Güvenlik ve koruma:</b> parola/biyometrik doğrulama, şifreleme, virüs/solucan savunması.</li>
+      <li><b>7. Ağ yönetimi:</b> dosya, yazıcı, mesaj servisleri; dağıtık istemci/sunucu erişimi.</li>
+      <li><b>8. Komut yorumlayıcısı:</b> kullanıcı ile çekirdek arasındaki CLI ve GUI arayüzleri.</li>
+    </ul>`,
+    k:'<span class="mn">“Gece İşten Bıkan Yorgun Dede, Güvercinlere Ağaçta Kraker attı.”</span><br>G/Ç · İşlem · Bellek · Yan bellek · Dosya · Güvenlik · Ağ · Komut yorumlayıcısı.',
+    w:'sekiz' },
+
+  { id:'gc', s:'45', t:'G/Ç: çift kademeli mimari',
+    h:`<div class="cmp">
+      <div><h4>Aygıt bağımsız bölüm (soyutlama katmanı)</h4><p>Uygulamalara tek tip, donanımdan bağımsız arayüz sunar. Standart sistem çağrılarını (<b>read, write, open, close</b>) karşılar ve ilgili aygıt sürücüsüne yönlendirir. Yazılımcıyı yüzlerce marka/modelin mikro kodunu öğrenmekten kurtarır.</p></div>
+      <div><h4>Aygıt bağımlı bölüm (aygıt sürücüsü)</h4><p>Doğrudan fiziksel donanımla (disk denetleyici, yazıcı, ekran kartı, ağ kartı) konuşur. Sistem çağrılarını donanımın anlayacağı <b>mikro komut ve sinyallere</b> çevirir. Örnek: genel “yazdır” çağrısını üreticiye özgü koda çevirir.</p></div>
+    </div>
+    <ul><li>Ana bellek ile G/Ç birimleri arasında veri kaybı ve tutarsızlık olmadan güvenli aktarım sağlar.</li></ul>`,
+    k:'<span class="mn">Bağımsız kısım = resepsiyon, bağımlı kısım = tercüman.</span><br>Uygulama herkesin dilinde “yazdır” der. Sürücü bunu yazıcının kendi lehçesine çevirir.' },
+
+  { id:'thread', s:'46', t:'İşlem yönetimi: thread ve işlem ağacı',
+    h:`<ul>
+      <li><b>İş parçacığı (thread):</b> en düşük sistem kaynağına ihtiyaç duyan program parçası.</li>
+      <li><b>Çoklu kullanım (multithreading):</b> bir işlem birden çok iş parçacığına bölünerek eşzamanlı yürütülür.</li>
+      <li><b>İşlem ağacı (process tree):</b> bir ana işlem (parent) yeni yavru (child) işlemler oluşturur. Örnek: A kökünden B ve C; B'den D, E, F türer.</li>
+      <li><b>Kaynak yalıtımı:</b> OS, CPU ve belleği işlemler arasında sınırlayarak karşılıklı çökmeleri engeller.</li>
+    </ul>
+    <pre class="mono" style="margin:0;background:var(--inset);border:2px solid var(--line);padding:10px 14px;font-size:.85rem;overflow-x:auto">      A        ← ana işlem (parent)
+     / \\
+    B   C      ← yavru işlemler (child)
+   /|\\
+  D E F</pre>`,
+    k:'<span class="mn">Proses = ev, thread = evdeki oda arkadaşları.</span><br>Aynı evi (kaynakları) paylaşırlar, bu yüzden en az kaynağı thread ister.' },
+
+  { id:'durum', s:'46', t:'Bir işlemin 5 temel durumu',
+    h:`<ul>
+      <li><b>1. Yeni (new):</b> işlemin sisteme kabul edilip oluşturulma evresi.</li>
+      <li><b>2. Hazır (ready):</b> işlemin <b>CPU ayrılmasını beklediği</b> kuyruk evresi.</li>
+      <li><b>3. Çalışıyor (running):</b> talimatların CPU tarafından yürütüldüğü evre.</li>
+      <li><b>4. Bekliyor (waiting):</b> <b>G/Ç tamamlanmasını</b>, veri girişini veya olay sinyalini beklediği evre.</li>
+      <li><b>5. İşlem sonu (terminated):</b> yürütmeyi bitirip kaynaklarını serbest bıraktığı evre.</li>
+    </ul>
+    <div class="tip"><small>TUZAK</small>“Hazır” CPU'yu bekler, “Bekliyor” G/Ç'yi bekler. İkisini karıştıran soru çok gelir.</div>`,
+    k:'<span class="mn">Restoran: kapıdan gir → masa sırası → şef pişiriyor → malzeme bekleniyor → hesap ödendi.</span><br>Yeni → Hazır → Çalışıyor → Bekliyor → Sonu.',
+    w:'durum' },
+
+  { id:'deadlock', s:'47', t:'Kilitlenme (deadlock)',
+    h:`<ul>
+      <li><b>Tanım:</b> Bekleme durumundaki iki veya daha fazla işlemin, hazır durumuna geçebilmek için birbirlerinin elindeki kaynakları <b>karşılıklı beklemesi</b>.</li>
+      <li><b>Sonuç:</b> Görevler hiçbir zaman gerçekleşmeyecek bir koşulu sonsuza dek bekler.</li>
+      <li><b>Temel neden:</b> Sınırlı kaynakların (CPU, bellek, yazıcı, disk) işlemler arasında <b>paylaşılma zorunluluğu</b>.</li>
+      <li>Kişisel bilgisayarda kilitlenen yazılımlara, sunucularda <b>hizmet durmasına (DoS)</b> yol açabilir.</li>
+      <li><b>Korunma ve çözüm:</b> <b>Ortak tasarım</b> (tüm işlemler ve kaynak talepleri bütünsel tasarlanır) · <b>Korumalı tahsis algoritmaları</b> (çekirdekte kilitlenmeyi önceden sezip engelleme) · <b>Tespit (detection)</b>: kaynak tahsis grafiği (resource allocation graph) taranıp <b>döngüler</b> bulunur · <b>Kurtarma (recovery)</b>: işlemlerden birini sonlandırmak veya kaynağı geri almak.</li>
+    </ul>`,
+    k:'<span class="mn">Dar köprüdeki iki inatçı keçi.</span><br>İkisi de geri çekilmez, kimse geçemez. Çözüm: biri geri çekilir (kurtarma) ya da köprüye baştan tek tek alınırlar (önleme).',
+    w:'deadlock' },
+
+  { id:'bellek', s:'48', t:'Bellek yönetimi: gerçek bellek, sanal bellek, swapping',
+    h:`<ul>
+      <li><b>Gerçek bellek tahsisi:</b> Program ve verilerin RAM'deki konumlarını belirler ve izler. İşlemlerin kendi bölgesinin dışına taşmasını denetler (yalıtım). Durgun ve devingen bölümlerle <b>parçalanmayı (fragmentation)</b> yönetir. Her işlemin bellek erişim güvenliğini garanti eder.</li>
+      <li><b>Sanal bellek (virtual memory):</b> Fiziksel RAM'den çok daha büyük bir alanın adreslenmesini sağlar. Sabit diskin bir alanını <b>RAM uzantısı</b> gibi kullanır. Dosya ve depolama alt sistemleriyle koordineli çalışır.</li>
+      <li><b>Diske taşıma (swapping):</b> RAM'de boş alan kalmayınca devreye girer. Önceliği düşük veya o an çalışmayan işlemler geçici olarak diske taşınır (<b>swap-out</b>). Yüksek öncelikli işler bitince geri yüklenir (<b>swap-in</b>). Sistemin bellek yetersizliğinden çökmesini engeller.</li>
+    </ul>`,
+    k:'<span class="mn">Masan dolunca kitapları yere koyarsın.</span><br>Masa = RAM, yer = disk. Yere indirmek swap-out, masaya geri almak swap-in.',
+    w:'swap' },
+
+  { id:'disk', s:'49', t:'Yan bellek ve dosya yönetimi',
+    h:`<ul>
+      <li><b>Sektör ve iz (track):</b> Disk yüzeyi, OS'nin format işleviyle dairesel izlere ve <b>512 baytlık</b> sektörlere bölünür.</li>
+      <li><b>MBR (Master Boot Record):</b> Sabit diskin <b>ilk sektörü</b>; açılışta OS'yi başlatan önyükleme kodunu taşır.</li>
+      <li><b>Bölümleme (partition):</b> Diskin mantıksal bölümlere ayrılması. OS <b>birincil bölümde</b> (primary partition) bulunur.</li>
+      <li><b>Bakım:</b> bozuk sektör denetimi, disk temizleme, birleştirme (defrag).</li>
+      <li><b>Dosya sistemleri:</b> FAT16, FAT32, NTFS, HFS+, EXT4, ReFS.</li>
+      <li><b>Kök klasör (root, C:\\ veya /):</b> en üst dizinden dallanan ağaç mimarisi.</li>
+      <li><b>Yol tanımı (path name):</b> dosyanın tam konumu, örn. <span class="mono">C:\\Ders\\Odev.txt</span>.</li>
+      <li><b>Dosya öznitelikleri:</b> isim, tür (exe, bat, txt), boyut, konum, oluşturma/değiştirme tarihi, erişim izinleri.</li>
+    </ul>`,
+    k:'<span class="mn">MBR = kitabın ilk sayfasındaki “buradan başla” notu.</span><br>Sektör = 512 bayt (“5-1-2, disk gelir dize”).' },
+
+  { id:'guv', s:'50', t:'Güvenlik ve koruma',
+    h:`<ul>
+      <li><b>Erişim denetimi:</b> parolaya dayalı (şifreli tutulan parola ve kullanıcı adı) · kimlik kartına dayalı (elektronik akıllı kart) · biyometrik (parmak izi, retina, yüz, ses) · yetkilendirme (dosya/dizin düzeyinde okuma/yazma izni).</li>
+      <li><b>Virüsler:</b> başka programların içine yerleşerek çoğalır, dosya siler, OS'yi bozar.</li>
+      <li><b>Solucanlar (worms):</b> veri bütünlüğünü doğrudan bozmasa da <b>ağ ve CPU kaynaklarını tüketerek</b> sistemi aşırı yükler.</li>
+      <li><b>İzinsiz değişiklik:</b> sistem dosyaları değiştirilerek arka kapı açılması.</li>
+      <li><b>Savunma:</b> şifreleme (özel anahtarla dönüştürme) · virüs tarama (bilinen <b>imzaları</b> arar) · virüs izleme (şüpheli sistem çağrılarını <b>gerçek zamanlı</b> yakalar) · bütünlük denetimi (kritik dosyaların boyut ve <b>hash</b> değerlerini dönemsel kontrol).</li>
+    </ul>`,
+    k:'<span class="mn">Bildiğin (parola), sahip olduğun (kart), olduğun (biyometrik).</span><br>Virüs = parazit, başka programa yapışır. Solucan = obur, kaynakları yer.' },
+
+  { id:'ag', s:'51', t:'Ağ servisleri ve komut yorumlayıcısı',
+    h:`<ul>
+      <li><b>Ağ servisleri:</b> dosya, yazıcı, mesaj, uygulama ve veritabanı servisleri üzerinden kaynak paylaşımı.</li>
+      <li><b>Dağıtık sistemler:</b> uzaktaki sunucu ve depolama kaynaklarına ağ üzerinden <b>şeffaf erişim</b> (Telnet, FTP, Uzak Masaüstü).</li>
+      <li><b>İstemci/sunucu mimarisi:</b> kişisel bilgisayarlar (istemci) ile veri merkezi sunucuları arasında görev paylaşımı. Ağdaki kaynakların düzenli, güvenli, çakışmasız paylaşımı koordine edilir.</li>
+      <li><b>Komut yorumlayıcısı:</b> kullanıcı ile çekirdek arasındaki temel köprü. Çoğu modern sistemde <b>ayrı bir program</b> (bağımsız süreç) olarak çalışır.</li>
+      <li><b>CLI (metin tabanlı):</b> klavye komutları ve otomatik betikler (<b>Batch, Shell</b>). <b>GUI:</b> fare, pencere ve menülerle sezgisel kullanım.</li>
+    </ul>`,
+    k:'<span class="mn">Shell = kabuk.</span><br>Çekirdeği (kernel) saran kabuk: sen kabukla konuşursun, kabuk çekirdekle.' }
+  ]}
+];
+
+/* ---------- Soru bankası: [bölüm, soru, [doğru, yanlış...], açıklama] ---------- */
+const SORULAR = [
+[1,'İşletim sistemi tanımında geçen nitelikler hangileridir?',['Kaynakları adil paylaştırma; etkin ve verimli kullanım','Hızlı, ucuz ve güvenli çalışma','Grafiksel, çok kullanıcılı ve dağıtık olma','Derleme, yorumlama ve bağlama'],'Tanım: kaynakları kullanıcılar arasında adil paylaştıran, bilgisayarın etkin ve verimli kullanılmasını sağlayan sistem programları topluluğu.'],
+[1,'6 katmanlı mimaride ROM\'da yer alan ve makine dilini yorumlayan katman hangisidir?',['Mikroprogram','Makine dili','İşletim sistemi','Sistem yazılımı'],'Mikroprogram ROM\'dadır; ekle, taşı, karşılaştır gibi en ilkel işleri yapar.'],
+[1,'Makine dili katmanı yaklaşık kaç temel komuttan oluşur?',['50–300','5–10','1.000–5.000','10.000\'den fazla'],'Makine dili, donanımın gerçek parçası gibi algılanan 50–300 temel komut setidir.'],
+[1,'Derleyiciler ve VTYS hangi katmanda yer alır?',['Sistem yazılımı','Uygulama yazılımı','Mikroprogram','Fiziksel birimler'],'Sistem yazılımı, işletim sisteminin üstündeki yardımcılardır: VTYS, derleyiciler, ağ yazılımları.'],
+[1,'Program ve proses için hangisi doğrudur?',['Proses, RAM\'e yüklenmiş ve çalışmakta olan programdır','Program dinamik, proses statiktir','Proses diskte bekleyen komutlar dizisidir','Programın ömrü saniyelerle ölçülür'],'Program diskte statik durur; proses RAM\'de yaşayan, dinamik görevdir.'],
+[1,'Her kullanıcının işlemcinin yalnızca kendisine hizmet ettiğini sanması hangi kavramla ilgilidir?',['Zaman paylaşımı','Spooling','Yığın işlem','Boot'],'Zaman paylaşımında CPU kısa sürelerle kullanıcılara dağıtılır; hız sayesinde bu illüzyon oluşur.'],
+[1,'Aynı anda 3 kullanıcının çıktısının yazıcıda karışmasını önleyen mekanizma hangisidir?',['Spooling','Swapping','Multiprocessing','Deadlock tespiti'],'Spooling işleri disk üzerinde kuyruğa alır, yazıcıya sırayla gönderir.'],
+[1,'Spooling mekanizmasında işler nerede sıraya konur?',['Disk üzerinde','CPU kaydedicilerinde','ROM\'da','Yazıcının kendi belleğinde'],'OS bu işleri disk üzerinde sıraya (kuyruğa) koyar.'],
+[1,'İstemci/sunucu (mikroçekirdek) yapısında File Server çökerse ne olur?',['Sadece dosya servisi durur','Tüm sistem çöker','RAM tamamen silinir','Sistem otomatik yeniden başlar'],'Mikroçekirdekte servisler ayrıdır; bir servisin çökmesi tüm sistemi çökertmez.'],
+[1,'1. nesil (1945–1955) bilgisayarlar için hangisi doğrudur?',['Vakum tüpleri kullanılır, OS yoktur','Transistörler ve batch işlem vardır','Entegre devreler ve multiprogramming vardır','LSI çipler ve kişisel bilgisayarlar vardır'],'1. nesilde OS yoktur; fiş panoları ve makine diliyle programlanır.'],
+[1,'Fortran dilinin öne çıktığı ve ilk OS örneği IBSYS\'in görüldüğü nesil hangisidir?',['2. nesil (1955–1965)','1. nesil (1945–1955)','3. nesil (1965–1980)','4. nesil (1980–günümüz)'],'2. nesil transistör çağıdır; yığın işlem, Fortran ve IBSYS (IBM).'],
+[1,'Multiprogramming, spooling ve zaman paylaşımı hangi nesilde doğmuştur?',['3. nesil, entegre devreler','2. nesil, transistörler','1. nesil, vakum tüpleri','4. nesil, LSI çipler'],'3. nesil (1965–1980): G/Ç sırasında CPU boş kalmasın diye multiprogramming geldi.'],
+[1,'Ortamda çok sayıda CPU olmasına rağmen kullanıcıya tek işlemci gibi görünen sistem hangisidir?',['Dağıtık işletim sistemi','Ağ işletim sistemi','Gömülü sistem','Yığın işlem sistemi'],'Dağıtık OS\'de kullanıcı dosyasının nerede işlendiğini bilmez.'],
+[1,'Makinelerin kendi yerel OS\'una sahip olduğu, kullanıcıların remote login ile diğer makinelerin farkında olduğu sistem hangisidir?',['Ağ işletim sistemi','Dağıtık işletim sistemi','Gerçek zamanlı sistem','Mikroçekirdek'],'Ağ OS\'de makineler birbirinin farkındadır; dağıtık OS\'de sistem tek makine gibi görünür.'],
+[1,'Aptal terminal (dumb terminal) için hangisi doğrudur?',['OS\'u, işlemcisi ve diski yoktur; sunucuya bağlı çalışır','Kendi Windows kurulumu vardır','Sadece işlemcisi vardır, ekranı yoktur','Bulut senkronizasyonu yapar'],'Aptal terminal sadece klavye ve monitördür; örnek: eski banka gişeleri.'],
+[1,'Boot sürecinde ROM\'daki mikroprogramın temel kontrolleri yaptığı aşama hangisidir?',['Tetiklenme (power on)','Yükleme (loading)','Devir','Kapalı durum'],'Sıra: Kapalı → Tetiklenme (ROM kontrolü) → Yükleme (disk → RAM) → Devir.'],
+[1,'Boot sürecinin yükleme aşamasında ne olur?',['OS dosyaları sabit diskten RAM\'e taşınır','ROM silinir ve yeniden yazılır','Kullanıcı komut girer','RAM\'deki veriler diske yazılır'],'Yükleme: sabit diskteki OS dosyaları okunur ve ana belleğe taşınır.'],
+
+[2,'Aşağıdakilerden hangisi metin tabanlı bir işletim sistemi değildir?',['OS/2','MS-DOS','Unix','Novell Netware'],'Metin tabanlılar: MS-DOS, Unix, Novell Netware. OS/2 grafik tabanlıdır.'],
+[2,'Çok kullanıcılı ve çok görevli, işlemci mimarisinden bağımsız çalışan; banka ve devlet kurumlarının omurgası olan sistem hangisidir?',['UNIX','MS-DOS','Novell Netware','Windows 3.1'],'UNIX çok kullanıcılı, çok görevli bir devrimdir.'],
+[2,'Ağ işletim sistemlerinin öncüsü olarak kabul edilen sistem hangisidir?',['Novell Netware','MS-DOS','Macintosh','OS/2'],'Novell Netware\'de yönetici ağdaki iş istasyonlarının tüm haklarını belirler.'],
+[2,'Komut satırı arayüzü (CLI) hangi zihinsel sürece dayanır?',['Hatırlama (recall)','Tanıma (recognition)','Otomasyon','Sezgi'],'CLI: komutları ezberleyip hatırlamak gerekir. GUI: ikonları tanımak yeter.'],
+[2,'Fare kullanımını merkeze alan öncü sistem ve yılı hangisidir?',['Macintosh, 1984','Windows 3.1, 1992','OS/2, 1987','Windows 95, 1995'],'Macintosh (1984) fareyi merkeze aldı.'],
+[2,'Dünyada geniş çapta kabul gören ilk görsel arayüz hangisidir?',['Windows 3.1 (1992)','Macintosh (1984)','OS/2 (1987)','Windows XP'],'Windows 3.1, 1992.'],
+[2,'OS/2 neden yaygınlaşamamıştır?',['Uygulama yazılımı eksikliği','Grafik arayüzünün olmaması','Multimedya desteğinin olmaması','Sadece ana çatılarda çalışması'],'OS/2 güçlüydü ama uygulama yazılımı azdı.'],
+[2,'OS/2 hangi firmaların ortaklığıyla geliştirilmiştir?',['IBM ve Microsoft','Apple ve IBM','Microsoft ve Novell','TÜBİTAK ve IBM'],'OS/2 (1987): IBM ve Microsoft ortaklığı.'],
+[2,'Windows 98\'in Windows 95\'ten en büyük farkı nedir?',['Web ve internet deneyiminin OS\'ye yerleşik entegrasyonu','32-bit mimariye geçiş','NT çekirdeğinin kullanılması','BitLocker şifrelemesi'],'32-bit ve gerçek çoklu görev Windows 95\'tir; 98 interneti yerleşik getirdi.'],
+[2,'config.sys ve autoexec.bat\'ı kaldırıp 16-bit sürücüleri kapatan sürüm hangisidir?',['Windows ME','Windows XP','Windows 95','Windows 3.1'],'Windows ME, MS-DOS\'un sonudur.'],
+[2,'Donanımı otomatik tanıyıp eksik sürücüleri Windows Update ile indirmesi hangi sürümün en büyük devrimidir?',['Windows XP','Windows ME','Windows 98','Windows 95'],'XP: otomatik donanım tanıma ve sürücü veritabanı.'],
+[2,'“Mavi ekran” hatalarını azaltan çekirdek ve kaynağı hangisidir?',['NT çekirdeği, Windows 2000\'den miras','Mikroçekirdek, UNIX\'ten miras','DOS çekirdeği, MS-DOS\'tan miras','Linux çekirdeği, Pardus\'tan miras'],'XP, Windows 2000\'den gelen NT çekirdeğini kullandı.'],
+[2,'ClearType teknolojisi nedir?',['LCD ekranlarda okunaklılık için alt-piksel render teknolojisi','Disk şifreleme teknolojisi','Ağ erişim koruması','Hızlı kullanıcı değişimi'],'ClearType: donanımın insan gözü için optimize edilmesi.'],
+[2,'Ağ Erişim Koruması (NAP) ne yapar?',['Bilgisayar ağa bağlanmadan önce virüs taraması ve sağlık kontrolü yapar','Diski sektör bazlı şifreler','Spam e-postaları siler','Sürücüleri otomatik günceller'],'NAP\'ta OS aktif bir güvenlik görevlisi gibi davranır.'],
+[2,'Disk çalınsa bile yetkili anahtar olmadan verilerin okunmasını imkânsız kılan teknoloji hangisidir?',['BitLocker (sektör bazlı kriptografik şifreleme)','Standart parola koruması','NAP','ClearType'],'Standart parola aşılabilir; BitLocker kriptografik anahtar ister.'],
+[2,'Pardus için hangisi doğrudur?',['TÜBİTAK öncülüğünde, lisans gerektirmeyen açık kaynak milli proje','Apple\'ın kapalı ekosistemidir','Lisans ücreti olan ticari bir sistemdir','Ana çatılar için geliştirilmiştir'],'Pardus: açık kaynak, imece usulü, lisanssız, TÜBİTAK.'],
+[2,'macOS için hangisi doğrudur?',['UNIX tabanlı, donanım ve yazılımın tek üreticide birleştiği kapalı ekosistem','Açık kaynak ve imece usulü geliştirilir','MS-DOS tabanlıdır','TÜBİTAK projesidir'],'macOS: UNIX kökleri + Apple kapalı ekosistemi.'],
+[2,'Sentez tablosunda Windows XP döneminin güvenlik duruşu nedir?',['Ağ Erişim Koruması (NAP)','Fiziksel kilitler','Basit şifreler','BitLocker ve kriptolama'],'DOS: fiziksel kilit · Win95: basit şifre · XP: NAP · Modern: BitLocker.'],
+[2,'Sentez tablosuna göre DOS döneminde donanım yönetimi nasıldır?',['Manuel konfigürasyon','Otomatik sürücü (internet)','Görünmez tak-çalıştır','Çakışmalar ve disketler'],'DOS: manuel · Win95: çakışma ve disket · XP: internetten sürücü · Modern: görünmez tak-çalıştır.'],
+[2,'Slaytlara göre işletim sistemlerinin evrimi hangi hedefe doğru bir yolculuktur?',['Makineyi unutturmak','Makineyi daha görünür kılmak','Komut satırına geri dönmek','Donanımı küçültmek'],'Sonuç: en iyi OS, en az hissettiğiniz ama en çok koruyandır.'],
+
+[3,'Aşağıdakilerden hangisi “sistemin 4 temel sütunu” arasında değildir?',['Ağ yönetimi','İşlem yönetimi','Bellek yönetimi','Dosya yönetimi'],'4 sütun: İşlem, Bellek, Giriş-Çıkış, Dosya yönetimi.'],
+[3,'“Zamanı ve sırayı yönetir” ifadesi hangi temel göreve aittir?',['İşlem yönetimi','Bellek yönetimi','Dosya yönetimi','G/Ç yönetimi'],'Bellek alanı/kapasiteyi, G/Ç çevre birimlerini, dosya hiyerarşik saklamayı yönetir.'],
+[3,'Bellek yönetiminde ana bellekte yer kalmadığında ne devreye sokulur?',['Yardımcı bellek (sabit disk)','ROM','Önbellek','Ekran kartı belleği'],'Yer kalmayınca yardımcı bellek, yani sabit disk devreye girer.'],
+[3,'Görünmez döngüde “çoklu programlamada denetimin programlar arası geçişi” hangisidir?',['Zaman paylaşımı','Yükleme','Koruma','Haberleşme'],'Döngü: Yükleme, Koruma, Zaman paylaşımı, Denetim ve loglama, Haberleşme.'],
+[3,'Görünmez döngüde “donanım, yazılım ve verilerin hatalı kullanımdan yalıtılması” hangisidir?',['Koruma','Denetim ve loglama','Yükleme','Haberleşme'],'Koruma: hatalı kullanıma karşı yalıtım.'],
+[3,'12 altın kuraldan “kesmelerin (interrupts) gereğini yapma” hangi gruptadır?',['Koruma ve süreklilik','Yönetim ve optimizasyon','Etkileşim ve paylaşım','Hiçbiri'],'Koruma ve süreklilik grubunda 5 kural vardır.'],
+[3,'12 altın kuraldan “işi kontrol eden dili yorumlama” hangi gruptadır?',['Etkileşim ve paylaşım','Yönetim ve optimizasyon','Koruma ve süreklilik','Hiçbiri'],'Etkileşim ve paylaşım: dili yorumlama, eşzamanlı erişim, tutarlı arayüz.'],
+[3,'“Kullanılmayan MİB zamanının sıfıra yakınsaması” hangi performans kriteridir?',['MİB optimizasyonu','Etkinlik','Kompakt yapı','Süreklilik'],'MİB optimizasyonu: CPU boşta kalmasın.'],
+[3,'“Az zamanda maksimum iş hacmi (throughput)” hangi performans kriteridir?',['İş yapma süresi','Hız (zaman kriterleri)','Etkinlik','Güvenirlik'],'İş yapma süresi = throughput.'],
+[3,'“Bakım yapılabilir, dokümantasyonu tam altyapı” hangi performans kriteridir?',['Süreklilik','Güvenirlik','Kompakt yapı','Etkinlik'],'Süreklilik: bakım ve dokümantasyon.'],
+[3,'“Kendinden taviz vermeden düşük boyut” hangi performans kriteridir?',['Kompakt yapı','Etkinlik','Hız','Süreklilik'],'Kompakt yapı.'],
+[3,'Büyüklük ölçeğinde en küçük (micro) uçta hangisi bulunur?',['Akıllı kart','Gömülü sistemler','Kişisel bilgisayar','Ana çatı'],'Micro → macro: Akıllı kart, Gömülü/el, PC, Çok işlemcili, Sunucu, Ana çatı.'],
+[3,'Yoğun G/Ç işlemi gerektiren devasa görevler için kullanılan sistem hangisidir?',['Ana çatı (mainframe)','Akıllı kart','Kişisel bilgisayar','Gömülü sistem'],'Ana çatı ölçeğin macro ucudur.'],
+[3,'Birden fazla fiziksel işlemcinin aynı belleği paylaşarak aynı anda program çalıştırması nedir?',['Çoklu işlem (multiprocessing)','Çoklu programlama (multiprogramming)','Toplu işlem (batch)','Zaman paylaşımı'],'Multiprocessing donanımla ilgilidir: çok CPU, ortak bellek.'],
+[3,'Tek işlemcide çok kısa zaman dilimleriyle (time-slicing) farklı programların çalıştırılması nedir?',['Çoklu programlama (multiprogramming)','Çoklu işlem (multiprocessing)','Gerçek zamanlı sistem','Etkileşimli işlem'],'Multiprogramming zamanla ilgilidir: tek CPU, çok program.'],
+[3,'Program ve verilerin tamamen yüklenip kuyruk sırasına göre işlenmesi nedir?',['Toplu işlem (batch processing)','Etkileşimli işlem','Çoklu erişim','Gerçek zamanlı işlem'],'Batch = bekleme; interactive = diyalog.'],
+[3,'Kimyasal tesisler ve endüstriyel kontrol hangi sistem türüne örnektir?',['Gerçek zamanlı (real time)','Toplu işlem','Zaman paylaşımı','Çoklu erişim'],'Gerçek zamanlıda zaman kısıtları hayatidir.'],
+[3,'Zaman paylaşımında işlemci zamanı hangi büyüklükte dilimlere bölünür?',['Milisaniyelik','Saatlik','Dakikalık','Günlük'],'Çok küçük, milisaniyelik dilimler.'],
+[3,'Görev-kullanıcı matrisinde “tek kullanıcı, tek görev” örneği hangisidir?',['MS-DOS','UNIX','Windows','Banka sistemleri'],'MS-DOS: her defasında tek kişi, tek iş.'],
+[3,'Görev-kullanıcı matrisinde “çok kullanıcı, tek görev” örneği hangisidir?',['Banka sistemleri','UNIX','MacOS','MS-DOS'],'Pek çok kişi ortak bir veritabanı programı kullanır.'],
+[3,'Görev-kullanıcı matrisinde UNIX nerededir?',['Çok kullanıcı, çok görev','Tek kullanıcı, çok görev','Çok kullanıcı, tek görev','Tek kullanıcı, tek görev'],'Birçok kullanıcı aynı anda birden fazla program çalıştırır (SSH/Telnet).'],
+[3,'Gerçek zamanlı işletim sistemi örnekleri hangileridir?',['VxWorks, QNX','iOS, Android','OS/390','Unix, Windows 2008 Server'],'Gerçek zamanlı: VxWorks ve QNX.'],
+[3,'Ana çatı (mainframe) işletim sistemi örneği hangisidir?',['OS/390','Symbian','QNX','PalmOS'],'Mainframe → OS/390.'],
+[3,'Gömülü / el sistemleri için verilen OS örnekleri hangileridir?',['iOS, Android, PalmOS, Symbian','VxWorks, QNX','Windows 7, MacOS, Linux','OS/390'],'Gömülü/el: iOS, Android, PalmOS, Symbian.'],
+
+[4,'Von Neumann mimarisinde matematiksel ve mantıksal hesapları yapan birim hangisidir?',['ALU (aritmetik-mantık birimi)','Kontrol birimi (CU)','Ana bellek','G/Ç birimi'],'ALU hesaplar; CU komut döngüsünü ve veri akışını yönetir.'],
+[4,'“Depolanmış program bilgisayarları” kavramının merkezinde hangi birim vardır?',['Ana bellek (RAM)','ALU','G/Ç birimleri','Veri yolu'],'Programlar ve veriler RAM\'de saklanır.'],
+[4,'Ana belleğin “uçucu (volatile)” olması ne anlama gelir?',['Elektrik kesilince içeriği kaybolur','Çok hızlı çalışır','Sadece okunabilir','Diskten büyüktür'],'Volatile = anlık işlem alanı; güç gidince içerik gider.'],
+[4,'Aşağıdakilerden hangisi OS\'nin 8 temel alt sisteminden biri değildir?',['Görüntü işleme yönetimi','Yan bellek yönetimi','Komut yorumlayıcısı','Ağ yönetimi'],'8 alt sistem: G/Ç, İşlem, Bellek, Yan bellek, Dosya, Güvenlik, Ağ, Komut yorumlayıcısı.'],
+[4,'read, write, open, close gibi standart sistem çağrılarını karşılayan G/Ç bölümü hangisidir?',['Aygıt bağımsız bölüm','Aygıt sürücüsü','Mikroprogram','Kontrol birimi'],'Aygıt bağımsız bölüm tek tip arayüz sunar ve çağrıyı sürücüye yönlendirir.'],
+[4,'Genel “yazdır” çağrısını üreticiye özgü kodlara çeviren bölüm hangisidir?',['Aygıt sürücüsü (aygıt bağımlı bölüm)','Aygıt bağımsız bölüm','Komut yorumlayıcısı','Dosya sistemi'],'Sürücü, sistem çağrılarını donanımın mikro komutlarına çevirir.'],
+[4,'En düşük sistem kaynağına ihtiyaç duyan program parçası nedir?',['İş parçacığı (thread)','Proses','Ana işlem (parent)','Mikroprogram'],'Thread en hafif yürütme birimidir.'],
+[4,'İşlem ağacı örneğinde A kökünden B ve C, B\'den D, E, F türüyorsa D\'nin ana işlemi (parent) hangisidir?',['B','A','C','E'],'D, E ve F, B\'nin yavru (child) işlemleridir.'],
+[4,'İşlemin CPU ayrılmasını beklediği kuyruk evresi hangisidir?',['Hazır (ready)','Bekliyor (waiting)','Yeni (new)','Çalışıyor (running)'],'Hazır = CPU bekler. Bekliyor = G/Ç veya olay bekler.'],
+[4,'İşlemin G/Ç tamamlanmasını veya olay sinyalini beklediği evre hangisidir?',['Bekliyor (waiting)','Hazır (ready)','İşlem sonu','Yeni'],'Bekliyor durumunda işlem G/Ç, veri girişi veya sinyal bekler.'],
+[4,'Kilitlenmenin (deadlock) temel nedeni nedir?',['Sınırlı kaynakların işlemler arasında paylaşılma zorunluluğu','CPU\'nun çok hızlı olması','Disk sektörlerinin 512 bayt olması','Kullanıcı sayısının az olması'],'Kaynaklar sınırlı ve paylaşılmak zorunda olduğu için karşılıklı bekleme oluşur.'],
+[4,'Deadlock tespitinde sistem neyi tarayarak döngüleri belirler?',['Kaynak tahsis grafiğini (resource allocation graph)','Dosya tablosunu','MBR\'ı','Swap alanını'],'Tespit: kaynak tahsis grafiği taranır, döngü aranır.'],
+[4,'Kilitlenme sunucularda neye yol açabilir?',['Hizmet durmasına (DoS)','Ekranın donmasına','Diskin formatlanmasına','Sanal belleğin artmasına'],'PC\'de kilitlenen yazılım, sunucuda hizmet durması (DoS).'],
+[4,'Kilitlenmeye neden olan işlemlerden birini sonlandırmak hangi çözümdür?',['Kurtarma (recovery)','Tespit (detection)','Ortak tasarım','Swapping'],'Kurtarma: bir işlemi sonlandırmak veya kaynağı geri almak.'],
+[4,'Sabit diskin belirli bir alanını RAM uzantısı gibi kullanan yöntem hangisidir?',['Sanal bellek','Gerçek bellek tahsisi','Spooling','MBR'],'Sanal bellek fiziksel RAM\'den büyük alan adreslemeyi sağlar.'],
+[4,'Önceliği düşük işlemin geçici olarak diske taşınmasına ne denir?',['Swap-out','Swap-in','Boot','Defrag'],'Diske = swap-out, RAM\'e geri = swap-in.'],
+[4,'MBR (Master Boot Record) nedir?',['Sabit diskin ilk sektörü; önyükleme kodunu taşır','Diskin son sektörü','Bir dosya sistemi türü','RAM\'in ilk adresi'],'MBR açılışta OS\'yi başlatan kodu taşır.'],
+[4,'Disk yüzeyi format işleviyle kaç baytlık sektörlere bölünür?',['512','64','1024','4096'],'Slayttaki değer: 512 bayt.'],
+[4,'İşletim sistemi hangi disk bölümünde konumlanır?',['Birincil bölüm (primary partition)','Genişletilmiş bölüm','Swap bölümü','MBR\'ın içinde'],'OS birincil bölümde konumlanır.'],
+[4,'Veri bütünlüğünü doğrudan bozmayan ama ağ ve CPU kaynaklarını tüketerek sistemi aşırı yükleyen zararlı hangisidir?',['Solucan (worm)','Virüs','Arka kapı','Phishing'],'Virüs başka programa yerleşip dosya siler; solucan kaynakları tüketir.'],
+[4,'Kritik sistem dosyalarının boyut ve hash değerlerini dönemsel kontrol etmek hangi savunmadır?',['Bütünlük denetimi','Virüs tarama','Virüs izleme','Şifreleme'],'Tarama imza arar, izleme gerçek zamanlı yakalar, bütünlük denetimi hash kontrol eder.'],
+[4,'Çalışma esnasında şüpheli sistem çağrılarını gerçek zamanlı yakalayan savunma hangisidir?',['Virüs izleme','Virüs tarama','Bütünlük denetimi','Yetkilendirme'],'İzleme = gerçek zamanlı; tarama = bilinen imzaları dosyalarda arama.'],
+[4,'Parmak izi, retina, yüz ve ses analizi hangi erişim denetimidir?',['Biyometrik (fiziksel özellikler)','Parolaya dayalı','Kimlik kartına dayalı','Yetkilendirme'],'Biyometrik = olduğun şey.'],
+[4,'Telnet, FTP ve Uzak Masaüstü hangi kavramın örnekleridir?',['Dağıtık sistemlerde uzak kaynaklara şeffaf erişim','Gerçek zamanlı sistemler','Spooling','Aygıt sürücüleri'],'Dağıtık sistemler uzaktaki kaynaklara ağ üzerinden şeffaf erişim sağlar.'],
+[4,'CLI\'de otomatik betik çalıştırma için verilen örnekler hangileridir?',['Batch, Shell','NTFS, EXT4','ALU, CU','FTP, Telnet'],'Metin tabanlı arayüz: klavye komutları ve Batch/Shell betikleri.'],
+[4,'Komut yorumlayıcısı için hangisi doğrudur?',['Çoğu modern sistemde bağımsız bir süreç olarak çalışır','Donanımın parçasıdır','ROM\'da bulunur','Sadece GUI\'de vardır'],'Komut yorumlayıcısı ayrı bir program yapısındadır; CLI ve GUI biçimleri vardır.']
+];
+
+/* ---------- Kartlar: [bölüm, ön, arka] ---------- */
+const KARTLAR = [
+[1,'İşletim sisteminin tanımı','Donanım ve yazılım kaynaklarını kullanıcılar arasında adil paylaştıran, bilgisayarın etkin ve verimli kullanılmasını sağlayan sistem programları topluluğu.'],
+[1,'6 katman (yukarıdan aşağı)','Uygulama → Sistem yazılımı → İşletim sistemi → Makine dili → Mikroprogram → Fiziksel birimler. “Usta Sincap İnce Makarnayı Mikrodalgada Fırınladı.”'],
+[1,'Mikroprogram','ROM\'da yer alan, makine dilini yorumlayan en ilkel yazılım (ekle, taşı, karşılaştır).'],
+[1,'Makine dili','Donanımın gerçek parçası gibi algılanan 50–300 temel komut seti.'],
+[1,'Program ve proses','Program: diskte, statik, yıllarca kalıcı. Proses: RAM\'de çalışan, dinamik, saniye/dakika ömürlü.'],
+[1,'Zaman paylaşımı (time-sharing)','CPU\'nun çok sayıda kullanıcı/sürece kısa sürelerle tahsisi. Her kullanıcı CPU\'nun yalnız kendisine çalıştığını sanır.'],
+[1,'Spooling','Simultaneous Peripheral Operation On Line. Paylaşılamayan cihazlara (yazıcı) gelen işleri disk üzerinde kuyruğa alır.'],
+[1,'Mikroçekirdek (istemci/sunucu)','Çekirdek en küçük düzeye iner; istemci proses sunucuya istek gönderir. File Server çökerse sadece dosya servisi durur.'],
+[1,'4 nesil','1945–55 vakum tüpü (OS yok) · 1955–65 transistör (batch, Fortran, IBSYS) · 1965–80 IC (multiprogramming, spooling, time-sharing) · 1980– LSI (PC, ağ, dağıtık, gömülü).'],
+[1,'Ağ OS ve dağıtık OS','Ağ OS: herkesin kendi OS\'u var, makineler birbirinin farkında (remote login). Dağıtık OS: çok CPU, kullanıcıya tek işlemci gibi görünür.'],
+[1,'Aptal terminal','OS, işlemci ve disk yok; sadece klavye + monitör. Özel kartla sunucuya bağlı (banka gişeleri).'],
+[1,'Boot aşamaları','Kapalı → Tetiklenme (ROM mikroprogram kontrolü) → Yükleme (diskten RAM\'e) → Devir (OS kontrolü alır).'],
+[2,'Metin tabanlı ve grafik tabanlı OS','Metin: MS-DOS, Unix, Novell Netware (“MUN”). Grafik: Windows, macOS, Linux, OS/2.'],
+[2,'UNIX','Çok kullanıcılı, çok görevli; işlemci mimarisinden bağımsız. Şirket, banka ve devletlerin omurgası.'],
+[2,'Novell Netware','Ağ işletim sistemlerinin öncüsü; yönetici iş istasyonlarındaki tüm hakları belirler.'],
+[2,'CLI ve GUI','CLI = hatırlama (recall), dik öğrenme eğrisi. GUI = tanıma (recognition), ikonlar, sezgisel.'],
+[2,'Önemli tarihler','Macintosh 1984 (fare) · OS/2 1987 (IBM + Microsoft) · Windows 3.1 1992 (ilk yaygın GUI).'],
+[2,'Windows 95 ve 98','95: 32-bit, korumalı ortam, gerçek çoklu görev. 98: internet/Web deneyimi OS\'ye yerleşik.'],
+[2,'Windows ME','MS-DOS\'un sonu: config.sys ve autoexec.bat kaldırıldı, 16-bit sürücüler kapandı, tamamen 32-bit.'],
+[2,'Windows XP','Otomatik donanım tanıma + Windows Update ile sürücü. NT çekirdeği, ClearType, hızlı kullanıcı değişimi, Uzak Masaüstü.'],
+[2,'NAP','Ağ Erişim Koruması: bilgisayar ağa bağlanmadan önce virüs taraması ve sağlık kontrolü.'],
+[2,'BitLocker','Sektör bazlı kriptografik şifreleme. Disk çalınsa bile anahtarsız okunamaz.'],
+[2,'Pardus','Linux tabanlı, açık kaynak, lisanssız; TÜBİTAK öncülüğünde milli proje.'],
+[2,'Sentez: güvenlik duruşu','DOS: fiziksel kilit → Win95: basit şifre → XP: NAP → Modern: BitLocker ve kriptolama.'],
+[3,'4 temel sütun','İşlem (zaman, sıra) · Bellek (alan, kapasite) · G/Ç (çevre birimleri) · Dosya (hiyerarşik saklama). “İyi Bir Gün Dile.”'],
+[3,'Görünmez döngü (5)','Yükleme · Koruma · Zaman paylaşımı · Denetim ve loglama · Haberleşme. “Yağmurda Koşan Zebra Dereyi Hopladı.”'],
+[3,'12 altın kural grupları','Yönetim ve optimizasyon (4) · Etkileşim ve paylaşım (3) · Koruma ve süreklilik (5).'],
+[3,'7 performans kriteri','Etkinlik · Hız · MİB optimizasyonu · İş yapma süresi (throughput) · Güvenirlik · Süreklilik · Kompakt yapı.'],
+[3,'4 sınıflandırma perspektifi','Büyüklük (ölçek) · İş yapma biçimi (mimari) · Zaman ve erişim (tepki) · Görev ve kullanıcı (kapsam). “BİZ Gördük.”'],
+[3,'Ölçek (micro → macro)','Akıllı kart → Gömülü/el → Kişisel → Çok işlemcili/kümeleşmiş → Sunucu → Ana çatı.'],
+[3,'Multiprocessing ve multiprogramming','Multiprocessing: çok fiziksel CPU, ortak bellek (donanım). Multiprogramming: tek CPU, time-slicing (zaman).'],
+[3,'Batch ve interactive','Batch: yüklenip kuyruk sırasıyla işlenir (bekleme). Interactive: kullanıcıyla anlık diyalog.'],
+[3,'Gerçek zamanlı sistem','Sonuçların işlemleri anında etkilediği, zaman kısıtlarının hayati olduğu sistemler (kimya tesisi, endüstriyel kontrol). VxWorks, QNX.'],
+[3,'Görev-kullanıcı matrisi','Tek-tek: MS-DOS · Tek kullanıcı çok görev: Windows, MacOS · Çok-çok: UNIX · Çok kullanıcı tek görev: Banka sistemleri.'],
+[3,'Ekosistem haritası','Mainframe: OS/390 · Sunucu: Unix, Win 2008 Server · PC: Win 7/XP, MacOS, Linux · Gömülü: iOS, Android, PalmOS, Symbian · Gerçek zamanlı: VxWorks, QNX.'],
+[4,'Von Neumann birimleri','G/Ç birimleri · Ana bellek (RAM, stored program, volatile) · CPU (ALU + CU) · Adres ve veri yolu (bus).'],
+[4,'8 alt sistem','G/Ç · İşlem · Bellek · Yan bellek · Dosya · Güvenlik · Ağ · Komut yorumlayıcısı. “Gece İşten Bıkan Yorgun Dede, Güvercinlere Ağaçta Kraker attı.”'],
+[4,'G/Ç çift kademe','Aygıt bağımsız: tek tip arayüz, read/write/open/close. Aygıt bağımlı (sürücü): donanıma özgü mikro komut ve sinyaller.'],
+[4,'Thread','En düşük sistem kaynağına ihtiyaç duyan program parçası. Multithreading: işlem birden çok thread\'e bölünür.'],
+[4,'5 işlem durumu','Yeni → Hazır (CPU bekler) → Çalışıyor → Bekliyor (G/Ç bekler) → İşlem sonu.'],
+[4,'Deadlock','Bekleyen işlemlerin birbirinin kaynağını karşılıklı beklemesi. Neden: sınırlı kaynak paylaşımı. Çözüm: ortak tasarım, korumalı tahsis, tespit (RAG döngüsü), kurtarma.'],
+[4,'Sanal bellek ve swapping','Sanal bellek: diskin bir kısmı RAM uzantısı. Swapping: RAM dolunca düşük öncelikli iş diske (swap-out), sonra geri (swap-in).'],
+[4,'Disk yapısı','İz (track) + 512 baytlık sektör. MBR = ilk sektör, önyükleme kodu. OS birincil bölümde (primary partition).'],
+[4,'Dosya sistemleri','FAT16, FAT32, NTFS, HFS+, EXT4, ReFS. Kök: C:\\ veya /. Yol örneği: C:\\Ders\\Odev.txt.'],
+[4,'Virüs ve solucan','Virüs: programlara yerleşir, çoğalır, dosya siler. Solucan: bütünlüğü doğrudan bozmaz, ağ ve CPU\'yu tüketir.'],
+[4,'Savunma araçları','Şifreleme · Virüs tarama (imza) · Virüs izleme (gerçek zamanlı) · Bütünlük denetimi (boyut + hash).'],
+[4,'Komut yorumlayıcısı','Kullanıcı ile çekirdek arasındaki köprü; ayrı süreç. CLI (Batch, Shell) ve GUI.']
+];
+
+/* =====================================================================
+   DURUM / DEPOLAMA
+   ===================================================================== */
+const KEY = 'cekirdek-kampi-v1';
+let S = {};
+try { S = JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e) { S = {}; }
+S.done = S.done || {}; S.cards = S.cards || {}; S.qok = S.qok || {};
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }
+
+const LEVELS = [[0,'Vakum Tüpü'],[100,'Transistör'],[250,'Entegre Devre'],[420,'LSI Çip'],[620,'Dağıtık Maestro']];
+const ALL_KONU = BOLUMLER.flatMap(b => b.konular.map(k => ({...k, b:b.id})));
+const qid = (q,i) => 'q'+i;
+function xp(){
+  return Object.keys(S.done).length*10 + Object.keys(S.cards).length*2 + Object.keys(S.qok).length*5;
+}
+function levelOf(x){ let i=0; LEVELS.forEach((l,j)=>{ if(x>=l[0]) i=j; }); return i; }
+function hud(){
+  const x = xp(), i = levelOf(x), cur = LEVELS[i][0], next = LEVELS[i+1] ? LEVELS[i+1][0] : null;
+  document.getElementById('hudLvl').textContent = LEVELS[i][1];
+  document.getElementById('hudXp').textContent = x + ' XP';
+  document.getElementById('hudBar').style.width = next ? ((x-cur)/(next-cur)*100)+'%' : '100%';
+}
+let lastLevel = levelOf(xp());
+function gain(msg){
+  hud(); const l = levelOf(xp());
+  if (l > lastLevel) toast('Seviye atladın: ' + LEVELS[l][1] + '!');
+  else if (msg) toast(msg);
+  lastLevel = l;
+}
+let tt;
+function toast(t){ const el=document.getElementById('toast'); el.textContent=t; el.classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>el.classList.remove('show'),2200); }
+const shuffle = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; };
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+
+/* =====================================================================
+   DENEYLER (WIDGETS)
+   ===================================================================== */
+function liste(items, opts={}){
+  return el => {
+    el.innerHTML = `<div class="lst ${opts.stack?'stack':''}">${items.map((it,i)=>`<button class="lst-b" data-i="${i}" ${opts.stack?`style="width:${100-i*(opts.step||7)}%"`:''}>${it.tag?`<span class="tag">${it.tag}</span>`:''}${it.t}</button>`).join('')}</div>
+      ${opts.note?`<div class="row muted" style="font-size:.84rem;justify-content:space-between">${opts.note}</div>`:''}
+      <div class="lst-d" aria-live="polite"><span class="muted">${opts.hint||'Bir parçaya dokun, ayrıntısı burada açılır.'}</span></div>`;
+    const d = el.querySelector('.lst-d');
+    el.querySelectorAll('.lst-b').forEach(b => b.onclick = () => {
+      el.querySelectorAll('.lst-b').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+      const it = items[+b.dataset.i]; d.innerHTML = `<b>${it.t}</b><p>${it.d}</p>`;
+    });
+  };
+}
+function adim(steps, label){
+  return el => {
+    let i = -1;
+    el.innerHTML = `<div class="stepper">${steps.map(s=>`<span>${s.t}</span>`).join('')}</div>
+      <div class="lst-d" aria-live="polite"><span class="muted">Başlamak için düğmeye bas.</span></div>
+      <div class="row"><button class="btn pri" data-a="n">${label}</button><button class="btn" data-a="r">Baştan</button></div>`;
+    const sp = el.querySelectorAll('.stepper span'), d = el.querySelector('.lst-d'), nb = el.querySelector('[data-a=n]');
+    const draw = () => {
+      sp.forEach((s,j)=>{ s.className = j===i?'on':(j<i?'past':''); });
+      if (i>=0) d.innerHTML = `<b>${i+1}. ${steps[i].t}</b><p>${steps[i].d}</p>`;
+      nb.textContent = i===-1 ? label : (i<steps.length-1 ? 'Sonraki adım' : 'Bitti');
+      nb.disabled = i===steps.length-1;
+    };
+    nb.onclick = () => { if(i<steps.length-1){ i++; draw(); } };
+    el.querySelector('[data-a=r]').onclick = () => { i=-1; draw(); d.innerHTML='<span class="muted">Başlamak için düğmeye bas.</span>'; };
+  };
+}
+
+const W = {
+  osuz(el){
+    const steps = ['Sürücü takılı mı?','Disket dönüyor mu? Hızı doğru mu?','Okuma kafası nerede?','Program diskette nerede? (örn. 80. iz)','Kafayı izin üzerine gönder ve bekle.','Bellekte boş yer var mı? (yoksa sil/taşı)','İzleri tek tek oku, belleğe yerleştir ve çalıştır.'];
+    el.innerHTML = `<div class="twocol">
+      <div><h4>İşletim sistemi olmadan</h4><button class="btn" data-a="a">Programı çalıştır</button><ol class="steps"></ol><div class="res" data-r="a"></div></div>
+      <div><h4>İşletim sistemi ile</h4><button class="btn pri" data-a="b">Simgeye tıkla</button><div class="res" data-r="b"></div></div></div>`;
+    let tm=[];
+    el.querySelector('[data-a=a]').onclick = () => {
+      tm.forEach(clearTimeout); tm=[];
+      const ol = el.querySelector('ol'), r = el.querySelector('[data-r=a]'); ol.innerHTML=''; r.textContent=''; r.className='res';
+      steps.forEach((s,i)=> tm.push(setTimeout(()=>{ ol.insertAdjacentHTML('beforeend',`<li>${s}</li>`); if(i===steps.length-1){ r.textContent='Sonunda çalıştı. 7 adımın hepsi senin işindi.'; r.className='res badc'; } }, 380*(i+1))));
+    };
+    el.querySelector('[data-a=b]').onclick = () => { const r = el.querySelector('[data-r=b]'); r.textContent='Çalıştı! 1 tık. O 7 adımı işletim sistemi senin yerine yaptı.'; r.className='res good'; };
+  },
+  katman: liste([
+    {tag:'1',t:'Uygulama yazılımı',d:'Kullanıcının doğrudan çözümleri (editörler, oyunlar). Kullanıcıya en yakın katman.'},
+    {tag:'2',t:'Sistem yazılımı',d:'İşletim sisteminin üstündeki yardımcılar: VTYS, derleyiciler, ağ yazılımları.'},
+    {tag:'3',t:'İşletim sistemi',d:'Karmaşıklığı gizleyen ana yönetici. Tam ortada: üstü yazılım, altı donanıma yakın.'},
+    {tag:'4',t:'Makine dili',d:'Donanımın gerçek parçası gibi algılanan, 50–300 temel komuttan oluşan set.'},
+    {tag:'5',t:'Mikroprogram',d:'ROM\'da yer alır; makine dilini yorumlayan en ilkel yazılım (ekle, taşı, karşılaştır).'},
+    {tag:'6',t:'Fiziksel birimler (donanım)',d:'Entegre devreler, kablolar, güç üniteleri.'}
+  ], {stack:true, step:6, note:'<span>↓ kullanıcı etkileşimi</span><span>donanım yürütmesi ↑</span>'}),
+  spool(el){
+    let on = false;
+    el.innerHTML = `<div class="row" style="justify-content:space-between"><div class="toggle" role="group" aria-label="Spooling"><button data-v="0" class="on">Spooling kapalı</button><button data-v="1">Spooling açık</button></div>
+      <button class="btn pri" data-a="p">3 kullanıcı aynı anda yazdırsın</button></div>
+      <div><div class="muted mono" style="font-size:.75rem;margin-bottom:4px">DİSK KUYRUĞU</div><div class="queue"><span class="muted" style="border:0">boş</span></div></div>
+      <div><div class="muted mono" style="font-size:.75rem;margin-bottom:4px">YAZICI ÇIKTISI</div><div class="paper"></div></div>
+      <div class="res" aria-live="polite"></div>`;
+    const q = el.querySelector('.queue'), p = el.querySelector('.paper'), r = el.querySelector('.res');
+    el.querySelectorAll('.toggle button').forEach(b => b.onclick = () => { on = b.dataset.v==='1'; el.querySelectorAll('.toggle button').forEach(x=>x.classList.toggle('on',x===b)); });
+    let tm=[];
+    el.querySelector('[data-a=p]').onclick = () => {
+      tm.forEach(clearTimeout); tm=[]; p.innerHTML=''; r.textContent=''; r.className='res';
+      const users = ['A','B','C'], docs = {A:'Ayşe · fatura',B:'Burak · ödev',C:'Cem · rapor'};
+      let lines = [];
+      if (!on) {
+        let pools = users.map(u=>[1,2,3].map(n=>[u,n]));
+        while (pools.some(x=>x.length)) { const nz = pools.filter(x=>x.length); const pick = nz[Math.floor(Math.random()*nz.length)]; lines.push(pick.shift()); }
+        q.innerHTML = '<span class="muted" style="border:0">kuyruk yok, herkes doğrudan yazıcıya</span>';
+      } else {
+        lines = users.flatMap(u=>[1,2,3].map(n=>[u,n]));
+        q.innerHTML = users.map(u=>`<span class="u${u}">${docs[u]}</span>`).join('');
+      }
+      lines.forEach((l,i)=> tm.push(setTimeout(()=>{
+        p.insertAdjacentHTML('beforeend', `<div class="ln u${l[0]}">${docs[l[0]]}: satır ${l[1]}</div>`);
+        if (on && l[1]===3) { const s=q.querySelector('.u'+l[0]); if(s) s.style.opacity=.35; }
+        if (i===lines.length-1) { r.textContent = on ? 'Düzenli: işler diskte sıraya girdi, yazıcı her işi bütün olarak bastı.' : 'Kaos: satırlar birbirine karıştı. Spooling\'i açıp tekrar dene.'; r.className = 'res ' + (on?'good':'badc'); }
+      }, 260*(i+1))));
+    };
+  },
+  nesil: liste([
+    {tag:'1945–55',t:'1. nesil · Vakum tüpleri',d:'OS yok. Fiş panoları ve makine diliyle programlama. Tasarım, donanım, programlama aynı grubun elinde.'},
+    {tag:'1955–65',t:'2. nesil · Transistörler',d:'Yığın işlem (batch): programlar tek bantta toplanıp arka arkaya çalışır. Fortran; ilk OS örneği IBSYS (IBM).'},
+    {tag:'1965–80',t:'3. nesil · Entegre devreler',d:'Multiprogramming: G/Ç sırasında CPU boş kalmaz, başka programı işler. Spooling ve zaman paylaşımı doğar.'},
+    {tag:'1980–',t:'4. nesil · LSI çipler',d:'Kişisel bilgisayar (MS-DOS, UNIX), ağ işletim sistemleri, dağıtık işletim sistemleri, gömülü ve gerçek zamanlı sistemler.'}
+  ], {hint:'Bir nesle dokun. İpucu: “Tüp Tıkandı, Entegre Lazım.”'}),
+  boot: adim([
+    {t:'Kapalı durum',d:'Sistem elektriksiz. RAM boş. OS sabit diskte (HDD) bekliyor.'},
+    {t:'Tetiklenme',d:'Güç verildi. ROM\'daki mikroprogram temel kontrolleri yapıyor.'},
+    {t:'Yükleme',d:'Sabit diskteki OS dosyaları okunup ana belleğe (RAM) taşınıyor.'},
+    {t:'Devir',d:'İşletim sistemi donanımın tam kontrolünü aldı ve kullanıcıdan komut bekliyor.'}
+  ], 'Güç düğmesine bas'),
+  tarih(el){
+    const items = [['Macintosh','1984','fare merkezli öncü'],['OS/2','1987','IBM + Microsoft'],['Windows 3.1','1992','ilk yaygın GUI'],['Windows 95','','32-bit, gerçek çoklu görev'],['Windows 98','','internet yerleşik'],['Windows ME','','MS-DOS\'un sonu'],['Windows XP','','otomatik sürücü, NT çekirdeği']];
+    let next = 0, miss = 0;
+    const draw = () => {
+      const pool = shuffle(items.map((x,i)=>i).filter(i=>i>=next));
+      el.innerHTML = `<p class="muted" style="font-size:.9rem">Sürümleri <b>eskiden yeniye</b> sırayla tıkla.</p>
+        <ol class="steps">${items.slice(0,next).map(x=>`<li><b>${x[0]}</b>${x[1]?' · '+x[1]:''} <span class="muted">· ${x[2]}</span></li>`).join('')}</ol>
+        <div class="lst">${pool.map(i=>`<button class="lst-b" data-i="${i}">${items[i][0]}</button>`).join('')}</div>
+        <div class="res ${next===items.length?'good':''}" aria-live="polite">${next===items.length?`Tamam! ${miss} hata ile bitirdin.`:''}</div>
+        ${next===items.length?'<button class="btn">Tekrar oyna</button>':''}`;
+      el.querySelectorAll('.lst-b').forEach(b=>b.onclick=()=>{ if(+b.dataset.i===next){ next++; draw(); } else { miss++; b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake'); } });
+      const again = el.querySelector('.btn'); if(again) again.onclick=()=>{ next=0; miss=0; draw(); };
+    };
+    draw();
+  },
+  sentez(el){
+    const cols = ['Komut satırı (DOS)','Görsel arayüz (Win 95)','Usabilite (Win XP)','Güvenlik ve bulut (Modern)'];
+    const rows = [['Etkileşim modeli',['Ezber (komutlar)','Tıklama (ikonlar)','Çoklu görev (hızlı geçiş)','Biyometrik ve çoklu cihaz']],
+                  ['Donanım yönetimi',['Manuel konfigürasyon','Çakışmalar ve disketler','Otomatik sürücü (internet)','Görünmez tak-çalıştır']],
+                  ['Güvenlik duruşu',['Fiziksel kilitler','Basit şifreler','Ağ Erişim Koruması (NAP)','BitLocker ve kriptolama']]];
+    el.innerHTML = `<div class="tblwrap"><table class="syn"><thead><tr><th></th>${cols.map(c=>`<th scope="col">${c}</th>`).join('')}</tr></thead><tbody>
+      ${rows.map((r,ri)=>`<tr><th scope="row">${r[0]}</th>${r[1].map((c,ci)=>`<td data-v="${esc(c)}"><button>?</button></td>`).join('')}</tr>`).join('')}</tbody></table></div>
+      <div class="row"><button class="btn" data-a="all">Hepsini aç</button><button class="btn" data-a="hide">Hepsini kapat</button><span class="muted" style="font-size:.85rem">Önce tahmin et, sonra kutuya dokun.</span></div>`;
+    const bind = () => el.querySelectorAll('td button').forEach(b=>b.onclick=()=>{ const td=b.parentNode; td.textContent=td.dataset.v; td.classList.add('shown'); });
+    bind();
+    el.querySelector('[data-a=all]').onclick=()=>el.querySelectorAll('td').forEach(td=>{ td.textContent=td.dataset.v; td.classList.add('shown'); });
+    el.querySelector('[data-a=hide]').onclick=()=>{ el.querySelectorAll('td').forEach(td=>{ td.innerHTML='<button>?</button>'; td.classList.remove('shown'); }); bind(); };
+  },
+  dongu: liste([
+    {tag:'Y',t:'Yükleme',d:'Programların zaman çizelgesiyle ana belleğe yüklenmesi.'},
+    {tag:'K',t:'Koruma',d:'Donanım, yazılım ve verilerin hatalı kullanımdan yalıtılması.'},
+    {tag:'Z',t:'Zaman paylaşımı',d:'Çoklu programlamada denetimin programlar arası geçişi.'},
+    {tag:'D',t:'Denetim ve loglama',d:'Hata denetim programlarının işletilmesi ve olayların dosyalanması.'},
+    {tag:'H',t:'Haberleşme',d:'İşletmen (kullanıcı) ile sistem arasındaki kesintisiz diyalog.'}
+  ], {hint:'“Yağmurda Koşan Zebra Dereyi Hopladı.” Harflere dokun.'}),
+  kural(el){
+    const G = ['Yönetim ve optimizasyon','Etkileşim ve paylaşım','Koruma ve süreklilik'];
+    const R = [['İşleri sıraya koyma',0],['İşlerde öncelik (priority) tanıma',0],['Kaynakları sıkı kontrol etme',0],['Bilgisayar kaynaklarının hesabını tutma',0],
+               ['İşi kontrol eden dili yorumlama',1],['Birden fazla eşzamanlı erişim sağlama',1],['İyi ve tutarlı bir arayüz sunma',1],
+               ['Hata durumlarında işlemleri sonuçlandırma',2],['G/Ç işlemlerini sağlama alma',2],['Kesmelerin (interrupts) gereğini yapma',2],['Kullanıcıların haklarına müdahaleyi önleme',2],['Bilgileri uzun vadede güvenle saklama',2]];
+    let order, i, ok;
+    const start = () => { order = shuffle(R); i = 0; ok = 0; draw(); };
+    const draw = () => {
+      if (i >= order.length) { el.innerHTML = `<div class="qbox"><div class="qq">Bitti: 12 kuraldan <b>${ok}</b> tanesini doğru gruba koydun.</div><div><button class="btn pri">Tekrar</button></div></div>`; el.querySelector('button').onclick=start; return; }
+      el.innerHTML = `<div class="qbox"><div class="muted mono" style="font-size:.75rem">KURAL ${i+1}/12 · doğru: ${ok}</div><div class="qq">“${order[i][0]}” hangi gruba ait?</div>
+        <div class="opts">${G.map((g,j)=>`<button class="opt" data-j="${j}">${g}</button>`).join('')}</div><div class="res" aria-live="polite"></div></div>`;
+      el.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+        const j=+b.dataset.j, c=order[i][1];
+        el.querySelectorAll('.opt').forEach(x=>{ x.disabled=true; if(+x.dataset.j===c) x.classList.add('right'); });
+        if (j===c) ok++; else b.classList.add('wrong');
+        const r = el.querySelector('.res'); r.textContent = j===c ? 'Doğru!' : 'Doğrusu: ' + G[c]; r.className='res '+(j===c?'good':'badc');
+        setTimeout(()=>{ i++; draw(); }, j===c?650:1400);
+      });
+    };
+    start();
+  },
+  perf: liste([
+    {tag:'E',t:'Etkinlik',d:'İşi verimli yapma kapasitesi.'},
+    {tag:'H',t:'Hız (zaman kriterleri)',d:'İşler arası zaman, toplu işlem ve cevap verme süresinin minimum olması.'},
+    {tag:'M',t:'MİB optimizasyonu',d:'Kullanılmayan merkezi işlem birimi zamanının sıfıra yakınsaması.'},
+    {tag:'İ',t:'İş yapma süresi',d:'Az zamanda maksimum iş hacmi (throughput).'},
+    {tag:'G',t:'Güvenirlik',d:'Hatalardan tamamen arındırılmış sağlam yapı.'},
+    {tag:'S',t:'Süreklilik',d:'Bakım yapılabilir, dokümantasyonu tam altyapı.'},
+    {tag:'K',t:'Kompakt yapı',d:'Kendinden taviz vermeden düşük boyut.'}
+  ], {hint:'“Ekmek Hamuru Mayalanırken İki Güzel Simit Kızardı.” Harflere dokun.'}),
+  matris(el){
+    const Q = [['Tek kullanıcı · çok görev','Bir kişi, eşzamanlı birçok iş.'],['Çok kullanıcı · çok görev','Birçok kullanıcı, birden fazla program (SSH/Telnet).'],['Tek kullanıcı · tek görev','Her defasında tek kişi, tek iş.'],['Çok kullanıcı · tek görev','Pek çok kişi, ortak bir veritabanı/mesajlaşma sistemi.']];
+    const items = [['MS-DOS',2],['Windows',0],['UNIX',1],['Banka sistemleri',3],['MacOS',0]];
+    let order, i, found;
+    const start = () => { order = shuffle(items); i=0; found=[[],[],[],[]]; draw(); };
+    const qb = q => `<button class="quad" data-q="${q}"><b>${Q[q][0]}</b><span class="muted">${Q[q][1]}</span>${found[q].map(f=>`<span class="found">✓ ${f}</span>`).join('')}</button>`;
+    const draw = () => {
+      const cur = order[i];
+      el.innerHTML = `<div class="qq" aria-live="polite">${cur?`<b>${cur[0]}</b> hangi kutuda?`:'Tamamlandı! Matris dolu.'}</div>
+        <div class="matrix">
+          <div></div><div class="ax">← Tek kullanıcı</div><div class="ax">Çok kullanıcı →</div>
+          <div class="ax v">Çok görev ↑</div>${[0,1].map(qb).join('')}
+          <div class="ax v">Tek görev ↓</div>${[2,3].map(qb).join('')}
+        </div>
+        <div class="row">${cur?'':'<button class="btn pri" data-a="r">Tekrar</button>'}<span class="res" data-r></span></div>`;
+      el.querySelectorAll('.quad').forEach(b=>b.onclick=()=>{
+        if(!cur) return; const r=el.querySelector('[data-r]');
+        if(+b.dataset.q===cur[1]){ found[cur[1]].push(cur[0]); i++; draw(); }
+        else { b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake'); r.textContent='Bu kutu değil, tekrar dene.'; r.className='res badc'; }
+      });
+      const rb = el.querySelector('[data-a=r]'); if(rb) rb.onclick=start;
+    };
+    start();
+  },
+  eko(el){
+    const P = [['Ana çatı (mainframe)','OS/390'],['Sunucu','Unix, Windows 2008 Server'],['Kişisel bilgisayar','Windows 7 / XP, MacOS, Linux'],['Gömülü / el sistemleri','iOS, Android, PalmOS, Symbian'],['Gerçek zamanlı','VxWorks, QNX']];
+    let sel=null, done={}, right;
+    const start = () => { right = shuffle(P.map((p,i)=>i)); sel=null; done={}; draw(); };
+    const draw = () => {
+      const all = Object.keys(done).length===P.length;
+      el.innerHTML = `<p class="muted" style="font-size:.9rem">Soldan bir donanım kategorisi seç, sonra sağdaki işletim sistemi grubuna dokun.</p>
+        <div class="match"><div class="colm">${P.map((p,i)=>`<button data-l="${i}" class="${done[i]?'ok':''} ${sel===i?'sel':''}" ${done[i]?'disabled':''}>${p[0]}</button>`).join('')}</div>
+        <div class="colm">${right.map(i=>`<button data-r="${i}" class="${done[i]?'ok':''}" ${done[i]?'disabled':''}>${P[i][1]}</button>`).join('')}</div></div>
+        <div class="row"><span class="res ${all?'good':''}" aria-live="polite">${all?'Harita tamam!':''}</span>${all?'<button class="btn">Karıştır, tekrar</button>':''}</div>`;
+      el.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{ sel=+b.dataset.l; draw(); });
+      el.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{
+        if(sel===null){ const r=el.querySelector('.res'); r.textContent='Önce soldan bir kategori seç.'; r.className='res'; return; }
+        if(+b.dataset.r===sel){ done[sel]=true; sel=null; draw(); } else { b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake'); }
+      });
+      const a = el.querySelector('.row .btn'); if(a) a.onclick=start;
+    };
+    start();
+  },
+  von: liste([
+    {t:'G/Ç birimleri',d:'Kullanıcı ile sistem arasında çift yönlü veri akışı. Giriş: klavye, fare, dokunmatik panel, sensörler. Çıkış: ekran, yazıcı, ağ arayüzü.'},
+    {t:'Ana bellek (RAM)',d:'Veri, program ve komutları depolar. Depolanmış program kavramının merkezi. Birden fazla program aynı anda yüklenebilir. Uçucudur (volatile).'},
+    {t:'ALU',d:'Aritmetik ve mantık birimi: matematiksel ve mantıksal hesaplamaları yapar. CPU\'nun parçası.'},
+    {t:'Kontrol birimi (CU)',d:'Komut döngüsünü ve veri akışını yönetir. CPU\'nun parçası.'},
+    {t:'Adres ve veri yolu (bus)',d:'CPU\'yu bellek ve G/Ç birimlerine elektronik sinyallerle bağlar.'}
+  ]),
+  sekiz: liste([
+    {tag:'Gece',t:'G/Ç yönetimi',d:'Verilerin fiziksel olarak kayıpsız aktarımı ve aygıt denetimi.'},
+    {tag:'İşten',t:'İşlem yönetimi',d:'Çoklu programlama, thread yönetimi ve işlem durum döngüsü.'},
+    {tag:'Bıkan',t:'Bellek yönetimi',d:'RAM bölümlenmesi, sanal bellek tahsisi ve swapping.'},
+    {tag:'Yorgun',t:'Yan bellek yönetimi',d:'Disk formatlama, sektör/iz yapısı, MBR ve bölümleme (partition).'},
+    {tag:'Dede',t:'Dosya yönetimi',d:'FAT, NTFS, EXT4 sistemleri; kök dizin ve dosya öznitelikleri.'},
+    {tag:'Güvercinlere',t:'Güvenlik ve koruma',d:'Parola/biyometrik doğrulama, şifreleme, virüs/solucan savunması.'},
+    {tag:'Ağaçta',t:'Ağ yönetimi',d:'Dosya, yazıcı, mesaj servisleri; dağıtık istemci/sunucu erişimi.'},
+    {tag:'Kraker',t:'Komut yorumlayıcısı',d:'Kullanıcı ile çekirdek arasındaki CLI ve GUI arayüzleri.'}
+  ], {hint:'Cümledeki her kelime bir alt sistemi açar.'}),
+  durum(el){
+    const ST = {yeni:['Yeni','new'],hazir:['Hazır','ready'],calis:['Çalışıyor','running'],bekle:['Bekliyor','waiting'],son:['İşlem sonu','terminated']};
+    const T = {yeni:[['hazir','Sisteme kabul et']],hazir:[['calis','CPU\'yu ver (sıra geldi)']],calis:[['hazir','Zaman dilimi doldu'],['bekle','Dosya oku (G/Ç iste)'],['son','İşi bitir']],bekle:[['hazir','G/Ç tamamlandı']],son:[]};
+    const WHY = {hazir:'Kuyrukta, CPU ayrılmasını bekliyor.',calis:'Talimatları CPU tarafından yürütülüyor.',bekle:'G/Ç\'nin tamamlanmasını bekliyor. CPU şu an başka işleme verilebilir.',son:'Yürütme bitti, kaynaklar serbest bırakıldı.',yeni:'Sisteme kabul edilip oluşturuluyor.'};
+    let cur = 'yeni', log = ['P1 oluşturuldu → Yeni'];
+    const draw = () => {
+      el.innerHTML = `<div class="states">${['yeni','hazir','calis','son'].map(k=>`<div class="st ${cur===k?'on':''}">${ST[k][0]}<small>${ST[k][1]}</small></div>`).join('')}
+        <div class="st w ${cur==='bekle'?'on':''}">${ST.bekle[0]}<small>${ST.bekle[1]}</small></div></div>
+        <div class="lst-d"><b>Şu an: ${ST[cur][0]}</b><p>${WHY[cur]}</p></div>
+        <div class="row">${T[cur].map(t=>`<button class="btn pri" data-to="${t[0]}">${t[1]}</button>`).join('')}<button class="btn" data-a="r">Yeni işlem</button></div>
+        <div class="log" aria-live="polite">${log.map(l=>`<div>${l}</div>`).join('')}</div>
+        <p class="muted" style="font-size:.84rem">Dikkat: “Bekliyor”dan doğrudan “Çalışıyor”a geçiş yok. G/Ç bitince işlem önce “Hazır” kuyruğuna döner.</p>`;
+      el.querySelectorAll('[data-to]').forEach(b=>b.onclick=()=>{ const to=b.dataset.to; log.push(`${b.textContent} → ${ST[to][0]}`); cur=to; draw(); const lg=el.querySelector('.log'); lg.scrollTop=lg.scrollHeight; });
+      el.querySelector('[data-a=r]').onclick=()=>{ cur='yeni'; log=['P1 oluşturuldu → Yeni']; draw(); };
+    };
+    draw();
+  },
+  deadlock(el){
+    const steps = [
+      ['Başlangıç','İki işlem (P1, P2) ve iki kaynak var: Yazıcı ve Disk. Her kaynağı aynı anda tek işlem kullanabilir.',[]],
+      ['P1 yazıcıyı alır','Düz ok: kaynak → işlem, yani “P1 yazıcıyı tutuyor”.',['h1']],
+      ['P2 diski alır','Şimdi iki kaynak da dolu.',['h1','h2']],
+      ['P1 diski ister','Kesik ok: işlem → kaynak, yani “istiyor”. Disk P2\'de olduğu için P1 bekler.',['h1','h2','r1']],
+      ['P2 yazıcıyı ister: KİLİTLENME','P2 de yazıcıyı bekler. Grafikte döngü oluştu: P1 → Disk → P2 → Yazıcı → P1. Kimse ilerleyemez. Tespit yöntemi tam olarak bu döngüyü arar.',['h1','h2','r1','r2','cyc']],
+      ['Kurtarma (recovery)','OS, P2\'yi sonlandırır ve diski geri alır. Disk P1\'e verilir, P1 işini bitirebilir.',['h1','h3','dead']]
+    ];
+    let i = 0;
+    el.innerHTML = `<div class="dl"><svg viewBox="0 0 340 200" role="img" aria-label="Kaynak tahsis grafiği">
+      <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z"/></marker>
+      <marker id="ahR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z"/></marker></defs>
+      <line id="h1" x1="148" y1="44" x2="84" y2="88" marker-end="url(#ah)"/>
+      <line id="h2" x1="192" y1="156" x2="256" y2="112" marker-end="url(#ah)"/>
+      <line id="h3" x1="148" y1="156" x2="84" y2="112" marker-end="url(#ah)"/>
+      <line id="r1" class="req" x1="84" y1="112" x2="146" y2="155" marker-end="url(#ah)"/>
+      <line id="r2" class="req" x1="256" y1="88" x2="194" y2="45" marker-end="url(#ah)"/>
+      <g id="gp1"><circle class="node" cx="66" cy="100" r="24"/><text x="66" y="105" text-anchor="middle">P1</text></g>
+      <g id="gp2"><circle class="node" cx="274" cy="100" r="24"/><text x="274" y="105" text-anchor="middle">P2</text></g>
+      <rect class="rnode" x="140" y="14" width="60" height="32" rx="4"/><text class="rt" x="170" y="35" text-anchor="middle">Yazıcı</text>
+      <rect class="rnode" x="140" y="154" width="60" height="32" rx="4"/><text class="rt" x="170" y="175" text-anchor="middle">Disk</text>
+      <text class="sm" x="6" y="194">düz ok: tutuyor · kesik ok: istiyor</text>
+    </svg></div>
+    <div class="lst-d" aria-live="polite"></div>
+    <div class="row"><button class="btn pri" data-a="n">Sonraki adım</button><button class="btn" data-a="r">Baştan</button></div>`;
+    const draw = () => {
+      const on = steps[i][2];
+      ['h1','h2','h3','r1','r2'].forEach(id=>{ const ln=el.querySelector('#'+id); ln.classList.toggle('hide',!on.includes(id)); const c = on.includes('cyc') && id!=='h3'; ln.classList.toggle('cyc',c); ln.setAttribute('marker-end', c?'url(#ahR)':'url(#ah)'); });
+      el.querySelector('#gp2').classList.toggle('dead', on.includes('dead'));
+      el.querySelector('.lst-d').innerHTML = `<b>${i}. ${steps[i][0]}</b><p>${steps[i][1]}</p>`;
+      el.querySelector('[data-a=n]').disabled = i===steps.length-1;
+    };
+    el.querySelector('[data-a=n]').onclick=()=>{ if(i<steps.length-1){ i++; draw(); } };
+    el.querySelector('[data-a=r]').onclick=()=>{ i=0; draw(); };
+    draw();
+  },
+  swap(el){
+    let ram=[null,null,null,null], disk=[], n=0, log=[];
+    const pri = () => 1+Math.floor(Math.random()*9);
+    const add = (msg) => { log.unshift(msg); log = log.slice(0,6); };
+    const seed = () => { ram=[{n:'P1',p:7},{n:'P2',p:3},{n:'P3',p:5},null]; disk=[]; n=3; log=['Başlangıç: RAM\'de 3 işlem var, 1 yer boş.']; };
+    const draw = () => {
+      el.innerHTML = `<div class="muted mono" style="font-size:.75rem">ANA BELLEK (RAM) · 4 yer · küçük sayı = düşük öncelik</div>
+        <div class="ram">${ram.map(s=>s?`<div class="slot full"><b>${s.n}</b><small>öncelik ${s.p}</small></div>`:'<div class="slot"><small>boş</small></div>').join('')}</div>
+        <div class="muted mono" style="font-size:.75rem">SABİT DİSK · swap alanı</div>
+        <div class="disk">${disk.length?disk.map(s=>`<span>${s.n} · ${s.p}</span>`).join(''):'<small class="muted">boş</small>'}</div>
+        <div class="row"><button class="btn pri" data-a="add">Yeni işlem başlat</button><button class="btn" data-a="end">En öncelikli işi bitir</button><button class="btn" data-a="r">Sıfırla</button></div>
+        <div class="log" aria-live="polite">${log.map(l=>`<div>${l}</div>`).join('')}</div>`;
+      el.querySelector('[data-a=add]').onclick=()=>{
+        const p={n:'P'+(++n),p:pri()}; let free=ram.indexOf(null);
+        if(free===-1){ let lo=0; ram.forEach((s,j)=>{ if(s.p<ram[lo].p) lo=j; }); disk.push(ram[lo]); add(`RAM dolu → swap-out: ${ram[lo].n} (öncelik ${ram[lo].p}) diske taşındı.`); free=lo; }
+        ram[free]=p; add(`${p.n} (öncelik ${p.p}) RAM'e yüklendi.`); draw();
+      };
+      el.querySelector('[data-a=end]').onclick=()=>{
+        let hi=-1; ram.forEach((s,j)=>{ if(s && (hi===-1 || s.p>ram[hi].p)) hi=j; });
+        if(hi===-1){ add('RAM\'de bitirilecek işlem yok.'); draw(); return; }
+        add(`${ram[hi].n} bitti, RAM\'deki yeri boşaldı.`); ram[hi]=null;
+        if(disk.length){ let b=0; disk.forEach((s,j)=>{ if(s.p>disk[b].p) b=j; }); const s=disk.splice(b,1)[0]; ram[hi]=s; add(`swap-in: ${s.n} diskten RAM'e geri yüklendi.`); }
+        draw();
+      };
+      el.querySelector('[data-a=r]').onclick=()=>{ seed(); draw(); };
+    };
+    seed(); draw();
+  }
+};
+
+/* =====================================================================
+   GÖRÜNÜMLER (retro masaüstü)
+   ===================================================================== */
+const main = document.getElementById('main');
+const N_KONU = ALL_KONU.length;
+function chapProgress(b){ const d=b.konular.filter(k=>S.done[k.id]).length; return [d,b.konular.length]; }
+const winBar = (label, extra='') => `<div class="win-bar"><span class="term">${label}</span>${extra}<span class="win-dots" aria-hidden="true"><i></i><i></i></span></div>`;
+function folderSVG(no){
+  return `<svg viewBox="0 0 64 56" aria-hidden="true"><path class="fold-back" d="M2 8h22l5 6h33v40H2z"/><path class="fold-line" d="M2 8h22l5 6h33v40H2z"/>
+    <rect class="fold-paper" x="8" y="12" width="46" height="20" stroke="#17192A" stroke-width="2"/>
+    <path class="fold-front" d="M2 22h60v32H2z"/><path class="fold-line" d="M2 22h60v32H2z"/>
+    <text class="fold-num" x="32" y="45" text-anchor="middle">${no}</text></svg>`;
+}
+const appIcon = {
+  kartlar:`<svg viewBox="0 0 64 56" aria-hidden="true"><rect x="14" y="4" width="40" height="30" fill="#FCFBF7" stroke="#17192A" stroke-width="2.5"/><rect x="8" y="14" width="44" height="34" fill="#FFE27A" stroke="#17192A" stroke-width="2.5"/><path d="M16 26h28M16 34h20" stroke="#17192A" stroke-width="2.5"/></svg>`,
+  sinav:`<svg viewBox="0 0 64 56" aria-hidden="true"><rect x="10" y="4" width="44" height="48" fill="#FCFBF7" stroke="#17192A" stroke-width="2.5"/><rect x="10" y="4" width="44" height="9" fill="#2B2F8F" stroke="#17192A" stroke-width="2.5"/><path d="M18 26l5 5 9-9M18 42h26" stroke="#1C7348" stroke-width="3" fill="none"/></svg>`,
+  kancalar:`<svg viewBox="0 0 64 56" aria-hidden="true"><path d="M12 4h40v36l-12 12H12z" fill="#FFE27A" stroke="#17192A" stroke-width="2.5"/><path d="M40 52V40h12" fill="#E5C35A" stroke="#17192A" stroke-width="2.5"/><path d="M20 16h24M20 24h24M20 32h14" stroke="#17192A" stroke-width="2.5"/></svg>`
+};
+
+function viewHarita(){
+  const x = xp(), li = levelOf(x), next = LEVELS[li+1];
+  main.innerHTML = `
+  <section class="desk-title">
+    <span class="term">C:\\VIZE&gt; isletim_sistemleri.exe · sayfa 1–51</span>
+    <h1>Çekirdek Kampı</h1>
+    <p>İşletim sistemlerini bir işletim sisteminin içinde çalış. ${BOLUMLER.length} klasör, ${N_KONU} konu; her konuda kısa anlatım, sarı bir kanca notu ve çoğunda bir deney var.</p>
+  </section>
+  <nav class="icons" aria-label="Bölümler">
+    ${BOLUMLER.map(b=>{ const [d,t]=chapProgress(b); return `<a class="dicon" href="#${b.id}">${folderSVG(b.no)}<span class="lbl">${b.ad}</span><span class="sub">${d}/${t} konu</span></a>`; }).join('')}
+  </nav>
+  <section class="win">${winBar('BOOT.LOG')}
+    <div class="dosbox" aria-hidden="true">
+      C:\\&gt; ROM mikroprogram kontrolü ........ <span class="g">TAMAM</span><br>
+      C:\\&gt; ${N_KONU} konu · ${SORULAR.length} soru · ${KARTLAR.length} kart RAM'e yüklendi <span class="g">TAMAM</span><br>
+      C:\\&gt; Kontrol sana devredildi. <span class="y">Komut bekleniyor</span><span class="blink">_</span>
+    </div>
+  </section>
+  <section class="win">${winBar('SEVIYE.SYS')}
+    <div class="win-body"><div class="lvl-row">
+      <div><div class="term muted">Şu anki seviyen</div><h2>${LEVELS[li][1]}</h2></div>
+      <div class="xpbig">${x} XP</div>
+      <span class="meter amber" style="grid-column:1/-1"><i style="width:${next?((x-LEVELS[li][0])/(next[0]-LEVELS[li][0])*100):100}%"></i></span>
+      <div class="ladder">${LEVELS.map((l,j)=>`<span class="${j===li?'on':(j<li?'past':'')}">${l[1]} · ${l[0]}</span>`).join('')}</div>
+      <p class="muted" style="grid-column:1/-1;font-size:.92rem">Seviyeler bilgisayar nesillerinden geliyor. Konu bitirmek +10 XP, kartı “biliyorum” demek +2 XP, bir soruyu ilk kez doğru yapmak +5 XP.${next?` Sonraki seviye için ${next[0]-x} XP kaldı.`:''}</p>
+    </div></div>
+  </section>
+  <section class="win">${winBar('BOLUMLER')}
+    <div class="win-body"><div class="chaplist">
+    ${BOLUMLER.map(b=>{ const [d,t]=chapProgress(b); return `<a class="chapitem" href="#${b.id}">
+      <span class="top"><span>BÖLÜM ${b.no}</span><span>s. ${b.sayfa}</span></span>
+      <h3>${b.ad}</h3><p>${b.ozet}</p>
+      <span class="top"><span>${d}/${t} konu</span><span>%${Math.round(d/t*100)}</span></span>
+      <span class="meter"><i style="width:${d/t*100}%"></i></span></a>`; }).join('')}
+    </div></div>
+  </section>
+  <nav class="icons" aria-label="Araçlar">
+    <a class="dicon" href="#kartlar">${appIcon.kartlar}<span class="lbl">Kartlar</span><span class="sub">${KARTLAR.length} kart</span></a>
+    <a class="dicon" href="#sinav">${appIcon.sinav}<span class="lbl">Deneme sınavı</span><span class="sub">${SORULAR.length} soru</span></a>
+    <a class="dicon" href="#kancalar">${appIcon.kancalar}<span class="lbl">Kanca listesi</span><span class="sub">sınav sabahı</span></a>
+  </nav>`;
+}
+
+function konuHTML(k, n){
+  const d = !!S.done[k.id];
+  return `<article class="win konu ${d?'done':''}" id="k-${k.id}">
+    ${winBar(`KONU ${n} · s. ${k.s}${d?' · TAMAM':''}`)}
+    <div class="win-body">
+      <h2>${k.t}</h2>
+      ${k.h}
+      <div class="note"><small>KANCA</small>${k.k}</div>
+      ${k.w?`<div class="lab"><span class="lab-h">DENEY.EXE</span><div id="w-${k.id}" style="display:flex;flex-direction:column;gap:12px"></div></div>`:''}
+      <div class="k-foot"><span class="st-note">${d?'tamamlandı · +10 XP':'okudun, anladın mı?'}</span>
+        <button class="btn okb ${d?'on':''}" data-done="${k.id}" aria-pressed="${d}">${d?'✓ Anladım':'Anladım'}</button></div>
+    </div>
+  </article>`;
+}
+function viewBolum(b){
+  const [d,t] = chapProgress(b), nb = BOLUMLER[b.no], pb = BOLUMLER[b.no-2];
+  main.innerHTML = `<section class="win chap-win">${winBar(`C:\\BOLUM${b.no} · sayfa ${b.sayfa}`)}
+      <div class="win-body">
+        <h1>${b.no}. ${b.ad}</h1><p class="alt">${b.alt}</p>
+        <div class="chap-meta"><span id="cp">${d}/${t} konu tamam</span><span class="meter"><i id="cpb" style="width:${d/t*100}%"></i></span></div>
+        <nav class="toc" aria-label="Konular">${b.konular.map(k=>`<a href="#${b.id}" data-jump="${k.id}" class="${S.done[k.id]?'done':''}">${k.t}</a>`).join('')}</nav>
+      </div></section>
+    ${b.konular.map((k,i)=>konuHTML(k,i+1)).join('')}
+    <section class="win">${winBar('BOLUM_SONU.EXE')}
+      <div class="win-body"><h2 style="font-family:var(--f-pixel);font-size:1.5rem">Bölüm ${b.no} bitti mi?</h2>
+      <p class="muted">Bu bölümün ${SORULAR.filter(q=>q[0]===b.no).length} sorusuyla kendini dene.</p>
+      <div class="row"><button class="btn pri" data-quiz="${b.no}">Bölüm ${b.no} sınavına gir</button></div></div></section>
+    <nav class="chapnav" aria-label="Bölümler arası">${pb?`<a class="btn" href="#${pb.id}">← ${pb.no}. ${pb.ad}</a>`:'<a class="btn" href="#harita">← Masaüstü</a>'}${nb?`<a class="btn" href="#${nb.id}">${nb.no}. ${nb.ad} →</a>`:'<a class="btn" href="#sinav">Deneme sınavı →</a>'}</nav>`;
+  b.konular.forEach(k => { if (k.w) W[k.w](document.getElementById('w-'+k.id)); });
+  main.querySelectorAll('[data-jump]').forEach(a=>a.onclick=e=>{ e.preventDefault(); document.getElementById('k-'+a.dataset.jump).scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}); });
+  main.querySelectorAll('[data-done]').forEach(btn=>btn.onclick=()=>{
+    const id = btn.dataset.done, art = document.getElementById('k-'+id), n = b.konular.findIndex(k=>k.id===id)+1, k = b.konular[n-1];
+    if (S.done[id]) delete S.done[id]; else S.done[id] = 1;
+    save(); const on = !!S.done[id];
+    art.classList.toggle('done',on); btn.classList.toggle('on',on); btn.textContent = on?'✓ Anladım':'Anladım'; btn.setAttribute('aria-pressed',on);
+    art.querySelector('.win-bar .term').textContent = `KONU ${n} · s. ${k.s}${on?' · TAMAM':''}`;
+    art.querySelector('.st-note').textContent = on?'tamamlandı · +10 XP':'okudun, anladın mı?';
+    main.querySelector(`[data-jump="${id}"]`).classList.toggle('done',on);
+    const [d2,t2] = chapProgress(b); document.getElementById('cp').textContent = `${d2}/${t2} konu tamam`; document.getElementById('cpb').style.width = (d2/t2*100)+'%';
+    gain(on ? (d2===t2 ? `Bölüm ${b.no} tamam!` : '+10 XP') : null);
+  });
+  main.querySelector('[data-quiz]').onclick = () => { QZ.scope = b.no; QZ.count = 0; startQuiz(); if (location.hash !== '#sinav') { skipRender = true; location.hash = 'sinav'; } };
+}
+
+/* ---------- kartlar ---------- */
+const FC = { scope:0, deck:[], i:0 };
+function buildDeck(){ FC.deck = shuffle(KARTLAR.map((c,i)=>({c,i})).filter(o=>!FC.scope||o.c[0]===FC.scope)); FC.i = 0; }
+function viewKartlar(){
+  if (!FC.deck.length) buildDeck();
+  const known = KARTLAR.filter((c,i)=>S.cards[i]).length;
+  const o = FC.deck[FC.i];
+  main.innerHTML = `<section class="win">${winBar('KARTLAR.EXE')}
+    <div class="win-body">
+      <h1 style="font-family:var(--f-pixel);font-size:clamp(1.8rem,6vw,2.4rem)">Kartlar</h1>
+      <p class="muted">Karta dokun ya da boşluk tuşuna bas, çevir. Bildiklerini “Biliyorum” ile işaretle; “Tekrar sor” dediğin kart destenin sonuna gider.</p>
+      <div class="seg" role="group" aria-label="Bölüm seç">${[0,1,2,3,4].map(s=>`<button data-s="${s}" class="${FC.scope===s?'on':''}" aria-pressed="${FC.scope===s}">${s?'Bölüm '+s:'Hepsi'}</button>`).join('')}</div>
+      <div class="chap-meta"><span>${known}/${KARTLAR.length} kart biliniyor</span><span class="meter"><i style="width:${known/KARTLAR.length*100}%"></i></span></div>
+    </div></section>
+    ${o?`<div class="qmeta" style="color:var(--on-desk)"><span>Kart ${FC.i+1}/${FC.deck.length}</span><span>Bölüm ${o.c[0]}${S.cards[o.i]?' · biliniyor':''}</span></div>
+      <div class="fc" id="fc" tabindex="0" role="button" aria-label="Kartı çevir"><div class="fc-in">
+        <div class="fc-f"><small>SORU</small><p>${o.c[1]}</p><small>çevirmek için dokun</small></div>
+        <div class="fc-b"><small>CEVAP</small><p>${o.c[2]}</p></div></div></div>
+      <div class="row" style="justify-content:center"><button class="btn" data-a="again">Tekrar sor</button><button class="btn pri" data-a="know">✓ Biliyorum</button></div>`
+      :`<section class="win">${winBar('BITTI')}<div class="win-body"><h2 style="font-family:var(--f-pixel)">Deste bitti!</h2><p class="muted">Tekrar karıştırıp baştan başlayabilirsin.</p><div><button class="btn pri" data-a="re">Yeniden karıştır</button></div></div></section>`}`;
+  main.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{ FC.scope=+b.dataset.s; buildDeck(); viewKartlar(); });
+  const fc = document.getElementById('fc');
+  if (fc) {
+    fc.onclick = () => fc.classList.toggle('flip');
+    fc.onkeydown = e => { if (e.key===' '||e.key==='Enter'){ e.preventDefault(); fc.classList.toggle('flip'); } };
+    main.querySelector('[data-a=again]').onclick = () => { FC.deck.push(FC.deck[FC.i]); FC.i++; viewKartlar(); };
+    main.querySelector('[data-a=know]').onclick = () => { const was = S.cards[o.i]; S.cards[o.i]=1; save(); FC.i++; viewKartlar(); if(!was) gain('+2 XP'); };
+  } else main.querySelector('[data-a=re]').onclick = () => { buildDeck(); viewKartlar(); };
+}
+
+/* ---------- sınav ---------- */
+const QZ = { scope:0, count:10, pool:null, i:0, score:0, wrong:[] };
+function startQuiz(onlyIdx){
+  let idx = SORULAR.map((q,i)=>i).filter(i=>!QZ.scope||SORULAR[i][0]===QZ.scope);
+  if (onlyIdx) idx = onlyIdx;
+  idx = shuffle(idx); if (QZ.count && !onlyIdx) idx = idx.slice(0, QZ.count);
+  QZ.pool = idx.map(i => ({ i, opts: shuffle(SORULAR[i][2].map((t,j)=>({t, ok:j===0}))) }));
+  QZ.i = 0; QZ.score = 0; QZ.wrong = []; viewSinav();
+}
+function viewSinav(){
+  if (!QZ.pool) {
+    main.innerHTML = `<section class="win">${winBar('SINAV.EXE')}
+      <div class="win-body">
+        <h1 style="font-family:var(--f-pixel);font-size:clamp(1.8rem,6vw,2.4rem)">Deneme sınavı</h1>
+        <p class="muted">${SORULAR.length} soruluk banka. Şıklar her seferinde karışır, her cevaptan sonra kısa bir açıklama gelir.</p>
+        <div><div class="seg-h">Kapsam</div><div class="seg" data-g="scope">${[0,1,2,3,4].map(s=>`<button data-v="${s}" class="${QZ.scope===s?'on':''}" aria-pressed="${QZ.scope===s}">${s?'Bölüm '+s+' ('+SORULAR.filter(q=>q[0]===s).length+')':'Hepsi'}</button>`).join('')}</div></div>
+        <div><div class="seg-h">Soru sayısı</div><div class="seg" data-g="count">${[10,20,0].map(c=>`<button data-v="${c}" class="${QZ.count===c?'on':''}" aria-pressed="${QZ.count===c}">${c||'Hepsi'}</button>`).join('')}</div></div>
+        <div><button class="btn pri" data-a="go">Sınavı başlat</button></div>
+        <p class="muted" style="font-size:.92rem">Şimdiye kadar ${Object.keys(S.qok).length}/${SORULAR.length} soruyu en az bir kez doğru yaptın.</p>
+      </div></section>`;
+    main.querySelectorAll('.seg').forEach(g=>g.querySelectorAll('button').forEach(b=>b.onclick=()=>{ QZ[g.dataset.g]=+b.dataset.v; viewSinav(); }));
+    main.querySelector('[data-a=go]').onclick = () => startQuiz();
+    return;
+  }
+  if (QZ.i >= QZ.pool.length) {
+    const n = QZ.pool.length, pct = Math.round(QZ.score/n*100);
+    const msg = pct>=85 ? 'Maestro seviyesi. Vizeye hazırsın.' : pct>=60 ? 'İyi gidiyor. Yanlışlarına bak, kancaları tekrar et.' : 'Biraz daha çalışalım. Yanlışların ait olduğu bölümleri tekrar oku.';
+    main.innerHTML = `<section class="win">${winBar('SONUC.TXT')}<div class="win-body">
+      <div class="score">${QZ.score}/${n}</div><p><b>%${pct}</b> · ${msg}</p>
+      <div class="row"><button class="btn pri" data-a="new">Yeni sınav</button>${QZ.wrong.length?'<button class="btn" data-a="retry">Sadece yanlışlarımı sor</button>':''}<button class="btn" data-a="set">Ayarlar</button></div></div></section>
+      ${QZ.wrong.length?`<section class="win">${winBar('YANLISLAR.LOG')}<div class="win-body"><div class="wronglist">${QZ.wrong.map(i=>`<div>${SORULAR[i][1]}<br><b>✓ ${SORULAR[i][2][0]}</b><br><span class="muted">${SORULAR[i][3]}</span></div>`).join('')}</div></div></section>`:''}`;
+    main.querySelector('[data-a=new]').onclick = () => startQuiz();
+    main.querySelector('[data-a=set]').onclick = () => { QZ.pool=null; viewSinav(); };
+    const rt = main.querySelector('[data-a=retry]'); if (rt) rt.onclick = () => startQuiz(QZ.wrong.slice());
+    return;
+  }
+  const cur = QZ.pool[QZ.i], q = SORULAR[cur.i];
+  main.innerHTML = `<section class="win">${winBar(`SORU ${QZ.i+1}/${QZ.pool.length}`)}<div class="win-body">
+    <div class="qmeta"><span>Bölüm ${q[0]}</span><span>Doğru: ${QZ.score}</span></div>
+    <span class="meter amber"><i style="width:${QZ.i/QZ.pool.length*100}%"></i></span>
+    <h1 class="qtitle">${q[1]}</h1>
+    <div class="opts">${cur.opts.map((o,j)=>`<button class="opt" data-j="${j}"><span class="lt">${'ABCD'[j]}</span><span>${o.t}</span></button>`).join('')}</div>
+    <div id="after" aria-live="polite"></div></div></section>
+    <div><button class="btn" data-a="quit">Sınavdan çık</button></div>`;
+  main.querySelector('[data-a=quit]').onclick = () => { QZ.pool=null; viewSinav(); };
+  main.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+    const j=+b.dataset.j, ok=cur.opts[j].ok;
+    main.querySelectorAll('.opt').forEach((x,k)=>{ x.disabled=true; if(cur.opts[k].ok) x.classList.add('right'); });
+    if (ok) { QZ.score++; const first=!S.qok[cur.i]; S.qok[cur.i]=1; save(); if(first) gain('+5 XP'); }
+    else { b.classList.add('wrong'); QZ.wrong.push(cur.i); }
+    document.getElementById('after').innerHTML = `<div class="expl"><b>${ok?'Doğru.':'Yanlış.'}</b> ${q[3]}</div>
+      <div class="row" style="margin-top:12px"><button class="btn pri" id="nextq">${QZ.i===QZ.pool.length-1?'Sonucu gör':'Sonraki soru →'}</button></div>`;
+    const nx = document.getElementById('nextq'); nx.focus({preventScroll:true}); nx.onclick = () => { QZ.i++; viewSinav(); window.scrollTo({top:0}); };
+  });
+}
+
+/* ---------- kanca listesi ---------- */
+function viewKancalar(){
+  main.innerHTML = `<section class="win">${winBar('KANCALAR.TXT')}<div class="win-body">
+    <h1 style="font-family:var(--f-pixel);font-size:clamp(1.8rem,6vw,2.4rem)">Kanca listesi</h1>
+    <p class="muted">${N_KONU} konunun kancaları tek sayfada. Kancayı okumadan önce konuyu kendi kendine anlatmayı dene; takılırsan başlığa dokunup konuya git.</p></div></section>
+    ${BOLUMLER.map(b=>`<section class="win">${winBar(`BOLUM ${b.no} · ${b.ad.toLocaleUpperCase('tr')} · s. ${b.sayfa}`)}<div class="win-body" style="gap:0">
+      ${b.konular.map(k=>`<div class="hook"><div><span class="pg">s. ${k.s}</span><a href="#${b.id}" data-go="${b.id}|${k.id}">${k.t}</a></div><div>${k.k}</div></div>`).join('')}</div></section>`).join('')}`;
+  main.querySelectorAll('[data-go]').forEach(a=>a.onclick=e=>{ e.preventDefault(); const [b,k]=a.dataset.go.split('|'); pendingJump=k; if(location.hash==='#'+b) route(); else location.hash=b; });
+}
+
+/* ---------- başlat menüsü ---------- */
+const startBtn = document.getElementById('startBtn'), startMenu = document.getElementById('startmenu');
+function renderStart(){
+  document.getElementById('startlist').innerHTML =
+    `<li><a href="#harita"><svg viewBox="0 0 28 24" aria-hidden="true"><rect x="2" y="3" width="24" height="16" fill="#2D6F6A" stroke="#17192A" stroke-width="2"/><path d="M9 22h10" stroke="#17192A" stroke-width="2"/></svg><span>Masaüstü<small>ana sayfa</small></span></a></li>
+     <li class="sep" role="separator"></li>` +
+    BOLUMLER.map(b=>{ const [d,t]=chapProgress(b); return `<li><a href="#${b.id}"><svg viewBox="0 0 28 24" aria-hidden="true"><path d="M1 3h10l2 3h14v17H1z" fill="#F2B13C" stroke="#17192A" stroke-width="2"/></svg><span>${b.no}. ${b.ad}<small>s. ${b.sayfa} · ${d}/${t} konu</small></span></a></li>`; }).join('') +
+    `<li class="sep" role="separator"></li>
+     <li><a href="#kartlar"><svg viewBox="0 0 28 24" aria-hidden="true"><rect x="4" y="5" width="20" height="16" fill="#FFE27A" stroke="#17192A" stroke-width="2"/></svg><span>Kartlar</span></a></li>
+     <li><a href="#sinav"><svg viewBox="0 0 28 24" aria-hidden="true"><rect x="4" y="2" width="20" height="20" fill="#FCFBF7" stroke="#17192A" stroke-width="2"/><path d="M9 12l3 3 6-6" stroke="#1C7348" stroke-width="2.5" fill="none"/></svg><span>Deneme sınavı</span></a></li>
+     <li><a href="#kancalar"><svg viewBox="0 0 28 24" aria-hidden="true"><path d="M5 2h18v14l-6 6H5z" fill="#FFE27A" stroke="#17192A" stroke-width="2"/></svg><span>Kanca listesi</span></a></li>`;
+}
+function openStart(open){
+  startMenu.hidden = !open; startBtn.setAttribute('aria-expanded', open);
+  if (open) { renderStart(); const f = startMenu.querySelector('a'); if (f) f.focus(); }
+}
+startBtn.onclick = e => { e.stopPropagation(); openStart(startMenu.hidden); };
+startMenu.addEventListener('click', e => { if (e.target.closest('a')) openStart(false); });
+document.addEventListener('click', e => { if (!startMenu.hidden && !startMenu.contains(e.target)) openStart(false); });
+document.addEventListener('keydown', e => {
+  if (e.key==='Escape' && !startMenu.hidden) { openStart(false); startBtn.focus(); }
+  if (e.key===' ' && document.activeElement===document.body && document.getElementById('fc')) { e.preventDefault(); document.getElementById('fc').classList.toggle('flip'); }
+});
+
+/* =====================================================================
+   YÖNLENDİRME
+   ===================================================================== */
+let pendingJump = null, skipRender = false;
+function route(){
+  const h = (location.hash||'').slice(1) || 'harita';
+  const b = BOLUMLER.find(x=>x.id===h);
+  if (skipRender) skipRender = false;
+  else if (b) viewBolum(b);
+  else if (h==='kartlar') viewKartlar();
+  else if (h==='sinav') viewSinav();
+  else if (h==='kancalar') viewKancalar();
+  else viewHarita();
+  document.querySelectorAll('.taskbar .tb').forEach(a=>{ const on = a.dataset.tab===h; a.classList.toggle('on',on); if(on) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
+  if (pendingJump) { const el=document.getElementById('k-'+pendingJump); pendingJump=null; if(el) setTimeout(()=>el.scrollIntoView(),0); }
+  else { window.scrollTo({top:0}); main.focus({preventScroll:true}); }
+  hud();
+}
+window.addEventListener('hashchange', route);
+route();
+</script>
+</html>
