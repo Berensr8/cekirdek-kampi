@@ -151,6 +151,38 @@ main{max-width:880px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-lef
 .rcard p{font-size:.94rem}
 .rcard a{font-size:.88rem;color:var(--link);font-weight:700;align-self:flex-start}
 .rquiz{display:flex;flex-direction:column;gap:10px}
+.zbox{display:flex;flex-direction:column;gap:12px}
+.z-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.z-scene{font-family:var(--f-pixel);font-weight:700;font-size:1.25rem}
+.z-name{font-family:var(--f-term);font-size:1.1rem;color:var(--muted)}
+.z-logic{font-size:.95rem;background:var(--win);border:2px solid var(--line);padding:10px 12px}
+ol.z-chain{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:0;counter-reset:z}
+.z-chain li{counter-increment:z;position:relative;padding:8px 10px 8px 46px;background:var(--win);border:2px solid var(--frame);margin-top:-2px;animation:pop .22s ease-out;font-size:.94rem;display:flex;flex-direction:column}
+.z-chain li::before{content:counter(z);position:absolute;left:0;top:0;bottom:0;width:36px;display:flex;align-items:center;justify-content:center;background:var(--bar);color:var(--on-bar);font-family:var(--f-term);font-size:1.3rem}
+.z-chain li b{font-weight:700}
+.z-chain li span{color:var(--muted)}
+.z-chain li.z-q{background:var(--note);color:var(--on-note);border-style:dashed}
+.z-chain li.z-q::before{content:"?";background:var(--accent);color:var(--on-accent)}
+.z-chain li.z-q span{color:var(--on-note);font-weight:700}
+.z-ans{color:var(--on-note);font-family:var(--f-term);font-size:1.15rem;font-weight:400}
+.scenemap{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+@media (max-width:560px){.scenemap{grid-template-columns:1fr}}
+.scenemap a,.scenemap button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:10px 12px;border:2px solid var(--frame);background:var(--win);color:var(--ink);text-decoration:none;box-shadow:2px 2px 0 var(--shadow);min-height:56px;font:inherit}
+.scenemap a:hover,.scenemap button:hover{background:var(--chip)}
+.scenemap button.on{background:var(--bar);color:var(--on-bar)}
+.scenemap span{font-size:.86rem;opacity:.85}
+.scenemap b{font-family:var(--f-pixel);font-size:1.1rem}
+.scenemap i{font-style:normal;font-family:var(--f-term);font-size:1rem;color:var(--ok)}
+.scenemap button.on i{color:var(--on-bar)}
+.pairs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:620px){.pairs{grid-template-columns:1fr}}
+.pair{border:2px solid var(--line);background:var(--win);padding:10px 12px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.pair-h{display:flex;flex-wrap:wrap;gap:6px;align-items:baseline}
+.pair-h b{font-weight:700}
+.pair-h span{font-family:var(--f-term);color:var(--bad);font-size:1.1rem}
+.pair p{font-size:.93rem;color:var(--muted)}
+.icons.tools{grid-template-columns:repeat(5,minmax(0,1fr))}
+@media (max-width:640px){.icons.tools{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .cmp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 @media (max-width:560px){.cmp{grid-template-columns:1fr}}
 .cmp>div{border:2px solid var(--line);padding:12px;min-width:0;background:var(--win)}
@@ -565,14 +597,14 @@ const BOLUMLER = [
       <li><b>Giriş-çıkış yönetimi:</b> çevre birimleriyle haberleşir. Bilgisayar ile çevre birimleri (I/O unit) arasındaki veri otobanını denetler (printer, mouse, scanner).</li>
       <li><b>Dosya yönetimi:</b> veriyi hiyerarşik olarak saklar. Veri yazma, okuma ve dosya erişim yetkilerini düzenler.</li>
     </ul>`,
-    k:'<span class="mn">“İyi Bir Gün Dile.”</span><br>İşlem (zaman) · Bellek (alan) · G/Ç (dış dünya) · Dosya (kalıcılık).' },
+    k:'<span class="mn">Sahne: ödev yapmak. 4 soru sor.</span><br>Ne zaman yapacağım? (işlem) → Nereye koyacağım? (bellek) → Neyle iletişim kuracağım? (G/Ç) → Nereye kaydedeceğim? (dosya)' },
 
   { id:'dongu', s:'32', t:'Sahne arkasındaki görünmez döngü',
     h:`<ul>
       <li>OS arka planda 5 işi sürekli bir döngü halinde yapar: <b>Yükleme → Koruma → Zaman paylaşımı → Denetim ve loglama → Haberleşme</b>.</li>
       <li>Ayrıntılar için aşağıdaki parçalara dokun.</li>
     </ul>`,
-    k:'<span class="mn">“Yağmurda Koşan Zebra Dereyi Hopladı.”</span><br>Y-K-Z-D-H: Yükleme, Koruma, Zaman paylaşımı, Denetim ve loglama, Haberleşme.',
+    k:'<span class="mn">Sahne: hastaneye yatan hasta.</span><br>Kayıt ve yatış (yükleme) → izole oda (koruma) → doktor odaları sırayla dolaşır (zaman paylaşımı) → dosyaya not (denetim ve loglama) → aileye bilgi (haberleşme).',
     w:'dongu' },
 
   { id:'kural', s:'33', t:'İşletim sisteminin 12 altın kuralı',
@@ -583,14 +615,14 @@ const BOLUMLER = [
     <div class="cmp">
       <div style="grid-column:1/-1"><h4>Koruma ve süreklilik (5)</h4><p>Hata durumlarında işlemleri sonuçlandırma · G/Ç işlemlerini sağlama alma · Kesmelerin (interrupts) gereğini yapma · Kullanıcıların haklarına müdahaleyi önleme · Bilgileri uzun vadede güvenle saklama.</p></div>
     </div>`,
-    k:'<span class="mn">4 + 3 + 5 = 12.</span><br>Yönetici (4 iş), arkadaş canlısı (3 iş), bekçi (5 iş). Bekçinin işi en çok: koruma her şeydir.',
+    k:'<span class="mn">Sahne: banka şubesi. Tek soru: “Bu kural kime bakıyor?”</span><br>Paraya ve sıraya bakıyorsa <b>şube müdürü</b> = Yönetim (4). Müşteriyle konuşuyorsa <b>gişe</b> = Etkileşim (3). Bir şey ters gidince devreye giriyorsa <b>güvenlik ve arşiv</b> = Koruma (5).',
     w:'kural' },
 
   { id:'perf', s:'34', t:'Performans kriterleri: ideal sistem radarı',
     h:`<ul>
       <li>İdeal bir OS 7 kriterde yüksek puan almalıdır. Her birinin kısa tanımını bil: aşağıdaki parçalara dokun.</li>
     </ul>`,
-    k:'<span class="mn">“Ekmek Hamuru Mayalanırken İki Güzel Simit Kızardı.”</span><br>Etkinlik · Hız · MİB optimizasyonu · İş yapma süresi · Güvenirlik · Süreklilik · Kompakt yapı.',
+    k:'<span class="mn">Sahne: telefon satın almak. 4-2-1.</span><br>4 hız sorusu: iyi mi (etkinlik), çabuk mu (hız), işlemci boşta mı (MİB), saatte kaç iş (iş yapma süresi). 2 sağlamlık sorusu: bozulur mu (güvenirlik), yıllarca bakım alır mı (süreklilik). 1 boyut sorusu: kompakt mı.',
     w:'perf' },
 
   { id:'mercek', s:'35–36', t:'Sınıflandırma merceği ve ölçek',
@@ -598,7 +630,7 @@ const BOLUMLER = [
       <li>Sistemler, kullanım şekillerine ve bilgiye erişim yöntemlerine göre <b>4 perspektiften</b> incelenir: <b>1. Büyüklük ve donanım (ölçek)</b> · <b>2. İş yapma biçimi (mimari)</b> · <b>3. Zaman ve erişim (tepki)</b> · <b>4. Görev ve kullanıcı (kapsam)</b>.</li>
       <li><b>Perspektif 1, micro'dan macro'ya:</b> Akıllı kart (kredi kartı boyutunda, işlemcili, tek işlevli) → Gömülü ve el sistemleri (avuç içi bilgisayar, TV, cep telefonu) → Kişisel bilgisayar (ev, ofis, masaüstü) → Çok işlemcili ve kümeleşmiş (paralel, dağıtık) → Sunucu (ağ üzerinden çok kullanıcıya hizmet) → Ana çatı/mainframe (yoğun G/Ç gerektiren devasa görevler).</li>
     </ul>`,
-    k:'<span class="mn">Perspektifler: “BİZ Gördük.”</span> Büyüklük, İş yapma biçimi, Zaman ve erişim, Görev ve kullanıcı.<br><span class="mn">Ölçek: “Akıllı Gelin Kaynanasını Çok Sever Aslında.”</span> Akıllı kart · Gömülü · Kişisel · Çok işlemcili · Sunucu · Ana çatı.' },
+    k:'<span class="mn">Perspektifler, sahne: araba galerisi.</span> Bak (büyüklük) → kaputu aç (iş yapma biçimi) → test sürüşü (zaman ve erişim) → kim kullanacak (görev ve kullanıcı).<br><span class="mn">Ölçek, sahne: cepten odaya.</span> Cüzdandaki kart → elindeki telefon → masadaki PC → çok işlemcili kasa → sunucu dolabı → oda dolusu ana çatı.' },
 
   { id:'bicim', s:'37', t:'Perspektif 2: iş yapma biçimleri',
     h:`<div class="cmp">
@@ -665,7 +697,7 @@ const BOLUMLER = [
       <li><b>7. Ağ yönetimi:</b> dosya, yazıcı, mesaj servisleri; dağıtık istemci/sunucu erişimi.</li>
       <li><b>8. Komut yorumlayıcısı:</b> kullanıcı ile çekirdek arasındaki CLI ve GUI arayüzleri.</li>
     </ul>`,
-    k:'<span class="mn">“Gece İşten Bıkan Yorgun Dede, Güvercinlere Ağaçta Kraker attı.”</span><br>G/Ç · İşlem · Bellek · Yan bellek · Dosya · Güvenlik · Ağ · Komut yorumlayıcısı.',
+    k:'<span class="mn">Sahne: bir fotoğrafın yolculuğu.</span><br>Kameradan girer (G/Ç) → işlenir (işlem) → RAM\'de durur (bellek) → diske yazılır (yan bellek) → klasöre konur (dosya) → kilitlenir (güvenlik) → arkadaşına gider (ağ) → hepsini sen başlattın (komut yorumlayıcısı).',
     w:'sekiz' },
 
   { id:'gc', s:'45', t:'G/Ç: çift kademeli mimari',
@@ -699,7 +731,7 @@ const BOLUMLER = [
       <li><b>5. İşlem sonu (terminated):</b> yürütmeyi bitirip kaynaklarını serbest bıraktığı evre.</li>
     </ul>
     <div class="tip"><small>TUZAK</small>“Hazır” CPU'yu bekler, “Bekliyor” G/Ç'yi bekler. İkisini karıştıran soru çok gelir.</div>`,
-    k:'<span class="mn">Restoran: kapıdan gir → masa sırası → şef pişiriyor → malzeme bekleniyor → hesap ödendi.</span><br>Yeni → Hazır → Çalışıyor → Bekliyor → Sonu.',
+    k:'<span class="mn">Sahne: kargo takibi.</span><br>Sipariş alındı (yeni) → şubede sırada (hazır: CPU bekler) → dağıtımda (çalışıyor) → alıcı evde yok (bekliyor: G/Ç bekler) → teslim edildi (sonu).',
     w:'durum' },
 
   { id:'deadlock', s:'47', t:'Kilitlenme (deadlock)',
@@ -710,7 +742,7 @@ const BOLUMLER = [
       <li>Kişisel bilgisayarda kilitlenen yazılımlara, sunucularda <b>hizmet durmasına (DoS)</b> yol açabilir.</li>
       <li><b>Korunma ve çözüm:</b> <b>Ortak tasarım</b> (tüm işlemler ve kaynak talepleri bütünsel tasarlanır) · <b>Korumalı tahsis algoritmaları</b> (çekirdekte kilitlenmeyi önceden sezip engelleme) · <b>Tespit (detection)</b>: kaynak tahsis grafiği (resource allocation graph) taranıp <b>döngüler</b> bulunur · <b>Kurtarma (recovery)</b>: işlemlerden birini sonlandırmak veya kaynağı geri almak.</li>
     </ul>`,
-    k:'<span class="mn">Dar köprüdeki iki inatçı keçi.</span><br>İkisi de geri çekilmez, kimse geçemez. Çözüm: biri geri çekilir (kurtarma) ya da köprüye baştan tek tek alınırlar (önleme).',
+    k:'<span class="mn">Sorun: kumanda ve kulaklık kavgası. Çözüm: sağlık gibi.</span><br>Hastalanmadan önce: plan (ortak tasarım) ve aşı (korumalı tahsis). Hastalandıktan sonra: tahlil (tespit) ve tedavi (kurtarma).',
     w:'deadlock' },
 
   { id:'bellek', s:'48', t:'Bellek yönetimi: gerçek bellek, sanal bellek, swapping',
@@ -719,7 +751,7 @@ const BOLUMLER = [
       <li><b>Sanal bellek (virtual memory):</b> Fiziksel RAM'den çok daha büyük bir alanın adreslenmesini sağlar. Sabit diskin bir alanını <b>RAM uzantısı</b> gibi kullanır. Dosya ve depolama alt sistemleriyle koordineli çalışır.</li>
       <li><b>Diske taşıma (swapping):</b> RAM'de boş alan kalmayınca devreye girer. Önceliği düşük veya o an çalışmayan işlemler geçici olarak diske taşınır (<b>swap-out</b>). Yüksek öncelikli işler bitince geri yüklenir (<b>swap-in</b>). Sistemin bellek yetersizliğinden çökmesini engeller.</li>
     </ul>`,
-    k:'<span class="mn">Masan dolunca kitapları yere koyarsın.</span><br>Masa = RAM, yer = disk. Yere indirmek swap-out, masaya geri almak swap-in.',
+    k:'<span class="mn">Sahne: çalışma masası.</span><br>Herkese yer ayır (gerçek bellek tahsisi) → yetmezse sandalyeyi de masa yap (sanal bellek) → o da yetmezse kitabı yere indir, sonra geri al (swap-out / swap-in).',
     w:'swap' },
 
   { id:'disk', s:'49', t:'Yan bellek ve dosya yönetimi',
@@ -743,7 +775,7 @@ const BOLUMLER = [
       <li><b>İzinsiz değişiklik:</b> sistem dosyaları değiştirilerek arka kapı açılması.</li>
       <li><b>Savunma:</b> şifreleme (özel anahtarla dönüştürme) · virüs tarama (bilinen <b>imzaları</b> arar) · virüs izleme (şüpheli sistem çağrılarını <b>gerçek zamanlı</b> yakalar) · bütünlük denetimi (kritik dosyaların boyut ve <b>hash</b> değerlerini dönemsel kontrol).</li>
     </ul>`,
-    k:'<span class="mn">Bildiğin (parola), sahip olduğun (kart), olduğun (biyometrik).</span><br>Virüs = parazit, başka programa yapışır. Solucan = obur, kaynakları yer.' },
+    k:'<span class="mn">Giriş: bildiğin (parola), sahip olduğun (kart), olduğun (biyometrik).</span><br><span class="mn">Savunma, sahne: bina güvenliği.</span> Kapıyı kilitle (şifreleme) → aranan listesine bak (tarama) → canlı kamera (izleme) → akşam sayım (bütünlük).<br>Virüs = parazit, başka programa yapışır. Solucan = obur, kaynakları yer.' },
 
   { id:'ag', s:'51', t:'Ağ servisleri ve komut yorumlayıcısı',
     h:`<ul>
@@ -803,13 +835,13 @@ sentez:{g:`Kendi telefon geçmişini düşün: önce tuşlu telefonda menüleri 
 
 sef:{g:`Bir düğün organizatörü düşün: çiçekçi, aşçı, müzisyen (donanım) ayrı ayrı uzmandır. Gelin ve damat (kullanıcı) onlarla tek tek uğraşmaz; organizatör hepsini yönetir ve aradaki iletişimi kurar. İşletim sistemi bilgisayarın düğün organizatörüdür.`,
  ip:[`Üç fiil: soyutlar (karmaşıklığı gizler), yönetir (kaynakları), köprü kurar (yazılım ile donanım arasında).`,`Katman sırası: Kullanıcı ve uygulamalar → OS → Donanım (MİB, RAM, Disk).`]},
-sutun:{g:`Bir öğrencinin günü: ders programı (işlem yönetimi: ne zaman ne yapılacak), sıra ve çanta düzeni (bellek: alan), telefonla haberleşme (G/Ç: dış dünya), defter ve dosyalar (dosya yönetimi: kalıcı kayıt). Biri aksarsa gün karışır.`,
+sutun:{g:`Akşam ödev yapacaksın. Önce <b>ne zaman</b> ve hangi sırayla yapacağına karar verirsin (işlem yönetimi). Sonra masada kitaplara <b>yer</b> açarsın (bellek). Klavyeyle yazar, yazıcıdan çıktı alırsın: <b>dış dünya</b> (G/Ç). En son ödevi klasöre <b>kaydedersin</b> (dosya). Herhangi bir işi yapmak için bu 4 soru yeter: ne zaman, nerede, neyle, nereye.`,
  ip:[`Eşleştirme sorusu gelir: zaman ve sıra = işlem, alan ve kapasite = bellek, çevre birimi = G/Ç, hiyerarşik saklama = dosya.`,`Bellekte yer kalmazsa yardımcı bellek (sabit disk) devreye girer.`,`<b>Ağ yönetimi 4 temel sütunda yok</b> (8 alt sistemde var). Klasik tuzak.`]},
-dongu:{g:`Bir kafenin günü: malzemeyi tezgâha koymak (yükleme), kasaya yabancı sokmamak (koruma), siparişlere sırayla bakmak (zaman paylaşımı), gün sonunda kasa defterini tutmak (denetim ve loglama), müşteriyle konuşmak (haberleşme). Bu iş her gün tekrarlanır, yani bir döngüdür.`,
+dongu:{g:`Hastaneye yatan bir hasta düşün. Önce kaydı yapılır ve odasına yerleştirilir (<b>yükleme</b>). Mikrop kapmasın diye diğer hastalardan ayrı tutulur (<b>koruma</b>). Doktor tek, hasta çok: doktor odaları sırayla dolaşır (<b>zaman paylaşımı</b>). Her vizitten sonra dosyaya not düşülür (<b>denetim ve loglama</b>). Akşam aileye bilgi verilir (<b>haberleşme</b>). Ertesi gün aynı döngü yeniden başlar.`,
  ip:[`“Hatalı kullanımdan yalıtım” = Koruma. “Olayların dosyalanması” = Denetim ve loglama.`,`“Programlar arası denetim geçişi” = Zaman paylaşımı.`]},
-kural:{g:`İyi bir sınıf başkanı da bu kuralları uygular. Nöbet listesini sıralar, acil işlere öncelik verir, sınıf fonunun hesabını tutar (yönetim). Herkesin anlayacağı dille konuşur ve herkes ona ulaşabilir (etkileşim). Sorun çıkınca toparlar, kimsenin hakkını yedirmez, belgeleri saklar (koruma).`,
+kural:{g:`Bir banka şubesi düşün. <b>Şube müdürü</b> sıra numaralarını düzenler, acil müşteriye öncelik verir, kasayı sıkı denetler, hesapları tutar: Yönetim (4). <b>Gişe memuru</b> müşterinin dilinden konuşur, aynı anda birçok gişe açıktır, formlar herkese aynıdır: Etkileşim (3). <b>Güvenlik ve arşiv</b> ise işlem yarıda kalırsa toparlar, para transferini sağlama alır, alarm çalınca (kesme) harekete geçer, kimsenin hesabına başkası dokunamaz, belgeleri yıllarca saklar: Koruma (5).`,
  ip:[`En kalabalık grup Koruma ve Süreklilik (5 kural): kesmeler, G/Ç'yi sağlama alma ve haklara müdahaleyi önleme buradadır.`,`“Dili yorumlama” Etkileşim grubundadır, Yönetim'de değil.`,`“Öncelik tanıma” ve “hesap tutma” Yönetim grubundadır.`]},
-perf:{g:`İyi bir kurye uygulaması gibi düşün: paketi doğru adrese götürür (etkinlik), çabuk gelir (hız), kurye boş beklemez (MİB optimizasyonu), saatte çok paket dağıtır (iş yapma süresi), paketi kaybetmez (güvenirlik), güncellenip bakımı yapılabilir (süreklilik), telefonunda az yer kaplar (kompakt yapı).`,
+perf:{g:`Yeni telefon alırken sorduğun sorular tam olarak bu 7 kriter. Önce <b>hıza dair 4 soru</b>: işini iyi yapıyor mu (etkinlik), uygulamalar çabuk açılıyor mu (hız), işlemci boşa dönüyor mu (MİB optimizasyonu), aynı sürede kaç iş bitiriyor (iş yapma süresi). Sonra <b>sağlamlığa dair 2 soru</b>: donup bozuluyor mu (güvenirlik), yıllarca güncelleme alır mı (süreklilik). En son <b>1 boyut sorusu</b>: küçük ama eksiksiz mi (kompakt yapı).`,
  ip:[`Throughput = İş yapma süresi. “Cevap verme süresi” ise Hız kriterine aittir.`,`MİB optimizasyonu: <b>kullanılmayan</b> MİB zamanının sıfıra yakınsaması.`,`Dokümantasyon ve bakım = Süreklilik.`]},
 mercek:{g:`Bir arabayı da farklı merceklerle sınıflarsın: boyutuna göre (mini, sedan, kamyon), motoruna göre (benzinli, elektrikli), tepkisine göre, kaç kişi taşıdığına göre. Ölçek sırası gündelik hayatta şöyle: kredi kartındaki çip → akıllı saat ve telefon → laptop → çok işlemcili sistem → sunucu → bankanın ana bilgisayarı.`,
  ip:[`Micro uç = Akıllı kart, Macro uç = Ana çatı (mainframe).`,`Ana çatı: yoğun G/Ç gerektiren devasa görevler. Sunucu: ağ üzerinden çok kullanıcıya hizmet.`,`Gömülü/el sistemleri: avuç içi bilgisayar, TV, cep telefonu.`]},
@@ -824,7 +856,7 @@ eko:{g:`Kendi hayatınla eşleştir: telefonundaki Android ya da iOS gömülü/e
 
 von:{g:`Bir muhasebeci düşün: önündeki masada (RAM) kâğıtlarla çalışır, hesap makinesi (ALU) toplar ve çıkarır, aklı (CU) hangi işin sırada olduğunu yönetir, telefonu ve yazıcısı (G/Ç) dışarıyla bağlantısıdır. Akşam masa toplanır: RAM uçucudur.`,
  ip:[`Hesap yapan = ALU. Komut döngüsünü yöneten = CU. İkisi de CPU'nun içinde.`,`“Depolanmış program” kavramının merkezi = RAM.`,`Uçucu (volatile) = elektrik gidince içerik gider. Elektrik kesilince kaydetmediğin ödevin gitmesinin sebebi bu.`]},
-sekiz:{g:`Bir belediyenin müdürlükleri gibi: ulaşım (G/Ç), iş planlama (işlem), otopark alanları (bellek), depolar (yan bellek), arşiv (dosya), zabıta (güvenlik), iletişim (ağ), halkla ilişkiler masası (komut yorumlayıcısı). 4 temel sütunda olmayıp burada olanlar: yan bellek, güvenlik, ağ ve komut yorumlayıcısı.`,
+sekiz:{g:`Telefonla bir fotoğraf çektin. Fotoğraf kameradan içeri girer (<b>G/Ç</b>), işlemci onu işler (<b>işlem</b>), işlenirken RAM'de durur (<b>bellek</b>), kalıcı olsun diye diske yazılır (<b>yan bellek</b>), Galeri klasörüne dosya olarak yerleşir (<b>dosya</b>), şifreyle kilitlenir (<b>güvenlik</b>), arkadaşına gönderilir (<b>ağ</b>). Bütün bu yolculuğu sen bir dokunuşla başlattın (<b>komut yorumlayıcısı</b>). İlk 5 durağın içinde 4 temel sütun zaten var; yeni olanlar yan bellek, güvenlik, ağ ve komut yorumlayıcısı.`,
  ip:[`MBR ve partition = Yan bellek yönetimi (dosya yönetimi değil).`,`FAT, NTFS, EXT4 = Dosya yönetimi.`,`Swapping = Bellek yönetimi. Thread = İşlem yönetimi.`]},
 gc:{g:`Duvardaki priz gibi düşün: hangi markanın şarj aletini takarsan tak, priz aynıdır (aygıt bağımsız, tek tip arayüz). Ama her telefonun şarj devresi akımı kendine göre dönüştürür (aygıt bağımlı, sürücü). Yeni yazıcı takınca “Sürücü yükleniyor” görmenin sebebi bu.`,
  ip:[`read, write, open, close = aygıt bağımsız bölüm.`,`Donanımla doğrudan konuşan, mikro komut ve sinyale çeviren = aygıt sürücüsü (aygıt bağımlı).`,`Avantajı: yazılımcı yüzlerce donanımın mikro kodunu öğrenmek zorunda kalmaz.`]},
@@ -832,7 +864,7 @@ thread:{g:`Tarayıcın bir prosestir. İçinde bir thread sayfayı çizer, biri 
  ip:[`“En düşük sistem kaynağına ihtiyaç duyan program parçası” = thread.`,`Parent/child: D'nin parent'ı B, B'nin parent'ı A.`,`Kaynak yalıtımı, bir işlem çöktüğünde diğerini çökertmesin diye vardır.`]},
 durum:{g:`Kargo takibi gibi: “Sipariş alındı” (yeni), “Şubede sırada” (hazır), “Dağıtımda” (çalışıyor), “Alıcı adreste yok, bekleniyor” (bekliyor), “Teslim edildi” (işlem sonu). Bekleyen kargo, alıcı gelince doğrudan dağıtıma çıkmaz; önce şubedeki sıraya döner.`,
  ip:[`Hazır = <b>CPU</b> bekler. Bekliyor = <b>G/Ç ya da olay</b> bekler. En sık tuzak bu.`,`Bekliyor'dan doğrudan Çalışıyor'a geçilmez; önce Hazır'a dönülür.`,`İşlem sonu = kaynaklar serbest bırakılır.`]},
-deadlock:{g:`Dar bir sokakta karşı karşıya gelen iki araba düşün: ikisi de geri gitmez, ikisi de karşıdakinin çekilmesini bekler. Ya da iki kardeş: biri kumandayı tutup kulaklığı istiyor, diğeri kulaklığı tutup kumandayı istiyor. Kimse bırakmazsa kimse dizi izleyemez.`,
+deadlock:{g:`İki kardeş dizi izleyecek. Biri kumandayı tutuyor ve kulaklığı istiyor, diğeri kulaklığı tutuyor ve kumandayı istiyor. İkisi de elindekini bırakmazsa kimse dizi izleyemez: bu kilitlenmedir. Çözümler sağlıktaki gibi: baştan plan yapmak ve aşı (önleme), tahlil ve tedavi (tespit ve kurtarma). Burada “tedavi”, annenin gelip kumandayı birinden alması.`,
  ip:[`Tanımdaki anahtar ifade: birbirinin elindeki kaynağı <b>karşılıklı</b> beklemek.`,`Tespit: kaynak tahsis grafiğinde <b>döngü</b> aranır.`,`Kurtarma: işlemlerden birini sonlandırmak ya da kaynağı geri almak. Sunucuda kilitlenmenin sonucu DoS olabilir.`]},
 bellek:{g:`Telefonunda çok uygulama açıkken eski bir uygulamaya dönünce baştan yüklendiğini görürsün: sistem onu kenara itip yerini yeniye vermiştir (swapping mantığı). Sanal bellek ise küçük masada çalışırken yanındaki sandalyeyi de masa gibi kullanmak: alan büyür ama uzanmak biraz yavaştır.`,
  ip:[`Sanal bellek = diskin bir kısmını RAM uzantısı gibi kullanmak.`,`Swap-out = diske, swap-in = RAM'e geri. Diske giden, düşük öncelikli olandır.`,`Parçalanma (fragmentation) “gerçek bellek tahsisi” başlığında geçer.`]},
@@ -870,6 +902,100 @@ const RESTORAN = [
  ['Batch / interactive','Catering / masada sipariş','Catering menüsü önceden hazırlanır ve sırayla çıkar. Masada garsonla anlık konuşursun.','b3'],
  ['Gerçek zamanlı','Fırındaki sufle','Bir dakika geç kalırsa doğru tarif bile işe yaramaz: zaman hayati.','b3'],
  ['Performans kriterleri','Restoranın puanı','Lezzet (etkinlik), hız, boşta şef yok (MİB opt.), saatte çok tabak (throughput), şikâyetsiz (güvenirlik), bakımlı (süreklilik), küçük ama tam (kompakt).','b3']
+];
+
+/* ---------- Zincirler: 3. ve 4. bölümün listeleri, her biri TEK ve AYRI bir sahnede.
+   adim: [kavram, sahnedeki karşılığı, sıradaki adımı buldurmak için soru] ---------- */
+const LISTELER = [
+{id:'perspektif', konu:'mercek', ad:'4 sınıflandırma perspektifi', sahne:'Araba galerisi',
+ mantik:'Bir arabayı tanırken sorduğun 4 doğal soru. Sıra dışarıdan içeriye gider: önce bakarsın, sonra kaputu açarsın, sonra test sürüşü yaparsın, en son kimin kullanacağını sorarsın.',
+ adim:[['Büyüklük ve donanım','Galeriye girdin; ilk gördüğün şey arabanın büyüklüğü.','Bir şeye ilk baktığında ne görürsün?'],
+       ['İş yapma biçimi','Kaputu açtın: motor nasıl çalışıyor?','Kaputu açınca neye bakarsın?'],
+       ['Zaman ve erişim','Test sürüşü: gaza basınca ne kadar çabuk tepki veriyor?','Test sürüşünde neyi ölçersin?'],
+       ['Görev ve kullanıcı','Son soru: kaç kişi binecek, ne işte kullanılacak?','Almadan önce en son ne sorarsın?']]},
+{id:'olcek', konu:'mercek', ad:'Ölçek: micro → macro', sahne:'Cepten odaya',
+ mantik:'Sadece fiziksel boyutu hayal et. Cüzdandaki karttan bir odayı dolduran makineye doğru büyür.',
+ adim:[['Akıllı kart','Cüzdanındaki kartın çipi.','En küçüğü: cüzdana sığar.'],
+       ['Gömülü ve el sistemleri','Avucundaki telefon, duvardaki TV.','Avucuna sığan.'],
+       ['Kişisel bilgisayar','Masandaki bilgisayar.','Masaya sığan.'],
+       ['Çok işlemcili ve kümeleşmiş','Birden çok işlemciyi birleştiren güçlü sistem.','PC\'den güçlü: içinde birden çok işlemci var.'],
+       ['Sunucu','Dolapta durup ağ üzerinden binlerce kişiye hizmet eden makine.','Ağdaki herkese hizmet eden.'],
+       ['Ana çatı (mainframe)','Bir odayı dolduran, bankaların dev makinesi.','En büyüğü: oda dolusu.']]},
+{id:'sutun', konu:'sutun', ad:'4 temel sütun', sahne:'Ödev yapmak',
+ mantik:'Herhangi bir işi yapmak için 4 şey lazım ve sırası da bu: ZAMAN (ne zaman?), YER (nerede?), DIŞ DÜNYA (neyle iletişim?), KALICILIK (sonuç nereye?).',
+ adim:[['İşlem yönetimi','Önce plan: ödevi ne zaman, hangi sırayla yapacağım? (zaman)','İşe başlamadan önce neye karar verirsin?'],
+       ['Bellek yönetimi','Masada kitaplara yer aç. (alan)','Çalışmak için neye ihtiyacın var?'],
+       ['Giriş-çıkış yönetimi','Klavyeyle yaz, yazıcıdan çıktı al. (dış dünya)','Bilgisayar dışarıyla nasıl konuşur?'],
+       ['Dosya yönetimi','Bitince klasöre kaydet. (kalıcılık)','En son ne yapmalısın?']]},
+{id:'dongu', konu:'dongu', ad:'Görünmez döngü (5)', sahne:'Hastaneye yatan hasta',
+ mantik:'Bir programın günü, hastanedeki bir hastanın günü gibi geçer: içeri alınır, korunur, sırayla bakılır, dosyasına yazılır, ailesine bilgi verilir.',
+ adim:[['Yükleme','Hasta kayıt olur ve odasına yerleşir. (program belleğe yüklenir)','Hastaneye gelince ilk ne olur?'],
+       ['Koruma','Mikrop kapmasın diye ayrı tutulur. (hatalı kullanımdan yalıtım)','Odaya yerleşen hastayı neden ayrı tutarlar?'],
+       ['Zaman paylaşımı','Doktor odaları sırayla dolaşır. (denetim programlar arasında geçer)','Doktor tek, hasta çok: nasıl yetişir?'],
+       ['Denetim ve loglama','Vizitten sonra dosyaya not düşülür. (olaylar dosyalanır)','Muayeneden sonra doktor ne yapar?'],
+       ['Haberleşme','Akşam aileye bilgi verilir. (kullanıcıyla diyalog)','Gün sonunda kime bilgi verilir?']]},
+{id:'perf', konu:'perf', ad:'7 performans kriteri', sahne:'Telefon satın almak',
+ mantik:'Telefon alırken sorduğun sorular: 4 tanesi “iyi ve hızlı mı?”, 2 tanesi “sağlam mı?”, 1 tanesi “ne kadar yer kaplar?”. Yani 4-2-1.',
+ adim:[['Etkinlik','İşini iyi yapıyor mu?','İlk soru: işe yarıyor mu?'],
+       ['Hız (zaman kriterleri)','Uygulamalar çabuk açılıyor mu?','İkinci soru: ne kadar çabuk?'],
+       ['MİB optimizasyonu','İşlemci boşa dönmüyor mu?','Hızın bir parçası: işlemci boşta mı?'],
+       ['İş yapma süresi','Aynı sürede kaç iş bitiriyor? (throughput)','Birim zamanda kaç iş biter?'],
+       ['Güvenirlik','Donup bozuluyor mu?','Hız bitti, sağlamlık başladı: hata yapar mı?'],
+       ['Süreklilik','Yıllarca güncelleme ve bakım alır mı?','Sağlamlığın uzun vadesi.'],
+       ['Kompakt yapı','Küçük ama eksiksiz mi?','Son soru: boyut.']]},
+{id:'sekiz', konu:'sekiz', ad:'8 alt sistem', sahne:'Bir fotoğrafın yolculuğu',
+ mantik:'Çektiğin bir fotoğraf sırayla bu 8 duraktan geçer. İlk 5 durağın içinde 4 temel sütun zaten var; yeni olanlar yan bellek, güvenlik, ağ ve komut yorumlayıcısı.',
+ adim:[['G/Ç yönetimi','Fotoğraf kameradan içeri girer.','Fotoğraf cihaza nereden girer?'],
+       ['İşlem yönetimi','İşlemci fotoğrafı işler.','Girdikten sonra ne olur?'],
+       ['Bellek yönetimi','İşlenirken RAM\'de durur.','İşlenen veri o an nerede durur?'],
+       ['Yan bellek yönetimi','Kalıcı olsun diye diske yazılır.','RAM uçucu; kalıcı olması için nereye yazılır?'],
+       ['Dosya yönetimi','Galeri klasörüne dosya olarak yerleşir.','Diskte nasıl düzenlenir?'],
+       ['Güvenlik ve koruma','Şifreyle kilitlenir.','Başkası görmesin diye ne olur?'],
+       ['Ağ yönetimi','Arkadaşına gönderilir.','Başkasıyla nasıl paylaşılır?'],
+       ['Komut yorumlayıcısı','Bütün yolculuğu sen bir dokunuşla başlattın.','Bu yolculuğu kim başlattı?']]},
+{id:'durum', konu:'durum', ad:'5 işlem durumu', sahne:'Kargo takibi',
+ mantik:'Kargo takip ekranındaki durumlar ile aynı sıra. Tek dikkat: alıcı evde yoksa kargo doğrudan yeniden dağıtıma değil, önce şubedeki sıraya döner.',
+ adim:[['Yeni','Sipariş alındı.','Kargo sistemine ilk ne düşer?'],
+       ['Hazır','Şubede dağıtım sırası bekliyor. (CPU bekler)','Kurye almadan önce kargo nerede?'],
+       ['Çalışıyor','Kurye yolda, dağıtımda. (CPU\'da)','Kurye aldıktan sonra?'],
+       ['Bekliyor','Alıcı evde yok, bekleniyor. (G/Ç bekler)','Kapıda kimse yoksa?'],
+       ['İşlem sonu','Teslim edildi.','Son durum?']]},
+{id:'kilit', konu:'deadlock', ad:'Kilitlenmeye karşı 4 yol', sahne:'Sağlık',
+ mantik:'Hastalıkla mücadele gibi: 2 yol hastalanmadan ÖNCE (önleme), 2 yol hastalandıktan SONRA (bul ve tedavi et).',
+ adim:[['Ortak tasarım','Sağlıklı yaşam planı: her şeyi baştan birlikte planla.','Hasta olmamak için en baştan ne yaparsın?'],
+       ['Korumalı tahsis algoritmaları','Aşı: tehlikeyi önceden sezip durdurur.','Hastalığı gelmeden durduran şey?'],
+       ['Tespit (detection)','Tahlil: kaynak grafiğinde döngü var mı?','Hastalandığını nasıl anlarsın?'],
+       ['Kurtarma (recovery)','Tedavi: bir işlemi sonlandır ya da kaynağı geri al.','Hastalık bulununca ne yapılır?']]},
+{id:'bellek', konu:'bellek', ad:'Bellek yönetiminin 3 aracı', sahne:'Çalışma masası',
+ mantik:'Masada yer sorunu 3 adımda çözülür: yer ayır, masayı büyüt, sığmazsa kenara indir.',
+ adim:[['Gerçek bellek tahsisi','Herkese masada ayrı yer ayır, kimse diğerinin alanına taşmasın.','Masaya oturunca ilk ne yaparsın?'],
+       ['Sanal bellek','Masa yetmedi: yandaki sandalyeyi de masa gibi kullan. (disk = RAM uzantısı)','Yer yetmezse masayı nasıl büyütürsün?'],
+       ['Swapping','O an kullanmadığın kitabı yere indir, lazım olunca geri al.','Hâlâ yetmezse ne yaparsın?']]},
+{id:'savunma', konu:'guv', ad:'4 savunma aracı', sahne:'Bina güvenliği',
+ mantik:'Bir binayı korurken sırayla: kapıyı kilitlersin, gelenleri aranan listesinde ararsın, içeriyi kameradan canlı izlersin, akşam sayım yaparsın.',
+ adim:[['Şifreleme','Kapıyı kilitle: anahtarı olmayan giremez.','İlk önlem?'],
+       ['Virüs tarama','Kapıda aranan listesine bak. (bilinen imzalar)','Gelenin kim olduğunu nasıl kontrol edersin?'],
+       ['Virüs izleme','Güvenlik kamerasından canlı izle. (gerçek zamanlı)','İçeridekileri o an nasıl takip edersin?'],
+       ['Bütünlük denetimi','Akşam sayım: eksik ya da değişen var mı? (boyut ve hash)','Gün sonunda neyi kontrol edersin?']]}
+];
+
+/* ---------- En çok karışan ikililer ---------- */
+const KARISANLAR = [
+ ['4 temel sütun','8 alt sistem','8 = 4 sütun + 4 yeni durak: yan bellek, güvenlik, ağ, komut yorumlayıcısı. “Ağ” sadece 8\'in içinde var.'],
+ ['Hazır','Bekliyor','Hazır, CPU\'yu bekler (kargo şubede sırada). Bekliyor, G/Ç\'yi bekler (alıcı evde yok).'],
+ ['Multiprocessing','Multiprogramming','Çok işlemci, ortak bellek: donanım. Tek işlemci, zaman dilimleri: zaman.'],
+ ['Zaman paylaşımı','Gerçek zamanlı','Zaman paylaşımı herkese sırayla milisaniyelik pay verir (adalet). Gerçek zamanlı anında cevap vermek zorunda (hayati).'],
+ ['Çoklu erişim','Zaman paylaşımı','Çoklu erişim AMAÇTIR: birçok kişi bağlansın. Zaman paylaşımı YÖNTEMDİR: bunu milisaniyelik dilimlerle sağlar.'],
+ ['Batch','Interactive','Batch: kuyrukta sıranı beklersin (yemekhane). Interactive: anlık diyalog (garsonla konuşmak).'],
+ ['Sanal bellek','Swapping','Sanal bellek, diski RAM gibi kullanma fikridir (alanı büyütür). Swapping, bir işlemi diske indirip geri alma hareketidir.'],
+ ['Virüs','Solucan','Virüs başka programa yapışır ve dosya siler (parazit). Solucan veriyi doğrudan bozmaz, ağı ve CPU\'yu yer (obur).'],
+ ['Virüs tarama','Virüs izleme','Tarama: dosyalarda bilinen imzaları arar (aranan listesi). İzleme: çalışırken şüpheli çağrıları canlı yakalar (kamera).'],
+ ['Aygıt bağımsız','Aygıt sürücüsü','Bağımsız kısım herkese aynı read, write, open, close\'u sunar. Sürücü bunları donanımın kendi diline çevirir.'],
+ ['ALU','CU','ALU hesaplar (hesap makinesi). CU komut döngüsünü ve veri akışını yönetir (trafik polisi).'],
+ ['Hız','İş yapma süresi','Hız: bir işin cevabı ne kadar çabuk geliyor? İş yapma süresi: birim zamanda kaç iş bitiyor (throughput)?'],
+ ['Sunucu','Ana çatı','Sunucu ağ üzerinden çok kullanıcıya hizmet eder. Ana çatı yoğun G/Ç isteyen devasa işler içindir, ölçeğin en ucu.'],
+ ['Tespit','Kurtarma','Tespit: grafikte döngüyü bul (tahlil). Kurtarma: işlemi sonlandır ya da kaynağı geri al (tedavi).'],
+ ['Döngüdeki “zaman paylaşımı”','Mimarideki “zaman paylaşımı”','Aynı fikir iki yerde geçer: döngüde OS\'nin sürekli yaptığı iş, mimaride bir sistem türü. İkisinde de CPU sırayla dağıtılır.']
 ];
 
 /* ---------- Soru bankası: [bölüm, soru, [doğru, yanlış...], açıklama] ---------- */
@@ -992,11 +1118,11 @@ const KARTLAR = [
 [2,'BitLocker','Sektör bazlı kriptografik şifreleme. Disk çalınsa bile anahtarsız okunamaz.'],
 [2,'Pardus','Linux tabanlı, açık kaynak, lisanssız; TÜBİTAK öncülüğünde milli proje.'],
 [2,'Sentez: güvenlik duruşu','DOS: fiziksel kilit → Win95: basit şifre → XP: NAP → Modern: BitLocker ve kriptolama.'],
-[3,'4 temel sütun','İşlem (zaman, sıra) · Bellek (alan, kapasite) · G/Ç (çevre birimleri) · Dosya (hiyerarşik saklama). “İyi Bir Gün Dile.”'],
-[3,'Görünmez döngü (5)','Yükleme · Koruma · Zaman paylaşımı · Denetim ve loglama · Haberleşme. “Yağmurda Koşan Zebra Dereyi Hopladı.”'],
+[3,'4 temel sütun','Ödev yapmak: ne zaman (işlem) · nerede (bellek) · neyle iletişim (G/Ç) · nereye kayıt (dosya).'],
+[3,'Görünmez döngü (5)','Hastane: kayıt (yükleme) · izole oda (koruma) · doktor sırayla dolaşır (zaman paylaşımı) · dosyaya not (loglama) · aileye bilgi (haberleşme).'],
 [3,'12 altın kural grupları','Yönetim ve optimizasyon (4) · Etkileşim ve paylaşım (3) · Koruma ve süreklilik (5).'],
 [3,'7 performans kriteri','Etkinlik · Hız · MİB optimizasyonu · İş yapma süresi (throughput) · Güvenirlik · Süreklilik · Kompakt yapı.'],
-[3,'4 sınıflandırma perspektifi','Büyüklük (ölçek) · İş yapma biçimi (mimari) · Zaman ve erişim (tepki) · Görev ve kullanıcı (kapsam). “BİZ Gördük.”'],
+[3,'4 sınıflandırma perspektifi','Araba galerisi: bak (büyüklük) · kaputu aç (iş yapma biçimi) · test sürüşü (zaman ve erişim) · kim kullanacak (görev ve kullanıcı).'],
 [3,'Ölçek (micro → macro)','Akıllı kart → Gömülü/el → Kişisel → Çok işlemcili/kümeleşmiş → Sunucu → Ana çatı.'],
 [3,'Multiprocessing ve multiprogramming','Multiprocessing: çok fiziksel CPU, ortak bellek (donanım). Multiprogramming: tek CPU, time-slicing (zaman).'],
 [3,'Batch ve interactive','Batch: yüklenip kuyruk sırasıyla işlenir (bekleme). Interactive: kullanıcıyla anlık diyalog.'],
@@ -1004,7 +1130,7 @@ const KARTLAR = [
 [3,'Görev-kullanıcı matrisi','Tek-tek: MS-DOS · Tek kullanıcı çok görev: Windows, MacOS · Çok-çok: UNIX · Çok kullanıcı tek görev: Banka sistemleri.'],
 [3,'Ekosistem haritası','Mainframe: OS/390 · Sunucu: Unix, Win 2008 Server · PC: Win 7/XP, MacOS, Linux · Gömülü: iOS, Android, PalmOS, Symbian · Gerçek zamanlı: VxWorks, QNX.'],
 [4,'Von Neumann birimleri','G/Ç birimleri · Ana bellek (RAM, stored program, volatile) · CPU (ALU + CU) · Adres ve veri yolu (bus).'],
-[4,'8 alt sistem','G/Ç · İşlem · Bellek · Yan bellek · Dosya · Güvenlik · Ağ · Komut yorumlayıcısı. “Gece İşten Bıkan Yorgun Dede, Güvercinlere Ağaçta Kraker attı.”'],
+[4,'8 alt sistem','Fotoğrafın yolculuğu: kamera (G/Ç) · işlenir (işlem) · RAM (bellek) · disk (yan bellek) · klasör (dosya) · kilit (güvenlik) · gönder (ağ) · sen başlattın (komut yorumlayıcısı).'],
 [4,'G/Ç çift kademe','Aygıt bağımsız: tek tip arayüz, read/write/open/close. Aygıt bağımlı (sürücü): donanıma özgü mikro komut ve sinyaller.'],
 [4,'Thread','En düşük sistem kaynağına ihtiyaç duyan program parçası. Multithreading: işlem birden çok thread\'e bölünür.'],
 [4,'5 işlem durumu','Yeni → Hazır (CPU bekler) → Çalışıyor → Bekliyor (G/Ç bekler) → İşlem sonu.'],
@@ -1023,14 +1149,14 @@ const KARTLAR = [
 const KEY = 'cekirdek-kampi-v1';
 let S = {};
 try { S = JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e) { S = {}; }
-S.done = S.done || {}; S.cards = S.cards || {}; S.qok = S.qok || {};
+S.done = S.done || {}; S.cards = S.cards || {}; S.qok = S.qok || {}; S.z = S.z || {};
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }
 
 const LEVELS = [[0,'Vakum Tüpü'],[100,'Transistör'],[250,'Entegre Devre'],[420,'LSI Çip'],[620,'Dağıtık Maestro']];
 const ALL_KONU = BOLUMLER.flatMap(b => b.konular.map(k => ({...k, b:b.id})));
 const qid = (q,i) => 'q'+i;
 function xp(){
-  return Object.keys(S.done).length*10 + Object.keys(S.cards).length*2 + Object.keys(S.qok).length*5;
+  return Object.keys(S.done).length*10 + Object.keys(S.cards).length*2 + Object.keys(S.qok).length*5 + Object.keys(S.z).length*5;
 }
 function levelOf(x){ let i=0; LEVELS.forEach((l,j)=>{ if(x>=l[0]) i=j; }); return i; }
 function hud(){
@@ -1176,12 +1302,12 @@ const W = {
     el.querySelector('[data-a=hide]').onclick=()=>{ el.querySelectorAll('td').forEach(td=>{ td.innerHTML='<button>?</button>'; td.classList.remove('shown'); }); bind(); };
   },
   dongu: liste([
-    {tag:'Y',t:'Yükleme',d:'Programların zaman çizelgesiyle ana belleğe yüklenmesi.'},
-    {tag:'K',t:'Koruma',d:'Donanım, yazılım ve verilerin hatalı kullanımdan yalıtılması.'},
-    {tag:'Z',t:'Zaman paylaşımı',d:'Çoklu programlamada denetimin programlar arası geçişi.'},
-    {tag:'D',t:'Denetim ve loglama',d:'Hata denetim programlarının işletilmesi ve olayların dosyalanması.'},
-    {tag:'H',t:'Haberleşme',d:'İşletmen (kullanıcı) ile sistem arasındaki kesintisiz diyalog.'}
-  ], {hint:'“Yağmurda Koşan Zebra Dereyi Hopladı.” Harflere dokun.'}),
+    {tag:'kayıt',t:'Yükleme',d:'Programların zaman çizelgesiyle ana belleğe yüklenmesi.'},
+    {tag:'izole oda',t:'Koruma',d:'Donanım, yazılım ve verilerin hatalı kullanımdan yalıtılması.'},
+    {tag:'doktor turu',t:'Zaman paylaşımı',d:'Çoklu programlamada denetimin programlar arası geçişi.'},
+    {tag:'dosyaya not',t:'Denetim ve loglama',d:'Hata denetim programlarının işletilmesi ve olayların dosyalanması.'},
+    {tag:'aileye bilgi',t:'Haberleşme',d:'İşletmen (kullanıcı) ile sistem arasındaki kesintisiz diyalog.'}
+  ], {hint:'Hastane sahnesini düşün: kayıt, izole oda, doktorun turu, dosya, aile. Bir adıma dokun.'}),
   kural(el){
     const G = ['Yönetim ve optimizasyon','Etkileşim ve paylaşım','Koruma ve süreklilik'];
     const R = [['İşleri sıraya koyma',0],['İşlerde öncelik (priority) tanıma',0],['Kaynakları sıkı kontrol etme',0],['Bilgisayar kaynaklarının hesabını tutma',0],
@@ -1204,14 +1330,14 @@ const W = {
     start();
   },
   perf: liste([
-    {tag:'E',t:'Etkinlik',d:'İşi verimli yapma kapasitesi.'},
-    {tag:'H',t:'Hız (zaman kriterleri)',d:'İşler arası zaman, toplu işlem ve cevap verme süresinin minimum olması.'},
-    {tag:'M',t:'MİB optimizasyonu',d:'Kullanılmayan merkezi işlem birimi zamanının sıfıra yakınsaması.'},
-    {tag:'İ',t:'İş yapma süresi',d:'Az zamanda maksimum iş hacmi (throughput).'},
-    {tag:'G',t:'Güvenirlik',d:'Hatalardan tamamen arındırılmış sağlam yapı.'},
-    {tag:'S',t:'Süreklilik',d:'Bakım yapılabilir, dokümantasyonu tam altyapı.'},
-    {tag:'K',t:'Kompakt yapı',d:'Kendinden taviz vermeden düşük boyut.'}
-  ], {hint:'“Ekmek Hamuru Mayalanırken İki Güzel Simit Kızardı.” Harflere dokun.'}),
+    {tag:'hız 1',t:'Etkinlik',d:'İşi verimli yapma kapasitesi.'},
+    {tag:'hız 2',t:'Hız (zaman kriterleri)',d:'İşler arası zaman, toplu işlem ve cevap verme süresinin minimum olması.'},
+    {tag:'hız 3',t:'MİB optimizasyonu',d:'Kullanılmayan merkezi işlem birimi zamanının sıfıra yakınsaması.'},
+    {tag:'hız 4',t:'İş yapma süresi',d:'Az zamanda maksimum iş hacmi (throughput).'},
+    {tag:'sağlam 1',t:'Güvenirlik',d:'Hatalardan tamamen arındırılmış sağlam yapı.'},
+    {tag:'sağlam 2',t:'Süreklilik',d:'Bakım yapılabilir, dokümantasyonu tam altyapı.'},
+    {tag:'boyut',t:'Kompakt yapı',d:'Kendinden taviz vermeden düşük boyut.'}
+  ], {hint:'Telefon alırken sorduğun 7 soru: 4 hız, 2 sağlamlık, 1 boyut. Birine dokun.'}),
   matris(el){
     const Q = [['Tek kullanıcı · çok görev','Bir kişi, eşzamanlı birçok iş.'],['Çok kullanıcı · çok görev','Birçok kullanıcı, birden fazla program (SSH/Telnet).'],['Tek kullanıcı · tek görev','Her defasında tek kişi, tek iş.'],['Çok kullanıcı · tek görev','Pek çok kişi, ortak bir veritabanı/mesajlaşma sistemi.']];
     const items = [['MS-DOS',2],['Windows',0],['UNIX',1],['Banka sistemleri',3],['MacOS',0]];
@@ -1263,15 +1389,15 @@ const W = {
     {t:'Adres ve veri yolu (bus)',d:'CPU\'yu bellek ve G/Ç birimlerine elektronik sinyallerle bağlar.'}
   ]),
   sekiz: liste([
-    {tag:'Gece',t:'G/Ç yönetimi',d:'Verilerin fiziksel olarak kayıpsız aktarımı ve aygıt denetimi.'},
-    {tag:'İşten',t:'İşlem yönetimi',d:'Çoklu programlama, thread yönetimi ve işlem durum döngüsü.'},
-    {tag:'Bıkan',t:'Bellek yönetimi',d:'RAM bölümlenmesi, sanal bellek tahsisi ve swapping.'},
-    {tag:'Yorgun',t:'Yan bellek yönetimi',d:'Disk formatlama, sektör/iz yapısı, MBR ve bölümleme (partition).'},
-    {tag:'Dede',t:'Dosya yönetimi',d:'FAT, NTFS, EXT4 sistemleri; kök dizin ve dosya öznitelikleri.'},
-    {tag:'Güvercinlere',t:'Güvenlik ve koruma',d:'Parola/biyometrik doğrulama, şifreleme, virüs/solucan savunması.'},
-    {tag:'Ağaçta',t:'Ağ yönetimi',d:'Dosya, yazıcı, mesaj servisleri; dağıtık istemci/sunucu erişimi.'},
-    {tag:'Kraker',t:'Komut yorumlayıcısı',d:'Kullanıcı ile çekirdek arasındaki CLI ve GUI arayüzleri.'}
-  ], {hint:'Cümledeki her kelime bir alt sistemi açar.'}),
+    {tag:'1 kamera',t:'G/Ç yönetimi',d:'Verilerin fiziksel olarak kayıpsız aktarımı ve aygıt denetimi.'},
+    {tag:'2 işlenir',t:'İşlem yönetimi',d:'Çoklu programlama, thread yönetimi ve işlem durum döngüsü.'},
+    {tag:'3 RAM',t:'Bellek yönetimi',d:'RAM bölümlenmesi, sanal bellek tahsisi ve swapping.'},
+    {tag:'4 disk',t:'Yan bellek yönetimi',d:'Disk formatlama, sektör/iz yapısı, MBR ve bölümleme (partition).'},
+    {tag:'5 klasör',t:'Dosya yönetimi',d:'FAT, NTFS, EXT4 sistemleri; kök dizin ve dosya öznitelikleri.'},
+    {tag:'6 kilit',t:'Güvenlik ve koruma',d:'Parola/biyometrik doğrulama, şifreleme, virüs/solucan savunması.'},
+    {tag:'7 gönder',t:'Ağ yönetimi',d:'Dosya, yazıcı, mesaj servisleri; dağıtık istemci/sunucu erişimi.'},
+    {tag:'8 sen başlattın',t:'Komut yorumlayıcısı',d:'Kullanıcı ile çekirdek arasındaki CLI ve GUI arayüzleri.'}
+  ], {hint:'Fotoğrafın yolculuğundaki her durak bir alt sistem. Bir durağa dokun.'}),
   durum(el){
     const ST = {yeni:['Yeni','new'],hazir:['Hazır','ready'],calis:['Çalışıyor','running'],bekle:['Bekliyor','waiting'],son:['İşlem sonu','terminated']};
     const T = {yeni:[['hazir','Sisteme kabul et']],hazir:[['calis','CPU\'yu ver (sıra geldi)']],calis:[['hazir','Zaman dilimi doldu'],['bekle','Dosya oku (G/Ç iste)'],['son','İşi bitir']],bekle:[['hazir','G/Ç tamamlandı']],son:[]};
@@ -1373,7 +1499,8 @@ const appIcon = {
   kartlar:`<svg viewBox="0 0 64 56" aria-hidden="true"><rect x="14" y="4" width="40" height="30" fill="#FCFBF7" stroke="#17192A" stroke-width="2.5"/><rect x="8" y="14" width="44" height="34" fill="#FFE27A" stroke="#17192A" stroke-width="2.5"/><path d="M16 26h28M16 34h20" stroke="#17192A" stroke-width="2.5"/></svg>`,
   sinav:`<svg viewBox="0 0 64 56" aria-hidden="true"><rect x="10" y="4" width="44" height="48" fill="#FCFBF7" stroke="#17192A" stroke-width="2.5"/><rect x="10" y="4" width="44" height="9" fill="#2B2F8F" stroke="#17192A" stroke-width="2.5"/><path d="M18 26l5 5 9-9M18 42h26" stroke="#1C7348" stroke-width="3" fill="none"/></svg>`,
   kancalar:`<svg viewBox="0 0 64 56" aria-hidden="true"><path d="M12 4h40v36l-12 12H12z" fill="#FFE27A" stroke="#17192A" stroke-width="2.5"/><path d="M40 52V40h12" fill="#E5C35A" stroke="#17192A" stroke-width="2.5"/><path d="M20 16h24M20 24h24M20 32h14" stroke="#17192A" stroke-width="2.5"/></svg>`,
-  restoran:`<svg viewBox="0 0 64 56" aria-hidden="true"><path d="M10 22c0-9 10-16 22-16s22 7 22 16z" fill="#FCFBF7" stroke="#17192A" stroke-width="2.5"/><rect x="6" y="22" width="52" height="7" fill="#F2B13C" stroke="#17192A" stroke-width="2.5"/><path d="M14 29v20h36V29" fill="#FCFBF7" stroke="#17192A" stroke-width="2.5"/><path d="M26 38h12" stroke="#17192A" stroke-width="2.5"/><circle cx="32" cy="6" r="3" fill="#17192A"/></svg>`
+  restoran:`<svg viewBox="0 0 64 56" aria-hidden="true"><path d="M10 22c0-9 10-16 22-16s22 7 22 16z" fill="#FCFBF7" stroke="#17192A" stroke-width="2.5"/><rect x="6" y="22" width="52" height="7" fill="#F2B13C" stroke="#17192A" stroke-width="2.5"/><path d="M14 29v20h36V29" fill="#FCFBF7" stroke="#17192A" stroke-width="2.5"/><path d="M26 38h12" stroke="#17192A" stroke-width="2.5"/><circle cx="32" cy="6" r="3" fill="#17192A"/></svg>`,
+  atolye:`<svg viewBox="0 0 64 56" aria-hidden="true"><rect x="6" y="6" width="22" height="13" fill="#FFE27A" stroke="#17192A" stroke-width="2.5"/><rect x="36" y="22" width="22" height="13" fill="#FCFBF7" stroke="#17192A" stroke-width="2.5"/><rect x="6" y="38" width="22" height="13" fill="#F2B13C" stroke="#17192A" stroke-width="2.5"/><path d="M28 12h8v10M36 28h-8v10" fill="none" stroke="#17192A" stroke-width="2.5"/></svg>`
 };
 
 function viewHarita(){
@@ -1412,7 +1539,8 @@ function viewHarita(){
       <span class="meter"><i style="width:${d/t*100}%"></i></span></a>`; }).join('')}
     </div></div>
   </section>
-  <nav class="icons" aria-label="Araçlar">
+  <nav class="icons tools" aria-label="Araçlar">
+    <a class="dicon" href="#atolye">${appIcon.atolye}<span class="lbl">Liste atölyesi</span><span class="sub">${LISTELER.length} zincir</span></a>
     <a class="dicon" href="#kartlar">${appIcon.kartlar}<span class="lbl">Kartlar</span><span class="sub">${KARTLAR.length} kart</span></a>
     <a class="dicon" href="#sinav">${appIcon.sinav}<span class="lbl">Deneme sınavı</span><span class="sub">${SORULAR.length} soru</span></a>
     <a class="dicon" href="#kancalar">${appIcon.kancalar}<span class="lbl">Kanca listesi</span><span class="sub">sınav sabahı</span></a>
@@ -1429,6 +1557,7 @@ function konuHTML(k, n){
       ${EKSTRA[k.id]?`<div class="life"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 12h17v9a6 6 0 0 1-6 6h-5a6 6 0 0 1-6-6z"/><path d="M23 14h2a3 3 0 0 1 0 6h-2"/><path d="M11 4c-1 2 1 3 0 5M16 4c-1 2 1 3 0 5"/></svg><div><small>GÜNLÜK HAYATTA</small><p>${EKSTRA[k.id].g}</p></div></div>`:''}
       ${k.h}
       <div class="note"><small>KANCA</small>${k.k}</div>
+      ${LISTELER.filter(L=>L.konu===k.id).map(L=>`<div class="lab zlab"><span class="lab-h">ZİNCİR.EXE · listeyi sahneden kendin kur</span><div id="z-${L.id}" class="zbox"></div></div>`).join('')}
       ${EKSTRA[k.id]?`<div class="tips"><small>SINAVDA DİKKAT</small><ul>${EKSTRA[k.id].ip.map(t=>`<li>${t}</li>`).join('')}</ul></div>`:''}
       ${k.w?`<div class="lab"><span class="lab-h">DENEY.EXE</span><div id="w-${k.id}" style="display:flex;flex-direction:column;gap:12px"></div></div>`:''}
       <div class="k-foot"><span class="st-note">${d?'tamamlandı · +10 XP':'okudun, anladın mı?'}</span>
@@ -1444,6 +1573,7 @@ function viewBolum(b){
         <div class="chap-meta"><span id="cp">${d}/${t} konu tamam</span><span class="meter"><i id="cpb" style="width:${d/t*100}%"></i></span></div>
         <nav class="toc" aria-label="Konular">${b.konular.map(k=>`<a href="#${b.id}" data-jump="${k.id}" class="${S.done[k.id]?'done':''}">${k.t}</a>`).join('')}</nav>
       </div></section>
+    ${b.no>=3?sahneKutusu(b):''}
     ${b.konular.map((k,i)=>konuHTML(k,i+1)).join('')}
     <section class="win">${winBar('BOLUM_SONU.EXE')}
       <div class="win-body"><h2 style="font-family:var(--f-pixel);font-size:1.5rem">Bölüm ${b.no} bitti mi?</h2>
@@ -1451,6 +1581,7 @@ function viewBolum(b){
       <div class="row"><button class="btn pri" data-quiz="${b.no}">Bölüm ${b.no} sınavına gir</button></div></div></section>
     <nav class="chapnav" aria-label="Bölümler arası">${pb?`<a class="btn" href="#${pb.id}">← ${pb.no}. ${pb.ad}</a>`:'<a class="btn" href="#harita">← Masaüstü</a>'}${nb?`<a class="btn" href="#${nb.id}">${nb.no}. ${nb.ad} →</a>`:'<a class="btn" href="#sinav">Deneme sınavı →</a>'}</nav>`;
   b.konular.forEach(k => { if (k.w) W[k.w](document.getElementById('w-'+k.id)); });
+  LISTELER.forEach(L => { const el = document.getElementById('z-'+L.id); if (el) zincir(L, el); });
   main.querySelectorAll('[data-jump]').forEach(a=>a.onclick=e=>{ e.preventDefault(); document.getElementById('k-'+a.dataset.jump).scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}); });
   main.querySelectorAll('[data-done]').forEach(btn=>btn.onclick=()=>{
     const id = btn.dataset.done, art = document.getElementById('k-'+id), n = b.konular.findIndex(k=>k.id===id)+1, k = b.konular[n-1];
@@ -1553,6 +1684,73 @@ function viewSinav(){
 }
 
 /* ---------- kanca listesi ---------- */
+/* ---------- zincir: listeyi sahnenin mantığıyla kurdurur ---------- */
+function zincir(L, el, onDone){
+  let next, miss, stepMiss, order;
+  const start = () => { next=0; miss=0; stepMiss=0; order=shuffle(L.adim.map((a,i)=>i)); draw(); };
+  const draw = () => {
+    const done = next===L.adim.length;
+    el.innerHTML = `<div class="z-head"><span class="z-scene">Sahne: ${L.sahne}</span><span class="z-name">${L.ad}</span></div>
+      <p class="z-logic">${L.mantik}</p>
+      <ol class="z-chain">${L.adim.slice(0,next).map(a=>`<li><b>${a[0]}</b><span>${a[1]}</span></li>`).join('')}
+        ${done?'':`<li class="z-q" aria-live="polite"><span>${L.adim[next][2]}</span>${stepMiss>=2?`<b class="z-ans">Cevap: ${L.adim[next][0]}</b>`:''}</li>`}</ol>
+      ${done?`<div class="res good">Zinciri ${miss===0?'hatasız':miss+' hatayla'} kurdun.${!S.z[L.id]?' +5 XP':''}</div><div class="row"><button class="btn" data-z="again">Karıştır, tekrar kur</button></div>`
+            :`<div class="lst">${order.filter(i=>i>=next).map(i=>`<button class="lst-b" data-i="${i}">${L.adim[i][0]}</button>`).join('')}</div>`}`;
+    if (done) {
+      if (!S.z[L.id]) { S.z[L.id]=1; save(); gain('+5 XP'); }
+      el.querySelector('[data-z]').onclick = start;
+      if (onDone) onDone();
+      return;
+    }
+    el.querySelectorAll('.lst-b').forEach(b=>b.onclick=()=>{
+      if (+b.dataset.i===next) { next++; stepMiss=0; draw(); }
+      else { miss++; stepMiss++; if (stepMiss>=2) draw(); else { b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake'); } }
+    });
+  };
+  start();
+}
+function sahneKutusu(b){
+  const ls = LISTELER.filter(L=>b.konular.some(k=>k.id===L.konu));
+  return `<section class="win">${winBar('SAHNELER.TXT')}<div class="win-body">
+    <h2 style="font-family:var(--f-pixel);font-size:1.4rem">Bu bölümde ezber yok, sahne var</h2>
+    <p>Bu bölümde çok liste var. Hepsini kısaltma cümleleriyle ezberlersen yenisi eskisinin üstüne yazılır. O yüzden <b>her listeyi tek ve farklı bir sahneye</b> koyduk. Listeyi hatırlamaya çalışma; sahneyi kafanda oynat, sıra kendiliğinden gelir.</p>
+    <div class="scenemap">${ls.map(L=>`<a href="#${b.id}" data-jump="${L.konu}"><span>${L.ad}</span><b>${L.sahne}</b></a>`).join('')}</div>
+    <p class="muted" style="font-size:.92rem">Her konunun içinde listeyi kendin kurduğun bir zincir var. Hepsini karışık çalışmak için <a href="#atolye" style="color:var(--link);font-weight:700">Liste atölyesi</a>'ne git.</p>
+  </div></section>`;
+}
+const AT = { cur: null };
+function viewAtolye(){
+  const tot = LISTELER.length, done = LISTELER.filter(L=>S.z[L.id]).length;
+  main.innerHTML = `<section class="win">${winBar('ATOLYE.EXE')}<div class="win-body">
+      <h1 style="font-family:var(--f-pixel);font-size:clamp(1.8rem,6vw,2.4rem)">Liste atölyesi</h1>
+      <p>3. ve 4. bölümdeki ${tot} listenin hepsi burada. Her listenin <b>kendine ait tek bir sahnesi</b> var, sahneler birbirine hiç benzemiyor; bu yüzden biri diğerinin üstüne yazılmaz. Önce sahneyi hatırla, sonra listeyi zincir gibi kur.</p>
+      <div class="chap-meta"><span>${done}/${tot} zincir en az bir kez kuruldu</span><span class="meter"><i style="width:${done/tot*100}%"></i></span></div>
+    </div></section>
+    <section class="win">${winBar('SAHNE_HARITASI')}<div class="win-body">
+      <p class="muted">Liste ↔ sahne eşleşmesi. Sınavda bir liste sorulduğunda ilk iş sahnesini hatırlamak.</p>
+      <div class="scenemap">${LISTELER.map(L=>`<button data-l="${L.id}" class="${AT.cur===L.id?'on':''}"><span>${L.ad}</span><b>${L.sahne}</b>${S.z[L.id]?'<i>✓ kuruldu</i>':''}</button>`).join('')}</div>
+      <div class="row"><button class="btn pri" data-a="rand">Rastgele bir liste kur</button></div>
+    </div></section>
+    <section class="win" id="zwin">${winBar('ZINCIR.EXE')}<div class="win-body"><div class="zbox" id="zat"></div></div></section>
+    <section class="win">${winBar('KARISANLAR.TXT')}<div class="win-body">
+      <h2 style="font-family:var(--f-pixel);font-size:1.4rem">En çok karışan ikililer</h2>
+      <p class="muted">Sınavda şıklar genelde bu ikilileri birbirine karıştırır. Her satırda farkı tek cümleyle söyle.</p>
+      <div class="pairs">${KARISANLAR.map(p=>`<div class="pair"><div class="pair-h"><b>${p[0]}</b><span>vs</span><b>${p[1]}</b></div><p>${p[2]}</p></div>`).join('')}</div>
+    </div></section>`;
+  const load = id => {
+    AT.cur = id; const L = LISTELER.find(x=>x.id===id);
+    main.querySelectorAll('[data-l]').forEach(b=>b.classList.toggle('on', b.dataset.l===id));
+    zincir(L, document.getElementById('zat'), () => {
+      const s = main.querySelector(`[data-l="${id}"]`); if (s && !s.querySelector('i')) s.insertAdjacentHTML('beforeend','<i>✓ kuruldu</i>');
+    });
+  };
+  main.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{ load(b.dataset.l); document.getElementById('zwin').scrollIntoView({block:'start'}); });
+  main.querySelector('[data-a=rand]').onclick = () => {
+    const pool = LISTELER.filter(L=>L.id!==AT.cur); load(pool[Math.floor(Math.random()*pool.length)].id);
+    document.getElementById('zwin').scrollIntoView({block:'start'});
+  };
+  load(AT.cur || LISTELER[0].id);
+}
 function viewRestoran(){
   main.innerHTML = `<section class="win">${winBar('RESTORAN.MAP')}<div class="win-body">
       <h1 style="font-family:var(--f-pixel);font-size:clamp(1.8rem,6vw,2.4rem)">Restoran haritası</h1>
@@ -1599,7 +1797,8 @@ function renderStart(){
      <li><a href="#kartlar"><svg viewBox="0 0 28 24" aria-hidden="true"><rect x="4" y="5" width="20" height="16" fill="#FFE27A" stroke="#17192A" stroke-width="2"/></svg><span>Kartlar</span></a></li>
      <li><a href="#sinav"><svg viewBox="0 0 28 24" aria-hidden="true"><rect x="4" y="2" width="20" height="20" fill="#FCFBF7" stroke="#17192A" stroke-width="2"/><path d="M9 12l3 3 6-6" stroke="#1C7348" stroke-width="2.5" fill="none"/></svg><span>Deneme sınavı</span></a></li>
      <li><a href="#kancalar"><svg viewBox="0 0 28 24" aria-hidden="true"><path d="M5 2h18v14l-6 6H5z" fill="#FFE27A" stroke="#17192A" stroke-width="2"/></svg><span>Kanca listesi</span></a></li>
-     <li><a href="#restoran"><svg viewBox="0 0 28 24" aria-hidden="true"><path d="M4 12c0-5 4-9 10-9s10 4 10 9z" fill="#FCFBF7" stroke="#17192A" stroke-width="2"/><rect x="2" y="12" width="24" height="5" fill="#F2B13C" stroke="#17192A" stroke-width="2"/></svg><span>Restoran haritası<small>bütün kavramlar tek benzetmede</small></span></a></li>`;
+     <li><a href="#restoran"><svg viewBox="0 0 28 24" aria-hidden="true"><path d="M4 12c0-5 4-9 10-9s10 4 10 9z" fill="#FCFBF7" stroke="#17192A" stroke-width="2"/><rect x="2" y="12" width="24" height="5" fill="#F2B13C" stroke="#17192A" stroke-width="2"/></svg><span>Restoran haritası<small>bütün kavramlar tek benzetmede</small></span></a></li>
+     <li><a href="#atolye"><svg viewBox="0 0 28 24" aria-hidden="true"><rect x="2" y="2" width="11" height="8" fill="#FFE27A" stroke="#17192A" stroke-width="2"/><rect x="15" y="14" width="11" height="8" fill="#F2B13C" stroke="#17192A" stroke-width="2"/><path d="M13 6h7v8" fill="none" stroke="#17192A" stroke-width="2"/></svg><span>Liste atölyesi<small>3. ve 4. bölüm listeleri</small></span></a></li>`;
 }
 function openStart(open){
   startMenu.hidden = !open; startBtn.setAttribute('aria-expanded', open);
@@ -1626,6 +1825,7 @@ function route(){
   else if (h==='sinav') viewSinav();
   else if (h==='kancalar') viewKancalar();
   else if (h==='restoran') viewRestoran();
+  else if (h==='atolye') viewAtolye();
   else viewHarita();
   document.querySelectorAll('.taskbar .tb').forEach(a=>{ const on = a.dataset.tab===h; a.classList.toggle('on',on); if(on) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
   if (pendingJump) { const el=document.getElementById('k-'+pendingJump); pendingJump=null; if(el) setTimeout(()=>el.scrollIntoView(),0); }
