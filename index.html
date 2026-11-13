@@ -135,6 +135,22 @@ main{max-width:880px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-lef
 .note .mn{font-family:var(--f-pixel);font-weight:700;font-size:1.15rem;line-height:1.3}
 .note b{color:inherit}
 .tip{background:var(--chip);padding:10px 14px;font-size:.95rem;border-left:4px solid var(--bar)}
+.life{display:flex;gap:14px;align-items:flex-start;background:var(--chip);border:2px solid var(--frame);padding:14px 16px;font-size:1rem}
+.life svg{flex:none;width:34px;height:34px;margin-top:2px}
+.life svg path{fill:none;stroke:var(--ink);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.life small,.tips small{display:block;font-family:var(--f-term);font-size:1.05rem;letter-spacing:.06em;color:var(--link);margin-bottom:2px}
+.tips{border:2px dashed var(--bad);padding:12px 14px 12px 16px;background:var(--win)}
+.tips small{color:var(--bad)}
+.tips ul{gap:6px}
+.konu .tips li::marker{content:"! ";color:var(--bad);font-weight:700}
+.rgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:620px){.rgrid{grid-template-columns:1fr}}
+.rcard{border:2px solid var(--frame);background:var(--win);box-shadow:3px 3px 0 var(--shadow);padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.rcard .rk{font-family:var(--f-term);font-size:1.1rem;color:var(--muted);line-height:1.1}
+.rcard .rv{font-family:var(--f-pixel);font-weight:700;font-size:1.2rem;line-height:1.25}
+.rcard p{font-size:.94rem}
+.rcard a{font-size:.88rem;color:var(--link);font-weight:700;align-self:flex-start}
+.rquiz{display:flex;flex-direction:column;gap:10px}
 .cmp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 @media (max-width:560px){.cmp{grid-template-columns:1fr}}
 .cmp>div{border:2px solid var(--line);padding:12px;min-width:0;background:var(--win)}
@@ -301,7 +317,7 @@ table.syn td.shown{background:var(--note);color:var(--on-note)}
 .startmenu{position:fixed;z-index:45;left:max(8px,env(safe-area-inset-left,0px));bottom:calc(var(--tb-h) + 4px + env(safe-area-inset-bottom,0px));width:min(320px,calc(100vw - 16px));
   background:var(--win);border:2px solid var(--frame);box-shadow:5px 5px 0 var(--shadow);display:flex}
 .startmenu .side{background:var(--bar);color:var(--on-bar);writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--f-pixel);font-weight:700;font-size:1.2rem;padding:10px 6px;letter-spacing:.04em}
-.startmenu ul{list-style:none;margin:0;padding:6px;flex:1;display:flex;flex-direction:column;gap:2px}
+.startmenu ul{list-style:none;margin:0;padding:6px;flex:1;display:flex;flex-direction:column;gap:2px;max-height:calc(100dvh - var(--tb-h) - 40px);overflow-y:auto}
 .startmenu a{display:flex;align-items:center;gap:10px;padding:8px 10px;text-decoration:none;color:var(--ink);min-height:48px}
 .startmenu a:hover,.startmenu a:focus-visible{background:var(--bar);color:var(--on-bar);outline:none}
 .startmenu a small{display:block;font-family:var(--f-term);font-size:1rem;opacity:.75;line-height:1}
@@ -739,6 +755,121 @@ const BOLUMLER = [
     </ul>`,
     k:'<span class="mn">Shell = kabuk.</span><br>Çekirdeği (kernel) saran kabuk: sen kabukla konuşursun, kabuk çekirdekle.' }
   ]}
+];
+
+/* ---------- Her konu için: günlük hayattan örnek (g) + sınav ipuçları (ip) ---------- */
+const EKSTRA = {
+tanim:{g:`Bir apartman yöneticisi düşün. Asansörü, kaloriferi ve otoparkı (donanım) kimin ne zaman kullanacağını o ayarlar. Kimseyi kayırmaz (<b>adil</b>), kalorifer boşa yanmaz (<b>verimli</b>), herkes işini görür (<b>etkin</b>). Sakinler (kullanıcılar) yöneticiyi pek görmez, ama o olmasa apartman birbirine girer.`,
+ ip:[`Tanımda “tek bir program” yok, “sistem programları <b>topluluğu</b>” var. Şıklarda “tek bir yazılım” görürsen dikkat.`,`Ara katmanın üç ucu: donanım, yazılım, kullanıcı. Kullanıcı = “sisteme komut veren son uç”.`,`Derleyiciler ve VTYS, yazılım ucunda sistem yazılımı örneği olarak geçer.`]},
+osuz:{g:`Araba sürerken “şimdi enjektöre yakıt ver, buji ateşlesin” diye düşünmezsin; gaza basarsın. Gaz pedalı = simge, motorun içindeki işler = o 7 adım. İşletim sistemi bilgisayarın gaz pedalıdır.`,
+ ip:[`Bu sayfanın kavramı <b>soyutlama</b>, yani karmaşıklığı gizlemek. Soruda “karmaşıklığı gizler” görürsen OS'yi düşün.`,`7 adımın sırasını kelimesi kelimesine ezberleme, mantığını bil: sürücü → disket → kafa → iz → bekle → bellek → oku ve çalıştır.`]},
+katman:{g:`Bir AVM düşün. En üstte mağazalar (uygulamalar), altında bilgi masası ve yürüyen merdiven (sistem yazılımı), ortada AVM yönetimi (OS), onun altında teknik ekibin talimat kitabı (makine dili), elektrik panosundaki otomatik sigortalar (mikroprogram, ROM) ve en dipte beton ile kablolar (donanım). Müşteri yukarıdan aşağı iner, elektrik aşağıdan yukarı çıkar.`,
+ ip:[`<b>ROM</b> kelimesini görürsen cevap mikroprogramdır.`,`“50–300 komut” makine diline aittir, mikroprograma değil.`,`OS tam ortadadır (3. katman): üstünde 2, altında 3 katman var.`]},
+proses:{g:`Telefonundaki WhatsApp, yüklü dururken bir <b>program</b>dır. Simgesine dokunduğun an RAM'e yüklenir ve <b>proses</b> olur. Uygulamayı kapatınca proses biter, ama program telefonda kalmaya devam eder.`,
+ ip:[`Statik = program, dinamik = proses. Şıklar bunu ters çevirerek tuzak kurar.`,`Ömür: program yıllar, proses saniye ya da dakika.`,`Görev Yöneticisi'nde (Ctrl+Shift+Esc) gördüğün liste proseslerdir.`]},
+zaman:{g:`Bir çay ocağındaki çaycıyı düşün: 10 masaya tek başına çay yetiştirir. O kadar hızlı döner ki her masa “çaycı bizimle ilgileniyor” sanır. Spotify çalarken Word'de yazı yazabilmen de böyle: CPU ikisi arasında milisaniyelerle gidip gelir.`,
+ ip:[`“İllüzyon” kelimesi = zaman paylaşımı.`,`Zaman paylaşımı CPU'yu çok kullanıcı/süreç arasında dağıtır. Çoklu görev ise tek kullanıcının birçok programı aynı anda çalıştırmasıdır (örnek: Windows).`,`Zaman paylaşımı 3. nesilde (1965–1980) doğdu.`]},
+spool:{g:`Fotokopicideki sıra gibi: herkes dosyasını bırakır, fotokopici sırayla basar, sen bu arada kantine gidip gelirsin. Ofisteki ortak yazıcıya aynı anda 5 kişi yazdırınca çıktıların karışmamasının sebebi de spooling.`,
+ ip:[`Kuyruk nerede tutulur? <b>Diskte.</b> Şıklarda RAM veya yazıcının belleği tuzaktır.`,`Spooling, aynı anda paylaşılamayan cihazlar içindir; klasik örnek yazıcı.`,`Açılımın ilk iki kelimesi akılda kalsın: <i>Simultaneous Peripheral</i>.`]},
+kernel:{g:`Eski telefonlarda bir uygulama donunca bütün telefon donar, pili çıkarmak gerekirdi (monolitik gibi). Bugünkü tarayıcılarda bir sekme çökerse sadece o sekme “Sayfa yanıt vermiyor” der, diğerleri çalışmaya devam eder (istemci/sunucu mantığı).`,
+ ip:[`Mikroçekirdekte çekirdek <b>küçülür</b>; işler ayrı sunuculara dağılır (File, Memory, Process Server).`,`Avantajı kararlılık ve güvenlik: bir sunucu çökerse sistemin tamamı çökmez.`]},
+nesil:{g:`Müziğin evrimi gibi düşün: plak (vakum tüpü: devasa ve sıcak), kaset (transistör: küçüldü), CD (entegre devre: birçok şarkı tek diskte), Spotify (LSI ve ağ: her yerde, herkese). Her nesil bir öncekini küçültüp hızlandırdı.`,
+ ip:[`Anahtar kelimeyi yakala: “OS yok” = 1. nesil, “batch/IBSYS/Fortran” = 2, “multiprogramming/spooling/time-sharing” = 3, “PC/ağ/dağıtık” = 4.`,`Ağ OS'de makineler birbirinin <b>farkındadır</b>; dağıtık OS'de kullanıcı dosyanın nerede işlendiğini <b>bilmez</b>.`,`Google Drive'da dosya düzenlerken hangi sunucuda işlendiğini bilmezsin: dağıtık sistem hissi budur.`]},
+terminal:{g:`Bankada memurun önündeki eski siyah-yeşil ekran: kendi beyni yoktur, her şey merkezdeki sunucuda hesaplanır. Netflix'i televizyonda izlemek de biraz buna benzer: film senin cihazında değil, sunucuda durur.`,
+ ip:[`Aptal terminalde OS, işlemci ve disk <b>yoktur</b>; sadece klavye ve monitör vardır.`,`Örnek sorulursa: eski banka gişeleri.`]},
+boot:{g:`Sabah alarm çalar (power on). Gözünü açıp “ellerim ayaklarım yerinde mi” diye kontrol edersin (ROM'daki kontroller). Dünü hatırlarsın (diskten RAM'e yükleme). Sonra güne hazırsındır ve ilk işi beklersin (devir). Bilgisayar açılırken gördüğün üretici logosu, ROM kontrollerinin yapıldığı andır.`,
+ ip:[`Sıra sorulur: Kapalı → Tetiklenme → Yükleme → Devir.`,`Kontrolü yapan ROM'daki mikroprogramdır. Taşınan, OS dosyalarıdır: diskten RAM'e.`,`Kapalı durumda RAM boştur, OS diskte bekler.`]},
+
+aile:{g:`Bakiyeni eski usul <b>*123#</b> koduyla sorgulamak metin tabanlıdır: kodu bilmen gerekir. Operatörün uygulamasında “Bakiye” düğmesine basmak grafik tabanlıdır. İkisi aynı işi yapar; biri ezber ister, diğeri görmeni yeterli kılar.`,
+ ip:[`“Hangisi metin tabanlı değildir?” tipi soru gelir. MUN (MS-DOS, Unix, Novell) dışındakiler grafiktir.`,`Çekirdek = yazılım ile donanım arasındaki köprü.`,`Linux grafik tabanlılar arasında sayılır.`]},
+sentaks:{g:`MS-DOS tek kişilik bir mutfak: tarifi ezbere bilmek zorundasın. UNIX kalabalık bir otel mutfağı: birçok aşçı aynı anda birçok yemek yapar. Novell ise bilgisayar laboratuvarındaki öğretmen bilgisayarı: hangi öğrencinin neye erişeceğine o karar verir.`,
+ ip:[`Tek kullanıcılı = MS-DOS. Çok kullanıcılı ve çok görevli = UNIX.`,`“Ağ işletim sistemlerinin öncüsü” = Novell Netware.`,`UNIX'in artısı: işlemci mimarisinden bağımsız çalışır.`]},
+gorsel:{g:`Arkadaşının telefon numarasını hatırlamaya çalışmak (recall) ile rehberde ismini görüp tanımak (recognition) arasındaki fark gibi. Kimse numaraları ezbere bilmez ama ismi görünce hemen tanır. GUI'nin başarısı bu.`,
+ ip:[`CLI = <b>Recall</b> (hatırlama), GUI = <b>Recognition</b> (tanıma). Çok sorulur, ters çevrilerek tuzak yapılır.`,`Fare = Macintosh, 1984. “Geniş çapta kabul gören ilk” = Windows 3.1, 1992.`,`CLI'de öğrenme eğrisi diktir: başlangıçta zordur.`]},
+masaustu:{g:`OS/2, kamerası çok iyi ama uygulama mağazası bomboş bir telefon gibiydi: içinde kullanacak uygulama olmadığı için kimse almadı. Bugün de bir telefonun başarısı uygulamalarına bağlı.`,
+ ip:[`32-bit ve gerçek çoklu görev = Windows 95. İnternet yerleşik = Windows 98.`,`OS/2: 1987, IBM + Microsoft. Yaygınlaşamama sebebi: uygulama yazılımı eksikliği.`,`95 ile 98'i karıştırma: 98, “95'in gelişmiş hali”dir.`]},
+otomasyon:{g:`Eskiden yeni bir yazıcı alınca kutudan CD çıkar, sürücüyü elle kurardın, bazen hata verirdi. Bugün kulaklığını ya da mouse'unu takınca “Cihaz hazır” bildirimi gelir. Bu kolaylık Windows XP ile başladı.`,
+ ip:[`config.sys ve autoexec.bat kaldırıldı, 16-bit sürücüler kapatıldı = <b>Windows ME</b>.`,`Otomatik donanım tanıma + Windows Update ile sürücü = <b>Windows XP</b>.`,`Eski yol: tak → disket ara → elle kur → çakışma. Yeni yol: tak → internetten sorgula → otomatik kur → hazır.`]},
+xp:{g:`ClearType, telefonda yazıların keskin görünmesi için ekran piksellerinin renkli alt parçalarının kullanılması gibidir: yazı senin gözüne göre ayarlanır. Hızlı kullanıcı değişimi ise evde kardeşin oturumu kapatmadan kendi hesabına geçebilmen.`,
+ ip:[`NT çekirdeği Windows 2000'den miras; mavi ekranlar azaldı.`,`ClearType = alt-piksel (sub-pixel) render, LCD ekranlar için.`,`Uzak Masaüstü bu dönemde standart oldu.`]},
+kale:{g:`NAP, AVM girişindeki güvenlik kapısı gibi: içeri girmeden önce çantan taranır. BitLocker ise telefonunun şifreli olması gibi: telefon çalınsa bile hırsız fotoğraflarını göremez. Sadece ekran kilidi olsaydı, hafızayı söküp başka cihaza takarak okuyabilirdi.`,
+ ip:[`NAP kontrolü ağa bağlanmadan <b>önce</b> yapar.`,`Parola aşılabilir: disk başka bilgisayara takılırsa veriler açıkta kalır. BitLocker'da anahtar yoksa okumak matematiksel olarak imkânsızdır.`,`Windows Mail'e phishing ve spam kalkanları eklendi.`]},
+felsefe:{g:`iPhone ile Android farkı gibi: Apple telefonu da yazılımı da kendisi yapar (kapalı ekosistem), her şey uyumlu çalışır. Linux ise Vikipedi gibidir: dünyanın her yerinden gönüllüler birlikte yazar ve ücretsizdir. Pardus bunun Türkiye'de TÜBİTAK eliyle yapılmış hali.`,
+ ip:[`macOS = UNIX tabanlı + kapalı ekosistem.`,`Pardus = açık kaynak + lisans ücreti yok + TÜBİTAK.`,`Açık kaynağın artısı: büyük programcı kitlelerince sürekli denetlenmesi, bu yüzden kararlı olması.`]},
+bulut:{g:`Telefonla çektiğin fotoğrafın birkaç saniye sonra bilgisayarında görünmesi, yeni telefona geçince ayarlarının geri gelmesi, telefonu yüzünle açman: hepsi bulut döneminin işletim sistemi özellikleri.`,
+ ip:[`Üç başlık: evrensel arayüz, yerelden buluta geçiş (OneDrive senkronu), yeni nesil etkileşim (yüz tanıma, Mağaza).`,`“OS artık sadece sabit diskte yaşamaz” cümlesi bu konunun özeti.`]},
+sentez:{g:`Kendi telefon geçmişini düşün: önce tuşlu telefonda menüleri ezberledin, sonra dokunmatiğe geçtin, sonra uygulamalar kendi kendine güncellenmeye başladı, şimdi telefonun yüzünle açılıyor. Bilgisayarlar da aynı yolu izledi.`,
+ ip:[`Tablonun satırları: etkileşim modeli, donanım yönetimi, güvenlik duruşu. Herhangi bir hücre sorulabilir.`,`Güvenlik sırası: fiziksel kilit → basit şifre → NAP → BitLocker.`,`Sonuç cümlesi: “makineyi unutturmak”.`]},
+
+sef:{g:`Bir düğün organizatörü düşün: çiçekçi, aşçı, müzisyen (donanım) ayrı ayrı uzmandır. Gelin ve damat (kullanıcı) onlarla tek tek uğraşmaz; organizatör hepsini yönetir ve aradaki iletişimi kurar. İşletim sistemi bilgisayarın düğün organizatörüdür.`,
+ ip:[`Üç fiil: soyutlar (karmaşıklığı gizler), yönetir (kaynakları), köprü kurar (yazılım ile donanım arasında).`,`Katman sırası: Kullanıcı ve uygulamalar → OS → Donanım (MİB, RAM, Disk).`]},
+sutun:{g:`Bir öğrencinin günü: ders programı (işlem yönetimi: ne zaman ne yapılacak), sıra ve çanta düzeni (bellek: alan), telefonla haberleşme (G/Ç: dış dünya), defter ve dosyalar (dosya yönetimi: kalıcı kayıt). Biri aksarsa gün karışır.`,
+ ip:[`Eşleştirme sorusu gelir: zaman ve sıra = işlem, alan ve kapasite = bellek, çevre birimi = G/Ç, hiyerarşik saklama = dosya.`,`Bellekte yer kalmazsa yardımcı bellek (sabit disk) devreye girer.`,`<b>Ağ yönetimi 4 temel sütunda yok</b> (8 alt sistemde var). Klasik tuzak.`]},
+dongu:{g:`Bir kafenin günü: malzemeyi tezgâha koymak (yükleme), kasaya yabancı sokmamak (koruma), siparişlere sırayla bakmak (zaman paylaşımı), gün sonunda kasa defterini tutmak (denetim ve loglama), müşteriyle konuşmak (haberleşme). Bu iş her gün tekrarlanır, yani bir döngüdür.`,
+ ip:[`“Hatalı kullanımdan yalıtım” = Koruma. “Olayların dosyalanması” = Denetim ve loglama.`,`“Programlar arası denetim geçişi” = Zaman paylaşımı.`]},
+kural:{g:`İyi bir sınıf başkanı da bu kuralları uygular. Nöbet listesini sıralar, acil işlere öncelik verir, sınıf fonunun hesabını tutar (yönetim). Herkesin anlayacağı dille konuşur ve herkes ona ulaşabilir (etkileşim). Sorun çıkınca toparlar, kimsenin hakkını yedirmez, belgeleri saklar (koruma).`,
+ ip:[`En kalabalık grup Koruma ve Süreklilik (5 kural): kesmeler, G/Ç'yi sağlama alma ve haklara müdahaleyi önleme buradadır.`,`“Dili yorumlama” Etkileşim grubundadır, Yönetim'de değil.`,`“Öncelik tanıma” ve “hesap tutma” Yönetim grubundadır.`]},
+perf:{g:`İyi bir kurye uygulaması gibi düşün: paketi doğru adrese götürür (etkinlik), çabuk gelir (hız), kurye boş beklemez (MİB optimizasyonu), saatte çok paket dağıtır (iş yapma süresi), paketi kaybetmez (güvenirlik), güncellenip bakımı yapılabilir (süreklilik), telefonunda az yer kaplar (kompakt yapı).`,
+ ip:[`Throughput = İş yapma süresi. “Cevap verme süresi” ise Hız kriterine aittir.`,`MİB optimizasyonu: <b>kullanılmayan</b> MİB zamanının sıfıra yakınsaması.`,`Dokümantasyon ve bakım = Süreklilik.`]},
+mercek:{g:`Bir arabayı da farklı merceklerle sınıflarsın: boyutuna göre (mini, sedan, kamyon), motoruna göre (benzinli, elektrikli), tepkisine göre, kaç kişi taşıdığına göre. Ölçek sırası gündelik hayatta şöyle: kredi kartındaki çip → akıllı saat ve telefon → laptop → çok işlemcili sistem → sunucu → bankanın ana bilgisayarı.`,
+ ip:[`Micro uç = Akıllı kart, Macro uç = Ana çatı (mainframe).`,`Ana çatı: yoğun G/Ç gerektiren devasa görevler. Sunucu: ağ üzerinden çok kullanıcıya hizmet.`,`Gömülü/el sistemleri: avuç içi bilgisayar, TV, cep telefonu.`]},
+bicim:{g:`<b>Multiprocessing:</b> pizzacıda 4 usta aynı anda 4 pizza açar (çok işlemci, ortak tezgâh). <b>Multiprogramming:</b> tek usta, bir pizza fırındayken diğerinin hamurunu açar (tek işlemci, zaman dilimleri). <b>Batch:</b> okul yemekhanesi; menü önceden belli, sırayla dağıtılır. <b>Interactive:</b> restoranda garsonla konuşarak sipariş vermek.`,
+ ip:[`“Aynı belleği paylaşan birden fazla fiziksel işlemci” = Multiprocessing.`,`“Tek işlemci + zaman dilimleri (time-slicing)” = Multiprogramming.`,`“Kuyruk” kelimesi = Batch. “Anlık diyalog” = Interactive.`]},
+erisim:{g:`Gerçek zamanlı sistemi arabadaki hava yastığı gibi düşün: çarpışmadan 2 saniye sonra açılırsa, doğru çalışmış olsa bile işe yaramaz. Zaman paylaşımı ise kütüphanedeki 20 bilgisayarın tek bir sunucuya bağlı olup her birinin sırayla milisaniyelik hizmet alması.`,
+ ip:[`Gerçek zamanlı örnekleri (slayttakiler): kimyasal tesis, endüstriyel kontrol.`,`Zaman paylaşımında dilimler <b>milisaniyelik</b>.`,`Çoklu erişim = birden fazla kullanıcının aynı anda, etkileşimli bağlanması.`]},
+matris:{g:`Tek kullanıcı, tek görev: eski bir hesap makinesi. Tek kullanıcı, çok görev: senin laptopun (müzik + ödev + tarayıcı). Çok kullanıcı, çok görev: okulun sunucusu. Çok kullanıcı, tek görev: bankanın ATM ağı; binlerce kişi aynı tek işi (hesap işlemi) ortak veritabanında yapar.`,
+ ip:[`Banka sistemleri = çok kullanıcı, <b>tek</b> görev. Çoğu kişi “çok görev” der, tuzak bu.`,`UNIX = çok kullanıcı, çok görev. MS-DOS = tek, tek. Windows ve MacOS = tek kullanıcı, çok görev.`]},
+eko:{g:`Kendi hayatınla eşleştir: telefonundaki Android ya da iOS gömülü/el sistemlerinde; laptopundaki Windows kişisel bilgisayarda. Arabadaki ABS freni ya da fabrikadaki robot kolu, VxWorks ve QNX gibi gerçek zamanlı sistemlerin işidir.`,
+ ip:[`Gerçek zamanlı = VxWorks, QNX. Ana çatı = OS/390. En çok karıştırılan ikili bunlar.`,`Sunucu: Unix ve Windows 2008 Server.`,`Misyon cümlesi: kaynakları korumak, zamanı bükmek, donanıma nefes vermek.`]},
+
+von:{g:`Bir muhasebeci düşün: önündeki masada (RAM) kâğıtlarla çalışır, hesap makinesi (ALU) toplar ve çıkarır, aklı (CU) hangi işin sırada olduğunu yönetir, telefonu ve yazıcısı (G/Ç) dışarıyla bağlantısıdır. Akşam masa toplanır: RAM uçucudur.`,
+ ip:[`Hesap yapan = ALU. Komut döngüsünü yöneten = CU. İkisi de CPU'nun içinde.`,`“Depolanmış program” kavramının merkezi = RAM.`,`Uçucu (volatile) = elektrik gidince içerik gider. Elektrik kesilince kaydetmediğin ödevin gitmesinin sebebi bu.`]},
+sekiz:{g:`Bir belediyenin müdürlükleri gibi: ulaşım (G/Ç), iş planlama (işlem), otopark alanları (bellek), depolar (yan bellek), arşiv (dosya), zabıta (güvenlik), iletişim (ağ), halkla ilişkiler masası (komut yorumlayıcısı). 4 temel sütunda olmayıp burada olanlar: yan bellek, güvenlik, ağ ve komut yorumlayıcısı.`,
+ ip:[`MBR ve partition = Yan bellek yönetimi (dosya yönetimi değil).`,`FAT, NTFS, EXT4 = Dosya yönetimi.`,`Swapping = Bellek yönetimi. Thread = İşlem yönetimi.`]},
+gc:{g:`Duvardaki priz gibi düşün: hangi markanın şarj aletini takarsan tak, priz aynıdır (aygıt bağımsız, tek tip arayüz). Ama her telefonun şarj devresi akımı kendine göre dönüştürür (aygıt bağımlı, sürücü). Yeni yazıcı takınca “Sürücü yükleniyor” görmenin sebebi bu.`,
+ ip:[`read, write, open, close = aygıt bağımsız bölüm.`,`Donanımla doğrudan konuşan, mikro komut ve sinyale çeviren = aygıt sürücüsü (aygıt bağımlı).`,`Avantajı: yazılımcı yüzlerce donanımın mikro kodunu öğrenmek zorunda kalmaz.`]},
+thread:{g:`Tarayıcın bir prosestir. İçinde bir thread sayfayı çizer, biri videoyu oynatır, biri dosya indirir. Aynı evde yaşayan kardeşler gibi buzdolabını (belleği) paylaşırlar. Görev Yöneticisi'nde bir uygulamanın altında açılan alt satırlar da işlem ağacını gösterir.`,
+ ip:[`“En düşük sistem kaynağına ihtiyaç duyan program parçası” = thread.`,`Parent/child: D'nin parent'ı B, B'nin parent'ı A.`,`Kaynak yalıtımı, bir işlem çöktüğünde diğerini çökertmesin diye vardır.`]},
+durum:{g:`Kargo takibi gibi: “Sipariş alındı” (yeni), “Şubede sırada” (hazır), “Dağıtımda” (çalışıyor), “Alıcı adreste yok, bekleniyor” (bekliyor), “Teslim edildi” (işlem sonu). Bekleyen kargo, alıcı gelince doğrudan dağıtıma çıkmaz; önce şubedeki sıraya döner.`,
+ ip:[`Hazır = <b>CPU</b> bekler. Bekliyor = <b>G/Ç ya da olay</b> bekler. En sık tuzak bu.`,`Bekliyor'dan doğrudan Çalışıyor'a geçilmez; önce Hazır'a dönülür.`,`İşlem sonu = kaynaklar serbest bırakılır.`]},
+deadlock:{g:`Dar bir sokakta karşı karşıya gelen iki araba düşün: ikisi de geri gitmez, ikisi de karşıdakinin çekilmesini bekler. Ya da iki kardeş: biri kumandayı tutup kulaklığı istiyor, diğeri kulaklığı tutup kumandayı istiyor. Kimse bırakmazsa kimse dizi izleyemez.`,
+ ip:[`Tanımdaki anahtar ifade: birbirinin elindeki kaynağı <b>karşılıklı</b> beklemek.`,`Tespit: kaynak tahsis grafiğinde <b>döngü</b> aranır.`,`Kurtarma: işlemlerden birini sonlandırmak ya da kaynağı geri almak. Sunucuda kilitlenmenin sonucu DoS olabilir.`]},
+bellek:{g:`Telefonunda çok uygulama açıkken eski bir uygulamaya dönünce baştan yüklendiğini görürsün: sistem onu kenara itip yerini yeniye vermiştir (swapping mantığı). Sanal bellek ise küçük masada çalışırken yanındaki sandalyeyi de masa gibi kullanmak: alan büyür ama uzanmak biraz yavaştır.`,
+ ip:[`Sanal bellek = diskin bir kısmını RAM uzantısı gibi kullanmak.`,`Swap-out = diske, swap-in = RAM'e geri. Diske giden, düşük öncelikli olandır.`,`Parçalanma (fragmentation) “gerçek bellek tahsisi” başlığında geçer.`]},
+disk:{g:`Diski bir kütüphane gibi düşün: raflar izler (track), raftaki kutular 512 baytlık sektörler. Girişteki “Kütüphane rehberi” panosu MBR'dir (ilk sektör, açılışta ilk okunan). Bölümleme kütüphaneyi “Roman” ve “Bilim” katlarına ayırmaktır; kök dizin giriş kapısı, yol ise “Kat2 › Raf5 › Kitap”.`,
+ ip:[`MBR = <b>ilk</b> sektör; önyükleme kodunu taşır.`,`Sektör = 512 bayt.`,`OS birincil bölümde (primary partition) durur.`,`Defrag, dağınık parçaları bir araya toplamaktır: kütüphaneyi düzenlemek gibi.`]},
+guv:{g:`Telefon kilidini açmanın üç yolu: PIN (bildiğin şey), banka kartı (sahip olduğun şey), yüz ya da parmak izi (olduğun şey). Virüs, eline geçen bir dosyanın içine saklanıp çoğalır. Solucan ise ağı doldurup internetini yavaşlatan, kendi kendine yayılan bir trafik canavarıdır.`,
+ ip:[`Solucan veri bütünlüğünü <b>doğrudan bozmaz</b>, kaynakları tüketir. Virüs ise programlara yerleşir ve dosya siler.`,`Tarama = bilinen imzalar. İzleme = gerçek zamanlı. Bütünlük denetimi = hash ve boyut kontrolü.`,`Biyometrik: parmak izi, retina, yüz, ses.`]},
+ag:{g:`Okuldaki ortak yazıcı (yazıcı servisi), Google Drive (dosya servisi), WhatsApp (mesaj servisi): hepsi ağ servisi. Komut yorumlayıcısı ise restorandaki garson gibidir: mutfağa (çekirdeğe) sen girmezsin, garsona söylersin. CMD'ye yazdığın komut da, masaüstünde çift tıklaman da garsona verdiğin siparişlerdir.`,
+ ip:[`Telnet, FTP, Uzak Masaüstü = dağıtık sistemlerde şeffaf erişim örnekleri.`,`Komut yorumlayıcısı çoğu sistemde <b>ayrı bir program</b> (bağımsız süreç) olarak çalışır.`,`CLI'de betik örnekleri: Batch, Shell.`]}
+};
+
+/* ---------- Büyük benzetme: bilgisayar bir restorandır ---------- */
+const RESTORAN = [
+ ['İşletim sistemi','Restoran müdürü','Kimse onu görmez ama masaları, aşçıları ve malzemeyi (kaynakları) müşterilere adil dağıtan odur.','b1'],
+ ['CPU','Şef','Bir anda tek tabağa bakar ama tencereler arasında o kadar hızlı gider gelir ki her şey aynı anda pişiyor sanılır.','b4'],
+ ['ALU / CU','Şefin terazisi / şefin aklı','Terazi ölçer ve hesaplar (ALU). Akıl hangi siparişin sırada olduğunu yönetir (CU).','b4'],
+ ['RAM','Tezgâh','Şu an hazırlanan malzemeler burada durur. Gece kapanışta tezgâh silinir: uçucu.','b4'],
+ ['Disk (yan bellek)','Kiler','Her şey kalıcı olarak orada durur ama tezgâha getirmek zaman alır.','b4'],
+ ['Sanal bellek','Tezgâh dolunca yandaki raf','Rafı da tezgâh gibi kullanırsın: alan büyür, ama uzanmak yavaştır.','b4'],
+ ['Swap-out / swap-in','Tencereyi ocaktan indirmek / geri koymak','Acil olmayan yemek kenara alınır, acil olan pişer, sonra eskisi ocağa döner.','b4'],
+ ['Program / proses','Tarif / ocakta pişen yemek','Tarif kitapta yıllarca durur (statik). Yemek pişerken mutfağı kullanır, sonra biter (dinamik).','b1'],
+ ['Thread','Aynı yemeğin yardımcı aşçıları','Biri soğan doğrar, biri sos yapar. Aynı mutfağı paylaştıkları için çok az ek kaynak isterler.','b4'],
+ ['5 işlem durumu','Bir siparişin yolculuğu','Alındı (yeni) → sırada (hazır) → pişiyor (çalışıyor) → fırın bekleniyor (bekliyor) → servis edildi (sonu).','b4'],
+ ['Zaman paylaşımı','Her tencereyi biraz karıştıran şef','Şef 10 tencereyi sırayla birkaç saniye karıştırır, hiçbiri yanmaz.','b1'],
+ ['Spooling','Sipariş fişlerinin askıya dizilmesi','Garsonlar fişleri askıya takar, şef sırayla alır; fişler birbirine karışmaz.','b1'],
+ ['G/Ç birimleri','Garsonlar','Mutfakla dış dünya (müşteriler) arasında taşıma yaparlar.','b4'],
+ ['Aygıt bağımsız / sürücü','Standart sipariş fişi / tercüman','Herkes aynı fişi doldurur. Yabancı tedarikçiyle tercüman onun dilinde konuşur.','b4'],
+ ['Deadlock','Bıçak ve kesme tahtası kavgası','Bir aşçı bıçağı tutup tahtayı, diğeri tahtayı tutup bıçağı bekler. İkisi de bırakmazsa yemek çıkmaz.','b4'],
+ ['Dosya yönetimi','Kilerdeki etiketli raflar','Kök = kiler kapısı, yol = Kiler › Raf 3 › Un.','b4'],
+ ['Güvenlik','Kapıdaki görevli ve kasa','Görevli kimin gireceğine bakar. Virüs, yemeğe karışmış zehirdir; solucan, mutfağı doldurup herkesin yolunu kesen kalabalıktır.','b4'],
+ ['Komut yorumlayıcısı','Sipariş tezgâhı','Müşteri mutfağa giremez; isteğini tezgâha söyler, tezgâh mutfağa iletir.','b4'],
+ ['Boot','Sabah açılış','Işıklar yanar ve kontrol edilir (ROM), malzeme kilerden tezgâha taşınır (yükleme), müdür kapıyı açar (devir).','b1'],
+ ['Mikroçekirdek','Ayrı mutfak istasyonları','Tatlı istasyonu bozulursa ana yemekler çıkmaya devam eder.','b1'],
+ ['Multiprocessing / multiprogramming','Birden çok şef / tek şef, çok tencere','Çok şef aynı tezgâhı paylaşır. Tek şef ise beklerken başka tencereye geçer.','b3'],
+ ['Batch / interactive','Catering / masada sipariş','Catering menüsü önceden hazırlanır ve sırayla çıkar. Masada garsonla anlık konuşursun.','b3'],
+ ['Gerçek zamanlı','Fırındaki sufle','Bir dakika geç kalırsa doğru tarif bile işe yaramaz: zaman hayati.','b3'],
+ ['Performans kriterleri','Restoranın puanı','Lezzet (etkinlik), hız, boşta şef yok (MİB opt.), saatte çok tabak (throughput), şikâyetsiz (güvenirlik), bakımlı (süreklilik), küçük ama tam (kompakt).','b3']
 ];
 
 /* ---------- Soru bankası: [bölüm, soru, [doğru, yanlış...], açıklama] ---------- */
@@ -1241,7 +1372,8 @@ function folderSVG(no){
 const appIcon = {
   kartlar:`<svg viewBox="0 0 64 56" aria-hidden="true"><rect x="14" y="4" width="40" height="30" fill="#FCFBF7" stroke="#17192A" stroke-width="2.5"/><rect x="8" y="14" width="44" height="34" fill="#FFE27A" stroke="#17192A" stroke-width="2.5"/><path d="M16 26h28M16 34h20" stroke="#17192A" stroke-width="2.5"/></svg>`,
   sinav:`<svg viewBox="0 0 64 56" aria-hidden="true"><rect x="10" y="4" width="44" height="48" fill="#FCFBF7" stroke="#17192A" stroke-width="2.5"/><rect x="10" y="4" width="44" height="9" fill="#2B2F8F" stroke="#17192A" stroke-width="2.5"/><path d="M18 26l5 5 9-9M18 42h26" stroke="#1C7348" stroke-width="3" fill="none"/></svg>`,
-  kancalar:`<svg viewBox="0 0 64 56" aria-hidden="true"><path d="M12 4h40v36l-12 12H12z" fill="#FFE27A" stroke="#17192A" stroke-width="2.5"/><path d="M40 52V40h12" fill="#E5C35A" stroke="#17192A" stroke-width="2.5"/><path d="M20 16h24M20 24h24M20 32h14" stroke="#17192A" stroke-width="2.5"/></svg>`
+  kancalar:`<svg viewBox="0 0 64 56" aria-hidden="true"><path d="M12 4h40v36l-12 12H12z" fill="#FFE27A" stroke="#17192A" stroke-width="2.5"/><path d="M40 52V40h12" fill="#E5C35A" stroke="#17192A" stroke-width="2.5"/><path d="M20 16h24M20 24h24M20 32h14" stroke="#17192A" stroke-width="2.5"/></svg>`,
+  restoran:`<svg viewBox="0 0 64 56" aria-hidden="true"><path d="M10 22c0-9 10-16 22-16s22 7 22 16z" fill="#FCFBF7" stroke="#17192A" stroke-width="2.5"/><rect x="6" y="22" width="52" height="7" fill="#F2B13C" stroke="#17192A" stroke-width="2.5"/><path d="M14 29v20h36V29" fill="#FCFBF7" stroke="#17192A" stroke-width="2.5"/><path d="M26 38h12" stroke="#17192A" stroke-width="2.5"/><circle cx="32" cy="6" r="3" fill="#17192A"/></svg>`
 };
 
 function viewHarita(){
@@ -1250,7 +1382,7 @@ function viewHarita(){
   <section class="desk-title">
     <span class="term">C:\\VIZE&gt; isletim_sistemleri.exe · sayfa 1–51</span>
     <h1>Çekirdek Kampı</h1>
-    <p>İşletim sistemlerini bir işletim sisteminin içinde çalış. ${BOLUMLER.length} klasör, ${N_KONU} konu; her konuda kısa anlatım, sarı bir kanca notu ve çoğunda bir deney var.</p>
+    <p>İşletim sistemlerini bir işletim sisteminin içinde çalış. ${BOLUMLER.length} klasör, ${N_KONU} konu; her konu günlük hayattan bir sahneyle başlıyor, ardından kısa anlatım, sarı bir kanca notu ve sınav ipuçları geliyor. Bütün kavramları birbirine bağlamak için <a href="#restoran" style="color:var(--on-desk);font-weight:700">Restoran haritası</a>'na bak.</p>
   </section>
   <nav class="icons" aria-label="Bölümler">
     ${BOLUMLER.map(b=>{ const [d,t]=chapProgress(b); return `<a class="dicon" href="#${b.id}">${folderSVG(b.no)}<span class="lbl">${b.ad}</span><span class="sub">${d}/${t} konu</span></a>`; }).join('')}
@@ -1284,6 +1416,7 @@ function viewHarita(){
     <a class="dicon" href="#kartlar">${appIcon.kartlar}<span class="lbl">Kartlar</span><span class="sub">${KARTLAR.length} kart</span></a>
     <a class="dicon" href="#sinav">${appIcon.sinav}<span class="lbl">Deneme sınavı</span><span class="sub">${SORULAR.length} soru</span></a>
     <a class="dicon" href="#kancalar">${appIcon.kancalar}<span class="lbl">Kanca listesi</span><span class="sub">sınav sabahı</span></a>
+    <a class="dicon" href="#restoran">${appIcon.restoran}<span class="lbl">Restoran haritası</span><span class="sub">${RESTORAN.length} benzetme</span></a>
   </nav>`;
 }
 
@@ -1293,8 +1426,10 @@ function konuHTML(k, n){
     ${winBar(`KONU ${n} · s. ${k.s}${d?' · TAMAM':''}`)}
     <div class="win-body">
       <h2>${k.t}</h2>
+      ${EKSTRA[k.id]?`<div class="life"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 12h17v9a6 6 0 0 1-6 6h-5a6 6 0 0 1-6-6z"/><path d="M23 14h2a3 3 0 0 1 0 6h-2"/><path d="M11 4c-1 2 1 3 0 5M16 4c-1 2 1 3 0 5"/></svg><div><small>GÜNLÜK HAYATTA</small><p>${EKSTRA[k.id].g}</p></div></div>`:''}
       ${k.h}
       <div class="note"><small>KANCA</small>${k.k}</div>
+      ${EKSTRA[k.id]?`<div class="tips"><small>SINAVDA DİKKAT</small><ul>${EKSTRA[k.id].ip.map(t=>`<li>${t}</li>`).join('')}</ul></div>`:''}
       ${k.w?`<div class="lab"><span class="lab-h">DENEY.EXE</span><div id="w-${k.id}" style="display:flex;flex-direction:column;gap:12px"></div></div>`:''}
       <div class="k-foot"><span class="st-note">${d?'tamamlandı · +10 XP':'okudun, anladın mı?'}</span>
         <button class="btn okb ${d?'on':''}" data-done="${k.id}" aria-pressed="${d}">${d?'✓ Anladım':'Anladım'}</button></div>
@@ -1418,6 +1553,32 @@ function viewSinav(){
 }
 
 /* ---------- kanca listesi ---------- */
+function viewRestoran(){
+  main.innerHTML = `<section class="win">${winBar('RESTORAN.MAP')}<div class="win-body">
+      <h1 style="font-family:var(--f-pixel);font-size:clamp(1.8rem,6vw,2.4rem)">Restoran haritası</h1>
+      <p class="muted">Kavramları ayrı ayrı ezberlemek yerine hepsini tek bir yere yerleştir: <b>bilgisayar bir restorandır</b>. Sınavda bir kavram aklından çıkarsa restoranda gezin: “tezgâh neydi? RAM. Kiler? Disk. Bıçak-tahta kavgası? Deadlock.”</p>
+    </div></section>
+    <section class="win">${winBar('TAHMIN_ET.EXE')}<div class="win-body"><div class="rquiz" id="rquiz"></div></div></section>
+    <div class="rgrid">${RESTORAN.map(r=>`<article class="rcard"><span class="rk">${r[0]}</span><span class="rv">${r[1]}</span><p>${r[2]}</p><a href="#${r[3]}">Konuya git: ${BOLUMLER.find(b=>b.id===r[3]).no}. ${BOLUMLER.find(b=>b.id===r[3]).ad} →</a></article>`).join('')}</div>`;
+  const box = document.getElementById('rquiz');
+  let streak = 0;
+  const ask = () => {
+    const pick = RESTORAN[Math.floor(Math.random()*RESTORAN.length)];
+    const opts = shuffle([pick, ...shuffle(RESTORAN.filter(r=>r!==pick)).slice(0,3)]);
+    box.innerHTML = `<div class="qmeta"><span>Restoranda bu ne?</span><span>Seri: ${streak}</span></div>
+      <div class="qtitle" style="font-size:1.15rem">“${pick[1]}” hangi kavram?</div>
+      <div class="opts">${opts.map((o,j)=>`<button class="opt" data-j="${j}"><span class="lt">${'ABCD'[j]}</span><span>${o[0]}</span></button>`).join('')}</div><div aria-live="polite" data-after></div>`;
+    box.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+      const ok = opts[+b.dataset.j]===pick;
+      box.querySelectorAll('.opt').forEach((x,k)=>{ x.disabled=true; if(opts[k]===pick) x.classList.add('right'); });
+      if(!ok) b.classList.add('wrong');
+      streak = ok ? streak+1 : 0;
+      box.querySelector('[data-after]').innerHTML = `<div class="expl"><b>${ok?'Doğru!':'Olmadı.'}</b> ${pick[1]} = ${pick[0]}. ${pick[2]}</div><div class="row" style="margin-top:10px"><button class="btn pri">Sıradaki →</button></div>`;
+      const nb = box.querySelector('[data-after] .btn'); nb.focus({preventScroll:true}); nb.onclick = ask;
+    });
+  };
+  ask();
+}
 function viewKancalar(){
   main.innerHTML = `<section class="win">${winBar('KANCALAR.TXT')}<div class="win-body">
     <h1 style="font-family:var(--f-pixel);font-size:clamp(1.8rem,6vw,2.4rem)">Kanca listesi</h1>
@@ -1437,7 +1598,8 @@ function renderStart(){
     `<li class="sep" role="separator"></li>
      <li><a href="#kartlar"><svg viewBox="0 0 28 24" aria-hidden="true"><rect x="4" y="5" width="20" height="16" fill="#FFE27A" stroke="#17192A" stroke-width="2"/></svg><span>Kartlar</span></a></li>
      <li><a href="#sinav"><svg viewBox="0 0 28 24" aria-hidden="true"><rect x="4" y="2" width="20" height="20" fill="#FCFBF7" stroke="#17192A" stroke-width="2"/><path d="M9 12l3 3 6-6" stroke="#1C7348" stroke-width="2.5" fill="none"/></svg><span>Deneme sınavı</span></a></li>
-     <li><a href="#kancalar"><svg viewBox="0 0 28 24" aria-hidden="true"><path d="M5 2h18v14l-6 6H5z" fill="#FFE27A" stroke="#17192A" stroke-width="2"/></svg><span>Kanca listesi</span></a></li>`;
+     <li><a href="#kancalar"><svg viewBox="0 0 28 24" aria-hidden="true"><path d="M5 2h18v14l-6 6H5z" fill="#FFE27A" stroke="#17192A" stroke-width="2"/></svg><span>Kanca listesi</span></a></li>
+     <li><a href="#restoran"><svg viewBox="0 0 28 24" aria-hidden="true"><path d="M4 12c0-5 4-9 10-9s10 4 10 9z" fill="#FCFBF7" stroke="#17192A" stroke-width="2"/><rect x="2" y="12" width="24" height="5" fill="#F2B13C" stroke="#17192A" stroke-width="2"/></svg><span>Restoran haritası<small>bütün kavramlar tek benzetmede</small></span></a></li>`;
 }
 function openStart(open){
   startMenu.hidden = !open; startBtn.setAttribute('aria-expanded', open);
@@ -1463,6 +1625,7 @@ function route(){
   else if (h==='kartlar') viewKartlar();
   else if (h==='sinav') viewSinav();
   else if (h==='kancalar') viewKancalar();
+  else if (h==='restoran') viewRestoran();
   else viewHarita();
   document.querySelectorAll('.taskbar .tb').forEach(a=>{ const on = a.dataset.tab===h; a.classList.toggle('on',on); if(on) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
   if (pendingJump) { const el=document.getElementById('k-'+pendingJump); pendingJump=null; if(el) setTimeout(()=>el.scrollIntoView(),0); }
